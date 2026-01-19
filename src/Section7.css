@@ -81,16 +81,23 @@
 @media (max-width: 768px) {
   .section7 {
     align-items: center;
-    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 2rem);
+    padding: clamp(3rem, 6vw, 5rem) 0; /* Убираем боковые отступы для изображения на всю ширину */
+    min-height: 60vh;
+    aspect-ratio: auto;
+    background-size: cover;
+    background-position: center;
   }
 
   .section7-container {
-    padding-bottom: 0;
+    position: relative; /* Меняем на relative для мобильных */
+    bottom: auto;
+    padding: clamp(1rem, 3vw, 2rem);
   }
 
   .section7-stats {
     grid-template-columns: 1fr;
     gap: clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: 0;
   }
 }
 
