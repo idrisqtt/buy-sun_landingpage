@@ -81,23 +81,60 @@
 @media (max-width: 768px) {
   .section7 {
     align-items: center;
-    padding: clamp(3rem, 6vw, 5rem) 0; /* Убираем боковые отступы для изображения на всю ширину */
-    min-height: 60vh;
+    padding: clamp(2rem, 4vw, 3rem) 0;
+    min-height: auto;
     aspect-ratio: auto;
-    background-size: cover;
-    background-position: center;
+    /* Фон на всю ширину, даже за края экрана */
+    background-size: 120% auto; /* Немного больше 100% чтобы не было пустот */
+    background-position: center center;
+    margin-left: -5vw;
+    margin-right: -5vw;
+    width: calc(100% + 10vw);
+    overflow: hidden;
   }
 
   .section7-container {
-    position: relative; /* Меняем на relative для мобильных */
+    position: relative;
     bottom: auto;
-    padding: clamp(1rem, 3vw, 2rem);
+    padding: clamp(0.5rem, 2vw, 1rem);
   }
 
   .section7-stats {
-    grid-template-columns: 1fr;
-    gap: clamp(1.5rem, 3vw, 2.5rem);
+    grid-template-columns: repeat(3, 1fr); /* Все 3 в одну линию */
+    gap: clamp(0.5rem, 2vw, 1rem);
     margin-bottom: 0;
+  }
+
+  .stat-number {
+    font-size: clamp(1.2rem, 4vw, 1.8rem); /* Меньший размер */
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  }
+
+  .stat-label {
+    font-size: clamp(0.6rem, 2vw, 0.9rem); /* Меньший размер */
+    padding-top: clamp(0.3rem, 1vw, 0.5rem);
+    white-space: nowrap; /* В одну линию */
+  }
+
+  .stat-label::before {
+    height: 2px; /* Тоньше линия */
+  }
+}
+
+@media (max-width: 480px) {
+  .section7 {
+    background-size: 150% auto; /* Ещё больше для очень маленьких экранов */
+    margin-left: -8vw;
+    margin-right: -8vw;
+    width: calc(100% + 16vw);
+  }
+
+  .stat-number {
+    font-size: clamp(1rem, 5vw, 1.5rem);
+  }
+
+  .stat-label {
+    font-size: clamp(0.5rem, 2.5vw, 0.75rem);
   }
 }
 
