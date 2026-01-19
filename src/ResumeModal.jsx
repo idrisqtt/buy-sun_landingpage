@@ -442,25 +442,37 @@ function ResumeModal({ isOpen, onClose }) {
         rightY += 5
       }
 
-      // COURSES AND INTERESTS section - only show if there's data
-      const hasCourses = formData.courses || formData.hobbies
-      if (hasCourses) {
+      // COURSES section - only show if there's data
+      if (formData.courses && formData.courses.trim()) {
         pdf.setTextColor(30, 58, 95)
         pdf.setFontSize(14)
         pdf.setFont(undefined, 'bold')
-        pdf.text('COURSES AND INTERESTS', rightX, rightY)
+        pdf.text('COURSES', rightX, rightY)
         rightY += 8
 
         pdf.setTextColor(...black)
         pdf.setFontSize(9)
         pdf.setFont(undefined, 'normal')
         
-        const parts = []
-        if (formData.courses) parts.push(formData.courses)
-        if (formData.hobbies) parts.push(formData.hobbies)
-        const coursesText = parts.join(', ')
-        const coursesLines = pdf.splitTextToSize(coursesText, rightColWidth - rightPadding * 2)
+        const coursesLines = pdf.splitTextToSize(formData.courses, rightColWidth - rightPadding * 2)
         pdf.text(coursesLines, rightX, rightY)
+        rightY += coursesLines.length * 4 + 8
+      }
+
+      // HOBBIES section - only show if there's data
+      if (formData.hobbies && formData.hobbies.trim()) {
+        pdf.setTextColor(30, 58, 95)
+        pdf.setFontSize(14)
+        pdf.setFont(undefined, 'bold')
+        pdf.text('HOBBIES', rightX, rightY)
+        rightY += 8
+
+        pdf.setTextColor(...black)
+        pdf.setFontSize(9)
+        pdf.setFont(undefined, 'normal')
+        
+        const hobbiesLines = pdf.splitTextToSize(formData.hobbies, rightColWidth - rightPadding * 2)
+        pdf.text(hobbiesLines, rightX, rightY)
       }
 
       // Generate blob URL
@@ -783,44 +795,44 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                 </section>
 
                 <section className="form-section">
-                  <h3 className="section-title">Образование</h3>
+                  <h3 className="section-title">Образование (необязательно)</h3>
                   <div className="form-row">
                     <div className="form-group">
                       <label>Учебное учреждение (на англ.)</label>
-                      <input type="text" name="institution" value={formData.institution} onChange={handleChange} placeholder="Введите название учебного учреждения" required />
+                      <input type="text" name="institution" value={formData.institution} onChange={handleChange} placeholder="Введите название учебного учреждения" />
                     </div>
                   </div>
                   <div className="form-row">
                     <div className="form-group">
                       <label>Специальность (на англ.)</label>
-                      <input type="text" name="specialty" value={formData.specialty} onChange={handleChange} placeholder="Введите специальность" required />
+                      <input type="text" name="specialty" value={formData.specialty} onChange={handleChange} placeholder="Введите специальность" />
                     </div>
                   </div>
                   <div className="form-row">
                     <div className="form-group">
                       <label>Начало учебы (только год)</label>
-                      <input type="number" name="studyStart" value={formData.studyStart} onChange={handleChange} min="1950" max="2026" required />
+                      <input type="number" name="studyStart" value={formData.studyStart} onChange={handleChange} min="1950" max="2026" />
                     </div>
                     <div className="form-group">
                       <label>Окончание учебы (только год)</label>
-                      <input type="number" name="studyEnd" value={formData.studyEnd} onChange={handleChange} min="1950" max="2030" required />
+                      <input type="number" name="studyEnd" value={formData.studyEnd} onChange={handleChange} min="1950" max="2030" />
                     </div>
                   </div>
                 </section>
 
                 <section className="form-section">
-                  <h3 className="section-title">Опыт работы</h3>
+                  <h3 className="section-title">Опыт работы (необязательно)</h3>
                   
                   <div className="work-experience-block">
                     <h4>Опыт работы</h4>
                     <div className="form-row">
                       <div className="form-group">
                         <label>Название компании (на англ.)</label>
-                        <input type="text" name="company1" value={formData.company1} onChange={handleChange} placeholder="Введите название компании" required />
+                        <input type="text" name="company1" value={formData.company1} onChange={handleChange} placeholder="Введите название компании" />
                       </div>
                       <div className="form-group">
                         <label>Страна компании</label>
-                        <select name="country1" value={formData.country1} onChange={handleChange} required>
+                        <select name="country1" value={formData.country1} onChange={handleChange}>
                           <option value="">---</option>
                           <option value="Kazakhstan">Казахстан</option>
                           <option value="Turkey">Турция</option>
@@ -832,16 +844,16 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                     <div className="form-row">
                       <div className="form-group">
                         <label>Должность (на англ.)</label>
-                        <input type="text" name="position1" value={formData.position1} onChange={handleChange} placeholder="Введите должность" required />
+                        <input type="text" name="position1" value={formData.position1} onChange={handleChange} placeholder="Введите должность" />
                       </div>
                       <div className="form-row-inline">
                         <div className="form-group">
                           <label>Начало работы (только год)</label>
-                          <input type="number" name="workStart1" value={formData.workStart1} onChange={handleChange} min="1950" max="2026" required />
+                          <input type="number" name="workStart1" value={formData.workStart1} onChange={handleChange} min="1950" max="2026" />
                         </div>
                         <div className="form-group">
                           <label>Окончание работы (только год)</label>
-                          <input type="number" name="workEnd1" value={formData.workEnd1} onChange={handleChange} min="1950" max="2026" required />
+                          <input type="number" name="workEnd1" value={formData.workEnd1} onChange={handleChange} min="1950" max="2026" />
                         </div>
                       </div>
                     </div>
