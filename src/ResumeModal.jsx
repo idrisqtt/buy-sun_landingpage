@@ -194,8 +194,8 @@ function ResumeModal({ isOpen, onClose }) {
             })
             
             if (circularPhotoData) {
-              // Add circular photo (50x50mm square to keep aspect)
-              pdf.addImage(circularPhotoData, 'PNG', leftColWidth / 2 - 25, leftY, 50, 50)
+              // Add circular photo (60x60mm - 20% larger)
+              pdf.addImage(circularPhotoData, 'PNG', leftColWidth / 2 - 30, leftY, 60, 60)
             }
           }
         } catch (err) {
@@ -203,7 +203,7 @@ function ResumeModal({ isOpen, onClose }) {
         }
       }
 
-      leftY += 60
+      leftY += 70
 
       // PERSONAL DETAILS section
       pdf.setTextColor(...white)
