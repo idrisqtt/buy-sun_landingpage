@@ -156,11 +156,7 @@ function ResumeModal({ isOpen, onClose }) {
       // ========== LEFT COLUMN ==========
       let leftY = 15
 
-      // Add selfie photo in circle area (placeholder circle)
-      pdf.setFillColor(200, 220, 240) // Light blue circle background
-      pdf.circle(leftColWidth / 2, leftY + 35, 30, 'F')
-      
-      // Add photo if available
+      // Add selfie photo as rectangle (no circle background)
       if (formData.selfiePhoto) {
         try {
           const photoData = await new Promise((resolve) => {
@@ -170,15 +166,15 @@ function ResumeModal({ isOpen, onClose }) {
             reader.readAsDataURL(formData.selfiePhoto)
           })
           if (photoData) {
-            // Add photo as square, positioned in circle area
-            pdf.addImage(photoData, 'JPEG', leftColWidth / 2 - 25, leftY + 10, 50, 50)
+            // Add photo as rectangle
+            pdf.addImage(photoData, 'JPEG', leftColWidth / 2 - 25, leftY, 50, 60)
           }
         } catch (err) {
           console.log('Could not add photo:', err)
         }
       }
 
-      leftY += 80
+      leftY += 70
 
       // PERSONAL DETAILS section
       pdf.setTextColor(...white)
@@ -569,16 +565,8 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                   
                   <div className="form-row">
                     <div className="form-group">
-                      <label>Город проживания</label>
-                      <select name="city" value={formData.city} onChange={handleChange} required>
-                        <option value="">---</option>
-                        <option value="Almaty">Алматы</option>
-                        <option value="Astana">Астана</option>
-                        <option value="Shymkent">Шымкент</option>
-                        <option value="Karaganda">Караганда</option>
-                        <option value="Aktobe">Актобе</option>
-                        <option value="Other">Другой</option>
-                      </select>
+                      <label>Город проживания (на английском)</label>
+                      <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="e.g. Almaty, Astana" required />
                     </div>
                     <div className="form-row-inline">
                       <div className="form-group">
@@ -607,25 +595,12 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       </select>
                     </div>
                     <div className="form-group">
-                      <label>Гражданство</label>
-                      <select name="citizenship" value={formData.citizenship} onChange={handleChange} required>
-                        <option value="">---</option>
-                        <option value="Kazakhstan">Казахстан</option>
-                        <option value="Russia">Россия</option>
-                        <option value="Uzbekistan">Узбекистан</option>
-                        <option value="Kyrgyzstan">Кыргызстан</option>
-                        <option value="Other">Другое</option>
-                      </select>
+                      <label>Гражданство (на английском)</label>
+                      <input type="text" name="citizenship" value={formData.citizenship} onChange={handleChange} placeholder="e.g. Kazakhstan, Russia" required />
                     </div>
                     <div className="form-group">
-                      <label>Национальность</label>
-                      <select name="nationality" value={formData.nationality} onChange={handleChange} required>
-                        <option value="">---</option>
-                        <option value="Kazakh">Казах</option>
-                        <option value="Russian">Русский</option>
-                        <option value="Uzbek">Узбек</option>
-                        <option value="Other">Другое</option>
-                      </select>
+                      <label>Национальность (на английском)</label>
+                      <input type="text" name="nationality" value={formData.nationality} onChange={handleChange} placeholder="e.g. Kazakh, Russian" required />
                     </div>
                     <div className="form-group">
                       <label>Пол</label>
