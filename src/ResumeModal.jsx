@@ -206,23 +206,25 @@ function ResumeModal({ isOpen, onClose }) {
 
       // PERSONAL DETAILS section
       pdf.setTextColor(...white)
-      pdf.setFontSize(12)
+      pdf.setFontSize(18) // Larger section title
       pdf.setFont(undefined, 'bold')
       pdf.text('PERSONAL DETAILS', leftPadding, leftY)
-      leftY += 8
+      leftY += 12
 
-      pdf.setFontSize(9)
+      pdf.setFontSize(12) // Larger field values
       pdf.setFont(undefined, 'bold')
 
       const addLeftField = (label, value) => {
         // Skip empty fields
         if (!value || value.trim() === '' || value === '-' || value === ' - ') return
+        pdf.setFontSize(10) // Label size
         pdf.setFont(undefined, 'bold')
         pdf.text(`${label}:`, leftPadding, leftY)
         leftY += 5
+        pdf.setFontSize(12) // Value size - larger
         pdf.setFont(undefined, 'normal')
         pdf.text(value, leftPadding + 2, leftY)
-        leftY += 7
+        leftY += 8
       }
 
       addLeftField('DATE OF BIRTH', formData.birthDate)
@@ -243,12 +245,12 @@ function ResumeModal({ isOpen, onClose }) {
       // EDUCATION section - only show if there's education data
       const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd
       if (hasEducation) {
-        pdf.setFontSize(12)
+        pdf.setFontSize(18) // Larger section title
         pdf.setFont(undefined, 'bold')
         pdf.text('EDUCATION', leftPadding, leftY)
-        leftY += 8
+        leftY += 12
 
-        pdf.setFontSize(9)
+        pdf.setFontSize(12)
         addLeftField('NAME OF EMPLOYER', formData.institution)
         addLeftField('MAJOR', formData.specialty)
         // Only show DATE if both start and end are filled
@@ -282,10 +284,10 @@ function ResumeModal({ isOpen, onClose }) {
 
       // Name and position
       pdf.setTextColor(...black)
-      pdf.setFontSize(10)
-      pdf.setFont(undefined, 'normal')
+      pdf.setFontSize(14) // Larger name
+      pdf.setFont(undefined, 'bold')
       pdf.text(`${formData.firstName} ${formData.lastName}`, rightX, rightY)
-      rightY += 5
+      rightY += 7
       
       // Divider line
       pdf.setDrawColor(...gray)
@@ -295,20 +297,24 @@ function ResumeModal({ isOpen, onClose }) {
 
       // Only show POSITION if filled
       if (formData.desiredPosition) {
+        pdf.setFontSize(10)
         pdf.setFont(undefined, 'bold')
         pdf.text('POSITION:', rightX, rightY)
+        pdf.setFontSize(12)
         pdf.setFont(undefined, 'normal')
         pdf.text(formData.desiredPosition, rightX + 25, rightY)
-        rightY += 6
+        rightY += 7
       }
 
       // Only show YEARS if filled
       if (formData.age) {
+        pdf.setFontSize(10)
         pdf.setFont(undefined, 'bold')
         pdf.text('YEARS:', rightX, rightY)
+        pdf.setFontSize(12)
         pdf.setFont(undefined, 'normal')
         pdf.text(formData.age, rightX + 18, rightY)
-        rightY += 6
+        rightY += 7
       }
       rightY += 4
 
@@ -389,13 +395,13 @@ function ResumeModal({ isOpen, onClose }) {
 
       if (hasAnyExperience) {
         pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(14)
+        pdf.setFontSize(18) // Larger section title
         pdf.setFont(undefined, 'bold')
         pdf.text('EXPERIENCE', rightX, rightY)
-        rightY += 8
+        rightY += 12
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(9)
+        pdf.setFontSize(11)
 
         if (hasExp1) addExpBlock(formData.position1, formData.company1, formData.workStart1, formData.workEnd1, formData.country1)
         if (hasExp2) addExpBlock(formData.position2, formData.company2, formData.workStart2, formData.workEnd2, formData.country2)
@@ -408,13 +414,13 @@ function ResumeModal({ isOpen, onClose }) {
       const hasLanguages = formData.english || formData.turkish || formData.russian
       if (hasLanguages) {
         pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(14)
+        pdf.setFontSize(18) // Larger section title
         pdf.setFont(undefined, 'bold')
         pdf.text('LANGUAGES', rightX, rightY)
-        rightY += 8
+        rightY += 12
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(9)
+        pdf.setFontSize(11)
 
         if (formData.english) {
           pdf.setFont(undefined, 'bold')
@@ -445,30 +451,30 @@ function ResumeModal({ isOpen, onClose }) {
       // COURSES section - only show if there's data
       if (formData.courses && formData.courses.trim()) {
         pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(14)
+        pdf.setFontSize(18) // Larger section title
         pdf.setFont(undefined, 'bold')
         pdf.text('COURSES', rightX, rightY)
-        rightY += 8
+        rightY += 12
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(9)
+        pdf.setFontSize(11)
         pdf.setFont(undefined, 'normal')
         
         const coursesLines = pdf.splitTextToSize(formData.courses, rightColWidth - rightPadding * 2)
         pdf.text(coursesLines, rightX, rightY)
-        rightY += coursesLines.length * 4 + 8
+        rightY += coursesLines.length * 5 + 10
       }
 
       // HOBBIES section - only show if there's data
       if (formData.hobbies && formData.hobbies.trim()) {
         pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(14)
+        pdf.setFontSize(18) // Larger section title
         pdf.setFont(undefined, 'bold')
         pdf.text('HOBBIES', rightX, rightY)
-        rightY += 8
+        rightY += 12
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(9)
+        pdf.setFontSize(11)
         pdf.setFont(undefined, 'normal')
         
         const hobbiesLines = pdf.splitTextToSize(formData.hobbies, rightColWidth - rightPadding * 2)
