@@ -136,214 +136,226 @@ function ResumeModal({ isOpen, onClose }) {
       const pdf = new jsPDF('p', 'mm', 'a4')
       const pageWidth = 210
       const pageHeight = 297
-      const margin = 20
-      let yPosition = margin
+      const leftColWidth = 85
+      const rightColStart = leftColWidth
+      const rightColWidth = pageWidth - leftColWidth
+      const leftPadding = 8
+      const rightPadding = 10
 
-      // Helper function to add text with word wrap
-      const addText = (text, x, y, maxWidth, fontSize = 10) => {
-        pdf.setFontSize(fontSize)
-        const lines = pdf.splitTextToSize(text, maxWidth)
-        pdf.text(lines, x, y)
-        return y + (lines.length * fontSize * 0.4)
-      }
+      // Colors
+      const darkBlue = [30, 58, 95] // #1E3A5F
+      const gold = [218, 165, 32] // Gold for logo
+      const white = [255, 255, 255]
+      const black = [0, 0, 0]
+      const gray = [100, 100, 100]
 
-      // Header
-      pdf.setFillColor(0, 144, 255)
-      pdf.rect(0, 0, pageWidth, 40, 'F')
+      // Draw left column background (dark blue)
+      pdf.setFillColor(...darkBlue)
+      pdf.rect(0, 0, leftColWidth, pageHeight, 'F')
+
+      // ========== LEFT COLUMN ==========
+      let leftY = 15
+
+      // Add selfie photo in circle area (placeholder circle)
+      pdf.setFillColor(200, 220, 240) // Light blue circle background
+      pdf.circle(leftColWidth / 2, leftY + 35, 30, 'F')
       
-      pdf.setTextColor(255, 255, 255)
-      pdf.setFontSize(24)
-      pdf.text('BUY SUN', margin, 25)
-      
-      pdf.setFontSize(12)
-      pdf.text('Resume', pageWidth - margin - 25, 25)
-
-      yPosition = 55
-
-      // Personal Info Section
-      pdf.setTextColor(0, 144, 255)
-      pdf.setFontSize(14)
-      pdf.text('Personal Information', margin, yPosition)
-      yPosition += 10
-
-      pdf.setTextColor(0, 0, 0)
-      pdf.setFontSize(10)
-
-      const addField = (label, value) => {
-        if (yPosition > pageHeight - 30) {
-          pdf.addPage()
-          yPosition = margin
-        }
-        pdf.setFont(undefined, 'bold')
-        pdf.text(`${label}:`, margin, yPosition)
-        pdf.setFont(undefined, 'normal')
-        pdf.text(value || '-', margin + 50, yPosition)
-        yPosition += 7
-      }
-
-      addField('Name', `${formData.firstName} ${formData.lastName}`)
-      addField('Phone', formData.phone)
-      addField('Email', formData.email)
-      addField('City', formData.city)
-      addField('Age', formData.age)
-      addField('Birth Date', formData.birthDate)
-      addField('Gender', formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : '-')
-      addField('Height', formData.height ? `${formData.height} cm` : '-')
-      addField('Weight', formData.weight ? `${formData.weight} kg` : '-')
-      addField('Marital Status', formData.maritalStatus)
-      addField('Citizenship', formData.citizenship)
-      addField('Nationality', formData.nationality)
-
-      yPosition += 5
-
-      // Languages Section
-      if (yPosition > pageHeight - 50) {
-        pdf.addPage()
-        yPosition = margin
-      }
-      pdf.setTextColor(0, 144, 255)
-      pdf.setFontSize(14)
-      pdf.text('Languages', margin, yPosition)
-      yPosition += 10
-      pdf.setTextColor(0, 0, 0)
-      pdf.setFontSize(10)
-
-      addField('Russian', formData.russian)
-      addField('English', formData.english)
-      addField('Turkish', formData.turkish)
-      if (formData.additionalLanguage) {
-        addField('Other', `${formData.additionalLanguage}: ${formData.additionalLanguageLevel}`)
-      }
-
-      yPosition += 5
-
-      // Education Section
-      if (yPosition > pageHeight - 50) {
-        pdf.addPage()
-        yPosition = margin
-      }
-      pdf.setTextColor(0, 144, 255)
-      pdf.setFontSize(14)
-      pdf.text('Education', margin, yPosition)
-      yPosition += 10
-      pdf.setTextColor(0, 0, 0)
-      pdf.setFontSize(10)
-
-      addField('Institution', formData.institution)
-      addField('Specialty', formData.specialty)
-      addField('Period', `${formData.studyStart} - ${formData.studyEnd}`)
-
-      yPosition += 5
-
-      // Work Experience Section
-      if (yPosition > pageHeight - 50) {
-        pdf.addPage()
-        yPosition = margin
-      }
-      pdf.setTextColor(0, 144, 255)
-      pdf.setFontSize(14)
-      pdf.text('Work Experience', margin, yPosition)
-      yPosition += 10
-      pdf.setTextColor(0, 0, 0)
-      pdf.setFontSize(10)
-
-      if (formData.company1) {
-        addField('Company 1', formData.company1)
-        addField('Position', formData.position1)
-        addField('Country', formData.country1)
-        addField('Period', `${formData.workStart1} - ${formData.workEnd1}`)
-        yPosition += 3
-      }
-
-      if (formData.company2) {
-        addField('Company 2', formData.company2)
-        addField('Position', formData.position2)
-        addField('Country', formData.country2)
-        addField('Period', `${formData.workStart2} - ${formData.workEnd2}`)
-        yPosition += 3
-      }
-
-      if (formData.company3) {
-        addField('Company 3', formData.company3)
-        addField('Position', formData.position3)
-        addField('Country', formData.country3)
-        addField('Period', `${formData.workStart3} - ${formData.workEnd3}`)
-      }
-
-      yPosition += 5
-
-      // Additional Info Section
-      if (yPosition > pageHeight - 50) {
-        pdf.addPage()
-        yPosition = margin
-      }
-      pdf.setTextColor(0, 144, 255)
-      pdf.setFontSize(14)
-      pdf.text('Additional Information', margin, yPosition)
-      yPosition += 10
-      pdf.setTextColor(0, 0, 0)
-      pdf.setFontSize(10)
-
-      addField('Student', formData.isStudent === 'yes' ? 'Yes' : 'No')
-      addField('Desired Position', formData.desiredPosition)
-      addField('Work Period', `${formData.startMonth}/${formData.startDay} - ${formData.endMonth}/${formData.endDay}`)
-      addField('Father Name', formData.fatherName)
-      addField('Mother Name', formData.motherName)
-      addField('Hobbies', formData.hobbies)
-      addField('Courses', formData.courses)
-      addField('Instagram', formData.instagram)
-      addField('Source', formData.source)
-
-      // Add photos if available
-      if (formData.selfiePhoto || formData.fullBodyPhoto) {
-        pdf.addPage()
-        yPosition = margin
-        
-        pdf.setTextColor(0, 144, 255)
-        pdf.setFontSize(14)
-        pdf.text('Photos', margin, yPosition)
-        yPosition += 15
-
-        const addImage = async (file, x, y, maxWidth, maxHeight) => {
-          return new Promise((resolve) => {
+      // Add photo if available
+      if (formData.selfiePhoto) {
+        try {
+          const photoData = await new Promise((resolve) => {
             const reader = new FileReader()
-            reader.onload = (e) => {
-              try {
-                pdf.addImage(e.target.result, 'JPEG', x, y, maxWidth, maxHeight)
-              } catch (err) {
-                console.log('Could not add image:', err)
-              }
-              resolve()
-            }
-            reader.onerror = () => resolve()
-            reader.readAsDataURL(file)
+            reader.onload = (e) => resolve(e.target.result)
+            reader.onerror = () => resolve(null)
+            reader.readAsDataURL(formData.selfiePhoto)
           })
-        }
-
-        if (formData.selfiePhoto) {
-          pdf.setTextColor(0, 0, 0)
-          pdf.setFontSize(10)
-          pdf.text('Selfie Photo (5x6)', margin, yPosition)
-          yPosition += 5
-          await addImage(formData.selfiePhoto, margin, yPosition, 50, 60)
-        }
-
-        if (formData.fullBodyPhoto) {
-          pdf.setTextColor(0, 0, 0)
-          pdf.setFontSize(10)
-          pdf.text('Full Body Photo', margin + 70, yPosition - 5)
-          await addImage(formData.fullBodyPhoto, margin + 70, yPosition, 50, 80)
+          if (photoData) {
+            // Add photo as square, positioned in circle area
+            pdf.addImage(photoData, 'JPEG', leftColWidth / 2 - 25, leftY + 10, 50, 50)
+          }
+        } catch (err) {
+          console.log('Could not add photo:', err)
         }
       }
 
-      // Footer
-      const lastPage = pdf.getNumberOfPages()
-      for (let i = 1; i <= lastPage; i++) {
-        pdf.setPage(i)
-        pdf.setTextColor(128, 128, 128)
-        pdf.setFontSize(8)
-        pdf.text(`Page ${i} of ${lastPage} | BuySun Resume | Generated: ${new Date().toLocaleDateString()}`, margin, pageHeight - 10)
+      leftY += 80
+
+      // PERSONAL DETAILS section
+      pdf.setTextColor(...white)
+      pdf.setFontSize(12)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('PERSONAL DETAILS', leftPadding, leftY)
+      leftY += 8
+
+      pdf.setFontSize(9)
+      pdf.setFont(undefined, 'bold')
+
+      const addLeftField = (label, value) => {
+        pdf.setFont(undefined, 'bold')
+        pdf.text(`${label}:`, leftPadding, leftY)
+        leftY += 5
+        pdf.setFont(undefined, 'normal')
+        pdf.text(value || '-', leftPadding + 2, leftY)
+        leftY += 7
       }
+
+      addLeftField('DATE OF BIRTH', formData.birthDate)
+      addLeftField('HEIGHT', formData.height ? `${formData.height} cm` : '-')
+      addLeftField('WEIGHT', formData.weight ? `${formData.weight} kg` : '-')
+      addLeftField('MARITAL STATUS', formData.maritalStatus)
+      addLeftField('START FINISH', `${formData.startMonth}/${formData.startDay} - ${formData.endMonth}/${formData.endDay}`)
+      addLeftField('CITIZENSHIP', formData.citizenship)
+      addLeftField('CITY', formData.city)
+      addLeftField('FATHER NAME', formData.fatherName)
+      addLeftField('MOTHER NAME', formData.motherName)
+
+      leftY += 10
+
+      // EDUCATION section
+      pdf.setFontSize(12)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('EDUCATION', leftPadding, leftY)
+      leftY += 8
+
+      pdf.setFontSize(9)
+      addLeftField('NAME OF EMPLOYER', formData.institution)
+      addLeftField('MAJOR', formData.specialty)
+      addLeftField('DATE', `${formData.studyStart} - ${formData.studyEnd}`)
+      addLeftField('MANAGER', '-')
+
+      // ========== RIGHT COLUMN ==========
+      let rightY = 15
+      const rightX = rightColStart + rightPadding
+
+      // BUY SUN Logo (text)
+      pdf.setTextColor(30, 58, 95) // Dark blue
+      pdf.setFontSize(28)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('BUY', rightX, rightY + 15)
+      pdf.setTextColor(218, 165, 32) // Gold
+      pdf.text('SUN', rightX + 30, rightY + 15)
+      
+      // Add small plane/sun icon placeholder (just decorative text for now)
+      pdf.setTextColor(30, 58, 95)
+      pdf.setFontSize(10)
+      pdf.text('*', rightX + 58, rightY + 8)
+
+      rightY += 35
+
+      // Name and position
+      pdf.setTextColor(...black)
+      pdf.setFontSize(10)
+      pdf.setFont(undefined, 'normal')
+      pdf.text(`${formData.firstName} ${formData.lastName}`, rightX, rightY)
+      rightY += 5
+      
+      // Divider line
+      pdf.setDrawColor(...gray)
+      pdf.setLineWidth(0.3)
+      pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
+      rightY += 6
+
+      pdf.setFont(undefined, 'bold')
+      pdf.text('POSITION:', rightX, rightY)
+      pdf.setFont(undefined, 'normal')
+      pdf.text(formData.desiredPosition || '-', rightX + 25, rightY)
+      rightY += 6
+
+      pdf.setFont(undefined, 'bold')
+      pdf.text('YEARS:', rightX, rightY)
+      pdf.setFont(undefined, 'normal')
+      pdf.text(formData.age || '-', rightX + 18, rightY)
+      rightY += 10
+
+      // EXPERIENCE section
+      pdf.setTextColor(30, 58, 95)
+      pdf.setFontSize(14)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('EXPERIENCE', rightX, rightY)
+      rightY += 8
+
+      pdf.setTextColor(...black)
+      pdf.setFontSize(9)
+
+      const addExpBlock = (position, company, period, country) => {
+        pdf.setFont(undefined, 'bold')
+        pdf.text('POSITION:', rightX, rightY)
+        pdf.setFont(undefined, 'normal')
+        pdf.text(position || '-', rightX + 25, rightY)
+        rightY += 5
+        
+        pdf.setFont(undefined, 'bold')
+        pdf.text('PLACE OF WORK:', rightX, rightY)
+        pdf.setFont(undefined, 'normal')
+        pdf.text(company || '-', rightX + 35, rightY)
+        rightY += 5
+        
+        pdf.setFont(undefined, 'bold')
+        pdf.text('WORK PERIOD:', rightX, rightY)
+        pdf.setFont(undefined, 'normal')
+        pdf.text(period || '-', rightX + 30, rightY)
+        rightY += 5
+        
+        pdf.setFont(undefined, 'bold')
+        pdf.text('COUNTRY:', rightX, rightY)
+        pdf.setFont(undefined, 'normal')
+        pdf.text(country || '-', rightX + 22, rightY)
+        rightY += 8
+
+        // Divider
+        pdf.setDrawColor(...gray)
+        pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
+        rightY += 5
+      }
+
+      addExpBlock(formData.position1, formData.company1, `${formData.workStart1} - ${formData.workEnd1}`, formData.country1)
+      addExpBlock(formData.position2, formData.company2, `${formData.workStart2} - ${formData.workEnd2}`, formData.country2)
+      addExpBlock(formData.position3, formData.company3, `${formData.workStart3} - ${formData.workEnd3}`, formData.country3)
+
+      rightY += 5
+
+      // LANGUAGES section
+      pdf.setTextColor(30, 58, 95)
+      pdf.setFontSize(14)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('LANGUAGES', rightX, rightY)
+      rightY += 8
+
+      pdf.setTextColor(...black)
+      pdf.setFontSize(9)
+
+      pdf.setFont(undefined, 'bold')
+      pdf.text('ENGLISH:', rightX, rightY)
+      pdf.setFont(undefined, 'normal')
+      pdf.text(formData.english || '-', rightX + 22, rightY)
+      rightY += 5
+
+      pdf.setFont(undefined, 'bold')
+      pdf.text('TURKCE:', rightX, rightY)
+      pdf.setFont(undefined, 'normal')
+      pdf.text(formData.turkish || '-', rightX + 20, rightY)
+      rightY += 5
+
+      pdf.setFont(undefined, 'bold')
+      pdf.text('RUSSIAN:', rightX, rightY)
+      pdf.setFont(undefined, 'normal')
+      pdf.text(formData.russian || '-', rightX + 22, rightY)
+      rightY += 10
+
+      // COURSES AND INTERESTS section
+      pdf.setTextColor(30, 58, 95)
+      pdf.setFontSize(14)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('COURSES AND INTERESTS', rightX, rightY)
+      rightY += 8
+
+      pdf.setTextColor(...black)
+      pdf.setFontSize(9)
+      pdf.setFont(undefined, 'normal')
+      
+      const coursesText = `${formData.courses || '-'}, ${formData.hobbies || '-'}`
+      const coursesLines = pdf.splitTextToSize(coursesText, rightColWidth - rightPadding * 2)
+      pdf.text(coursesLines, rightX, rightY)
 
       // Generate blob URL
       const pdfBlob = pdf.output('blob')
