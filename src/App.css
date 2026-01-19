@@ -1,0 +1,183 @@
+.app {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Плавные переходы между секциями */
+.app > section {
+  position: relative;
+  transition: opacity 0.3s ease-in-out;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Масштабирование для экранов до 1386px */
+@media (max-width: 1386px) {
+  html {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+  }
+  
+  .app {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+  }
+  
+  /* Обеспечиваем пропорциональное масштабирование всех элементов */
+  .app * {
+    box-sizing: border-box;
+  }
+  
+  /* Секции всегда на всю ширину */
+  .app > section {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Для больших экранов - без масштабирования */
+@media (min-width: 1387px) {
+  .app {
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+  }
+}
+
+/* Адаптивный скейлинг для разных диапазонов */
+/* Используем transform: scale() с правильным центрированием и фоном */
+@media (max-width: 1386px) and (min-width: 1200px) {
+  html, body {
+    background-color: #000;
+    overflow-x: hidden;
+  }
+  
+  #root {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #000;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .app {
+    transform: scale(0.722);
+    transform-origin: center top;
+    width: 1920px;
+    min-height: calc(100vh / 0.722);
+    margin: 0;
+    position: relative;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 969px) {
+  html, body {
+    background-color: #000;
+    overflow-x: hidden;
+  }
+  
+  #root {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #000;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .app {
+    transform: scale(0.625);
+    transform-origin: center top;
+    width: 1920px;
+    min-height: calc(100vh / 0.625);
+    margin: 0;
+    position: relative;
+  }
+}
+
+/* Скейлинг для планшетов 769px - 968px */
+@media (max-width: 968px) and (min-width: 769px) {
+  html, body {
+    background-color: #000;
+    overflow-x: hidden;
+  }
+  
+  #root {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #000;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .app {
+    transform: scale(0.505);
+    transform-origin: center top;
+    width: 1920px;
+    min-height: calc(100vh / 0.505);
+    margin: 0;
+    position: relative;
+  }
+}
+
+/* Для мобильных - полноценный responsive без scale */
+@media (max-width: 768px) {
+  html, body {
+    background-color: #000;
+    overflow-x: hidden;
+  }
+  
+  #root {
+    display: block;
+    background-color: #000;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .app {
+    transform: none;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+  }
+  
+  .app > section {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}

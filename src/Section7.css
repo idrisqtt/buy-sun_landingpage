@@ -1,0 +1,102 @@
+.section7 {
+  width: 100%;
+  background-image: url('/s7.png');
+  background-size: cover; /* Заполняем всю ширину и высоту, обрезая при необходимости */
+  background-position: center center;
+  background-repeat: no-repeat;
+  padding-left: clamp(2rem, 5vw, 4rem);
+  padding-right: clamp(2rem, 5vw, 4rem);
+  padding-top: 0;
+  padding-bottom: 0; /* Убираем padding-bottom, так как используем абсолютное позиционирование для текста */
+  /* Высота секции = высота изображения (1920x1080 = соотношение 16:9) */
+  aspect-ratio: 16 / 9; /* Соотношение сторон изображения 1920x1080 */
+  min-height: 100vh; /* Минимум полный экран, но может быть больше если нужно */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.section7-container {
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  position: absolute; /* Абсолютное позиционирование для точного размещения внизу */
+  bottom: clamp(2rem, 4vw, 3rem); /* Текст внизу секции с небольшим отступом */
+  left: 0;
+  right: 0;
+  padding-left: clamp(2rem, 5vw, 4rem);
+  padding-right: clamp(2rem, 5vw, 4rem);
+  box-sizing: border-box;
+}
+
+.section7-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(2rem, 4vw, 4rem);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: 67px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(0.5rem, 1vw, 1rem);
+}
+
+.stat-number {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--text-white);
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.stat-label {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 400;
+  color: var(--text-white);
+  line-height: 1.4;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  position: relative;
+  padding-top: clamp(0.5rem, 1vw, 1rem);
+}
+
+.stat-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--text-white);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .section7 {
+    align-items: center;
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .section7-container {
+    padding-bottom: 0;
+  }
+
+  .section7-stats {
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+  }
+}
+
+@media (min-width: 2560px) {
+  .section7-container {
+    max-width: 2560px;
+    padding: 0 clamp(2rem, 6vw, 6rem);
+  }
+}

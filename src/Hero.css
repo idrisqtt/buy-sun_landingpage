@@ -1,0 +1,444 @@
+.hero {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--bg-black);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: clamp(1.5rem, 4vw, 4rem);
+  padding-left: clamp(1.5rem, 4vw, 4rem);
+  padding-right: clamp(1.5rem, 4vw, 4rem);
+  padding-bottom: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.hero-video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-container {
+  width: 100%;
+  max-width: 1281px;
+  margin: 0 auto;
+  margin-bottom: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 5vw, 4rem);
+  padding: 0 clamp(1rem, 4vw, 4rem);
+  padding-bottom: 0 !important;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: stretch;
+  min-height: 0; /* Позволяет flex-элементам сжиматься */
+}
+
+/* Убеждаемся, что на всех размерах экрана изображение прилегает к низу */
+@media (min-width: 769px) {
+  .hero-container {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    gap: clamp(2rem, 5vw, 4rem); /* Сохраняем gap между header и content */
+  }
+  
+  .hero-content {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    align-items: end; /* Выравниваем по низу */
+    align-self: stretch; /* Растягиваемся на всю высоту flex-контейнера */
+    min-height: 0; /* Позволяет сжиматься */
+  }
+  
+  .hero-text {
+    align-self: center; /* Текст остается по центру */
+  }
+  
+  .hero-image {
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    padding-bottom: 0 !important;
+    align-self: end !important;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    height: auto;
+  }
+  
+  .hero-image img {
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    padding-bottom: 0 !important;
+    display: block;
+  }
+}
+
+/* Header Section */
+.hero-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: flex-start;
+  gap: clamp(1rem, 3vw, 2rem);
+  width: 100%;
+}
+
+.hero-social {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.25rem, 0.75vw, 0.5rem);
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.social-icons {
+  display: flex;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+.social-icon {
+  width: clamp(24px, 3vw, 36px);
+  height: clamp(24px, 3vw, 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-blue);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+
+.social-icon:hover {
+  opacity: 0.8;
+  filter: brightness(1.2);
+}
+
+.social-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.hero-email {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--text-white);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.hero-email:hover {
+  opacity: 0.8;
+}
+
+.hero-brand {
+  font-size: clamp(1.2rem, 4.8vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: clamp(0.1em, 0.5vw, 0.2em);
+  text-align: center;
+  white-space: nowrap;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  line-height: 1;
+}
+
+.hero-contact-btn {
+  justify-self: end;
+  padding: 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+  background-color: #0090FF;
+  color: var(--text-white);
+  border: none;
+  border-radius: 32px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.hero-contact-btn:hover {
+  background-color: #0077CC;
+}
+
+/* Main Content Section */
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: end; /* Выравниваем элементы по низу grid строки */
+  width: 100%;
+  margin: 0;
+  margin-bottom: 0 !important;
+  padding: 0;
+  padding-bottom: 0 !important;
+  align-self: flex-end; /* Прижимаем контент к низу контейнера */
+  min-height: 0; /* Позволяет grid сжиматься */
+  position: relative;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 759px;
+  align-self: center; /* Текстовый блок остается по центру */
+}
+
+.hero-greeting {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(24px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #F2F2F2;
+  margin: 0;
+  padding: 0;
+}
+
+.hero-service {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(18px, 4vw, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: #F2F2F2;
+  letter-spacing: clamp(0.05em, 0.2vw, 0.1em);
+  margin: 0;
+  padding: 0;
+  margin-top: -0.1em;
+}
+
+.hero-announcement {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(16px, 3.5vw, 33px);
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: clamp(0.05em, 0.2vw, 0.1em);
+  margin: 0;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+.hero-cta-btn {
+  align-self: flex-start;
+  width: 100%;
+  max-width: 319px;
+  padding: clamp(12px, 2vw, 16px);
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(14px, 2.5vw, 21px);
+  font-weight: 900;
+  text-transform: uppercase;
+  background-color: #0090FF;
+  color: var(--text-white);
+  border: none;
+  border-radius: 32px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin-top: clamp(32px, 6vw, 92px);
+}
+
+.hero-cta-btn:hover {
+  background-color: #0077CC;
+}
+
+.hero-image {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: relative;
+  align-self: end; /* Выравниваем по низу grid ячейки */
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.hero-content .hero-image {
+  align-self: end;
+}
+
+.hero-image img {
+  width: 444px;
+  height: 613px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero {
+    padding: clamp(1rem, 3vw, 2rem);
+    min-height: auto;
+  }
+
+  .hero-container {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .hero-header {
+    grid-template-columns: 1fr;
+    gap: clamp(1rem, 3vw, 1.5rem);
+    text-align: center;
+  }
+
+  .hero-social {
+    align-items: center;
+  }
+
+  .hero-email {
+    font-size: clamp(14px, 3vw, 19px);
+  }
+
+  .hero-contact-btn {
+    justify-self: center;
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(14px, 3vw, 21px);
+    padding: clamp(12px, 2vw, 16px);
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .hero-text {
+    max-width: 100%;
+    width: 100%;
+    text-align: center;
+    align-items: center;
+  }
+
+  .hero-cta-btn {
+    align-self: center;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .hero-image {
+    order: -1;
+    min-height: auto;
+    justify-content: center;
+  }
+
+  .hero-image img {
+    max-height: 40vh;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+  }
+}
+
+/* Убеждаемся, что на больших экранах (от 1300px) изображение прилегает к низу */
+@media (min-width: 1300px) {
+  .hero-container {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .hero-content {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    align-items: end; /* Выравниваем по низу */
+    align-self: stretch; /* Растягиваемся на всю высоту */
+  }
+  
+  .hero-text {
+    align-self: center; /* Текст остается по центру */
+  }
+  
+  .hero-image {
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: end !important;
+    display: flex;
+    align-items: flex-end; /* Прижимаем изображение к низу flex-контейнера */
+    justify-content: flex-end;
+  }
+  
+  .hero-image img {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block;
+  }
+}
+
+/* Масштабирование для очень больших экранов */
+@media (min-width: 2560px) {
+  .hero-container {
+    max-width: 2560px;
+    padding: 0 clamp(2rem, 6vw, 6rem);
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .hero-content {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    align-items: end; /* Выравниваем по низу */
+    align-self: stretch; /* Растягиваемся на всю высоту */
+  }
+  
+  .hero-text {
+    align-self: center; /* Текст остается по центру */
+  }
+  
+  .hero-image {
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: end !important;
+    display: flex;
+    align-items: flex-end; /* Прижимаем изображение к низу flex-контейнера */
+    justify-content: flex-end;
+  }
+  
+  .hero-image img {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block;
+  }
+}
