@@ -131,6 +131,26 @@
     min-height: auto;
     margin: 0 auto;
   }
+
+  .section6-title {
+    font-size: clamp(24px, 6vw, 36px);
+  }
+
+  .section6-paragraph {
+    font-size: clamp(14px, 4vw, 18px);
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 480px) {
+  .section6-title {
+    font-size: clamp(20px, 5vw, 28px);
+  }
+
+  .section6-paragraph {
+    font-size: clamp(12px, 3.5vw, 16px);
+    line-height: 1.5;
+  }
 }
 
 @media (min-width: 2560px) {
