@@ -315,10 +315,16 @@ function ResumeModal({ isOpen, onClose }) {
 
       // EXPERIENCE section - helper to add experience block only if has data
       const addExpBlock = (position, company, workStart, workEnd, country) => {
-        // Skip if no meaningful data
-        if (!position && !company && !country) return false
+        // Skip completely if no meaningful data (check for empty strings too)
+        const hasPosition = position && position.trim() !== ''
+        const hasCompany = company && company.trim() !== ''
+        const hasCountry = country && country.trim() !== ''
+        const hasWorkStart = workStart && workStart.trim() !== ''
+        const hasWorkEnd = workEnd && workEnd.trim() !== ''
         
-        if (position) {
+        if (!hasPosition && !hasCompany && !hasCountry) return false
+        
+        if (hasPosition) {
           pdf.setFont(undefined, 'bold')
           pdf.text('POSITION:', rightX, rightY)
           pdf.setFont(undefined, 'normal')
@@ -326,7 +332,7 @@ function ResumeModal({ isOpen, onClose }) {
           rightY += 5
         }
         
-        if (company) {
+        if (hasCompany) {
           pdf.setFont(undefined, 'bold')
           pdf.text('PLACE OF WORK:', rightX, rightY)
           pdf.setFont(undefined, 'normal')
@@ -334,21 +340,27 @@ function ResumeModal({ isOpen, onClose }) {
           rightY += 5
         }
         
-        if (workStart && workEnd) {
+        if (hasWorkStart && hasWorkEnd) {
           pdf.setFont(undefined, 'bold')
           pdf.text('WORK PERIOD:', rightX, rightY)
           pdf.setFont(undefined, 'normal')
           pdf.text(`${workStart} - ${workEnd}`, rightX + 30, rightY)
           rightY += 5
-        } else if (workStart || workEnd) {
+        } else if (hasWorkStart) {
           pdf.setFont(undefined, 'bold')
           pdf.text('WORK PERIOD:', rightX, rightY)
           pdf.setFont(undefined, 'normal')
-          pdf.text(workStart || workEnd, rightX + 30, rightY)
+          pdf.text(workStart, rightX + 30, rightY)
+          rightY += 5
+        } else if (hasWorkEnd) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('WORK PERIOD:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(workEnd, rightX + 30, rightY)
           rightY += 5
         }
         
-        if (country) {
+        if (hasCountry) {
           pdf.setFont(undefined, 'bold')
           pdf.text('COUNTRY:', rightX, rightY)
           pdf.setFont(undefined, 'normal')
@@ -357,17 +369,23 @@ function ResumeModal({ isOpen, onClose }) {
         }
         rightY += 3
 
-        // Divider
+        // Divider only if block was rendered
         pdf.setDrawColor(...gray)
         pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
         rightY += 5
         return true
       }
 
-      // Check if any experience exists
-      const hasExp1 = formData.position1 || formData.company1 || formData.country1
-      const hasExp2 = formData.position2 || formData.company2 || formData.country2
-      const hasExp3 = formData.position3 || formData.company3 || formData.country3
+      // Check if any experience exists (with proper empty string check)
+      const hasExp1 = (formData.position1 && formData.position1.trim()) || 
+                      (formData.company1 && formData.company1.trim()) || 
+                      (formData.country1 && formData.country1.trim())
+      const hasExp2 = (formData.position2 && formData.position2.trim()) || 
+                      (formData.company2 && formData.company2.trim()) || 
+                      (formData.country2 && formData.country2.trim())
+      const hasExp3 = (formData.position3 && formData.position3.trim()) || 
+                      (formData.company3 && formData.company3.trim()) || 
+                      (formData.country3 && formData.country3.trim())
       const hasAnyExperience = hasExp1 || hasExp2 || hasExp3
 
       if (hasAnyExperience) {
