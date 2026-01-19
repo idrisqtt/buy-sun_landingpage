@@ -27,7 +27,6 @@ function ResumeModal({ isOpen, onClose }) {
     weight: '',
     russian: '',
     english: '',
-    german: '',
     turkish: '',
     additionalLanguage: '',
     additionalLanguageLevel: '',
@@ -211,7 +210,6 @@ function ResumeModal({ isOpen, onClose }) {
 
       addField('Russian', formData.russian)
       addField('English', formData.english)
-      addField('German', formData.german)
       addField('Turkish', formData.turkish)
       if (formData.additionalLanguage) {
         addField('Other', `${formData.additionalLanguage}: ${formData.additionalLanguageLevel}`)
@@ -655,16 +653,6 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                     <div className="form-group">
                       <label>Английский</label>
                       <select name="english" value={formData.english} onChange={handleChange} required>
-                        <option value="">---</option>
-                        <option value="native">Родной</option>
-                        <option value="fluent">Свободно</option>
-                        <option value="good">Хорошо</option>
-                        <option value="basic">Базовый</option>
-                      </select>
-                    </div>
-                    <div className="form-group">
-                      <label>Немецкий</label>
-                      <select name="german" value={formData.german} onChange={handleChange} required>
                         <option value="">---</option>
                         <option value="native">Родной</option>
                         <option value="fluent">Свободно</option>
