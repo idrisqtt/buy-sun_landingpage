@@ -61,7 +61,6 @@ function ResumeModal({ isOpen, onClose }) {
     hobbies: '',
     courses: '',
     selfiePhoto: null,
-    fullBodyPhoto: null,
     instagram: '',
     source: ''
   })
@@ -156,7 +155,7 @@ function ResumeModal({ isOpen, onClose }) {
       // ========== LEFT COLUMN ==========
       let leftY = 15
 
-      // Add selfie photo as rectangle (no circle background)
+      // Add selfie photo as circle using canvas crop
       if (formData.selfiePhoto) {
         try {
           const photoData = await new Promise((resolve) => {
@@ -166,15 +165,44 @@ function ResumeModal({ isOpen, onClose }) {
             reader.readAsDataURL(formData.selfiePhoto)
           })
           if (photoData) {
-            // Add photo as rectangle
-            pdf.addImage(photoData, 'JPEG', leftColWidth / 2 - 25, leftY, 50, 60)
+            // Create circular crop using canvas
+            const circularPhotoData = await new Promise((resolve) => {
+              const img = new Image()
+              img.onload = () => {
+                const size = Math.min(img.width, img.height)
+                const canvas = document.createElement('canvas')
+                canvas.width = size
+                canvas.height = size
+                const ctx = canvas.getContext('2d')
+                
+                // Draw circular clip
+                ctx.beginPath()
+                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
+                ctx.closePath()
+                ctx.clip()
+                
+                // Draw image centered
+                const offsetX = (img.width - size) / 2
+                const offsetY = (img.height - size) / 2
+                ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size)
+                
+                resolve(canvas.toDataURL('image/png'))
+              }
+              img.onerror = () => resolve(null)
+              img.src = photoData
+            })
+            
+            if (circularPhotoData) {
+              // Add circular photo (50x50mm square to keep aspect)
+              pdf.addImage(circularPhotoData, 'PNG', leftColWidth / 2 - 25, leftY, 50, 50)
+            }
           }
         } catch (err) {
           console.log('Could not add photo:', err)
         }
       }
 
-      leftY += 70
+      leftY += 60
 
       // PERSONAL DETAILS section
       pdf.setTextColor(...white)
@@ -922,16 +950,10 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                 </section>
 
                 <section className="form-section">
-                  <h3 className="section-title">Фотографии</h3>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Фотография селфи (5x6)</label>
-                      <input type="file" name="selfiePhoto" onChange={handleChange} accept="image/*" required />
-                    </div>
-                    <div className="form-group">
-                      <label>Фотография в полный рост</label>
-                      <input type="file" name="fullBodyPhoto" onChange={handleChange} accept="image/*" required />
-                    </div>
+                  <h3 className="section-title">Фотография</h3>
+                  <div className="form-group">
+                    <label>Ваша фотография (лицо)</label>
+                    <input type="file" name="selfiePhoto" onChange={handleChange} accept="image/*" required />
                   </div>
                   <div className="form-group">
                     <label>Логин в Instagram (без @)</label>
