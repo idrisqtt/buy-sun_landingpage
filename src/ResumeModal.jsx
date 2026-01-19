@@ -19,7 +19,6 @@ function ResumeModal({ isOpen, onClose }) {
     city: '',
     age: '',
     birthDate: '',
-    fullYears: '',
     maritalStatus: '',
     citizenship: '',
     nationality: '',
@@ -687,10 +686,6 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <div className="form-group">
                         <label>Дата рождения</label>
                         <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
-                      </div>
-                      <div className="form-group">
-                        <label>Полных лет</label>
-                        <input type="number" name="fullYears" value={formData.fullYears} onChange={handleChange} required />
                       </div>
                     </div>
                   </div>
