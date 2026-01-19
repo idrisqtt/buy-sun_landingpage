@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import jsPDF from 'jspdf'
 import './ResumeModal.css'
+import logoAnketa from '/logo_anketa.png'
 
 function ResumeModal({ isOpen, onClose }) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -215,19 +216,24 @@ function ResumeModal({ isOpen, onClose }) {
       pdf.setFont(undefined, 'bold')
 
       const addLeftField = (label, value) => {
+        // Skip empty fields
+        if (!value || value.trim() === '' || value === '-' || value === ' - ') return
         pdf.setFont(undefined, 'bold')
         pdf.text(`${label}:`, leftPadding, leftY)
         leftY += 5
         pdf.setFont(undefined, 'normal')
-        pdf.text(value || '-', leftPadding + 2, leftY)
+        pdf.text(value, leftPadding + 2, leftY)
         leftY += 7
       }
 
       addLeftField('DATE OF BIRTH', formData.birthDate)
-      addLeftField('HEIGHT', formData.height ? `${formData.height} cm` : '-')
-      addLeftField('WEIGHT', formData.weight ? `${formData.weight} kg` : '-')
+      addLeftField('HEIGHT', formData.height ? `${formData.height} cm` : '')
+      addLeftField('WEIGHT', formData.weight ? `${formData.weight} kg` : '')
       addLeftField('MARITAL STATUS', formData.maritalStatus)
-      addLeftField('START FINISH', `${formData.startMonth}/${formData.startDay} - ${formData.endMonth}/${formData.endDay}`)
+      // Only show START FINISH if both dates are filled
+      if (formData.startMonth && formData.startDay && formData.endMonth && formData.endDay) {
+        addLeftField('START FINISH', `${formData.startMonth}/${formData.startDay} - ${formData.endMonth}/${formData.endDay}`)
+      }
       addLeftField('CITIZENSHIP', formData.citizenship)
       addLeftField('CITY', formData.city)
       addLeftField('FATHER NAME', formData.fatherName)
@@ -235,36 +241,45 @@ function ResumeModal({ isOpen, onClose }) {
 
       leftY += 10
 
-      // EDUCATION section
-      pdf.setFontSize(12)
-      pdf.setFont(undefined, 'bold')
-      pdf.text('EDUCATION', leftPadding, leftY)
-      leftY += 8
+      // EDUCATION section - only show if there's education data
+      const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd
+      if (hasEducation) {
+        pdf.setFontSize(12)
+        pdf.setFont(undefined, 'bold')
+        pdf.text('EDUCATION', leftPadding, leftY)
+        leftY += 8
 
-      pdf.setFontSize(9)
-      addLeftField('NAME OF EMPLOYER', formData.institution)
-      addLeftField('MAJOR', formData.specialty)
-      addLeftField('DATE', `${formData.studyStart} - ${formData.studyEnd}`)
-      addLeftField('MANAGER', '-')
+        pdf.setFontSize(9)
+        addLeftField('NAME OF EMPLOYER', formData.institution)
+        addLeftField('MAJOR', formData.specialty)
+        // Only show DATE if both start and end are filled
+        if (formData.studyStart && formData.studyEnd) {
+          addLeftField('DATE', `${formData.studyStart} - ${formData.studyEnd}`)
+        } else if (formData.studyStart) {
+          addLeftField('DATE', formData.studyStart)
+        } else if (formData.studyEnd) {
+          addLeftField('DATE', formData.studyEnd)
+        }
+      }
 
       // ========== RIGHT COLUMN ==========
       let rightY = 15
       const rightX = rightColStart + rightPadding
 
-      // BUY SUN Logo (text)
-      pdf.setTextColor(30, 58, 95) // Dark blue
-      pdf.setFontSize(28)
-      pdf.setFont(undefined, 'bold')
-      pdf.text('BUY', rightX, rightY + 15)
-      pdf.setTextColor(218, 165, 32) // Gold
-      pdf.text('SUN', rightX + 30, rightY + 15)
-      
-      // Add small plane/sun icon placeholder (just decorative text for now)
-      pdf.setTextColor(30, 58, 95)
-      pdf.setFontSize(10)
-      pdf.text('*', rightX + 58, rightY + 8)
+      // BUY SUN Logo (image)
+      try {
+        pdf.addImage(logoAnketa, 'PNG', rightX, rightY, 50, 20)
+      } catch (err) {
+        // Fallback to text if image fails
+        pdf.setTextColor(30, 58, 95)
+        pdf.setFontSize(28)
+        pdf.setFont(undefined, 'bold')
+        pdf.text('BUY', rightX, rightY + 15)
+        pdf.setTextColor(218, 165, 32)
+        pdf.text('SUN', rightX + 30, rightY + 15)
+      }
 
-      rightY += 35
+      rightY += 30
 
       // Name and position
       pdf.setTextColor(...black)
@@ -279,107 +294,157 @@ function ResumeModal({ isOpen, onClose }) {
       pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
       rightY += 6
 
-      pdf.setFont(undefined, 'bold')
-      pdf.text('POSITION:', rightX, rightY)
-      pdf.setFont(undefined, 'normal')
-      pdf.text(formData.desiredPosition || '-', rightX + 25, rightY)
-      rightY += 6
-
-      pdf.setFont(undefined, 'bold')
-      pdf.text('YEARS:', rightX, rightY)
-      pdf.setFont(undefined, 'normal')
-      pdf.text(formData.age || '-', rightX + 18, rightY)
-      rightY += 10
-
-      // EXPERIENCE section
-      pdf.setTextColor(30, 58, 95)
-      pdf.setFontSize(14)
-      pdf.setFont(undefined, 'bold')
-      pdf.text('EXPERIENCE', rightX, rightY)
-      rightY += 8
-
-      pdf.setTextColor(...black)
-      pdf.setFontSize(9)
-
-      const addExpBlock = (position, company, period, country) => {
+      // Only show POSITION if filled
+      if (formData.desiredPosition) {
         pdf.setFont(undefined, 'bold')
         pdf.text('POSITION:', rightX, rightY)
         pdf.setFont(undefined, 'normal')
-        pdf.text(position || '-', rightX + 25, rightY)
-        rightY += 5
-        
+        pdf.text(formData.desiredPosition, rightX + 25, rightY)
+        rightY += 6
+      }
+
+      // Only show YEARS if filled
+      if (formData.age) {
         pdf.setFont(undefined, 'bold')
-        pdf.text('PLACE OF WORK:', rightX, rightY)
+        pdf.text('YEARS:', rightX, rightY)
         pdf.setFont(undefined, 'normal')
-        pdf.text(company || '-', rightX + 35, rightY)
-        rightY += 5
+        pdf.text(formData.age, rightX + 18, rightY)
+        rightY += 6
+      }
+      rightY += 4
+
+      // EXPERIENCE section - helper to add experience block only if has data
+      const addExpBlock = (position, company, workStart, workEnd, country) => {
+        // Skip if no meaningful data
+        if (!position && !company && !country) return false
         
-        pdf.setFont(undefined, 'bold')
-        pdf.text('WORK PERIOD:', rightX, rightY)
-        pdf.setFont(undefined, 'normal')
-        pdf.text(period || '-', rightX + 30, rightY)
-        rightY += 5
+        if (position) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('POSITION:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(position, rightX + 25, rightY)
+          rightY += 5
+        }
         
-        pdf.setFont(undefined, 'bold')
-        pdf.text('COUNTRY:', rightX, rightY)
-        pdf.setFont(undefined, 'normal')
-        pdf.text(country || '-', rightX + 22, rightY)
-        rightY += 8
+        if (company) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('PLACE OF WORK:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(company, rightX + 35, rightY)
+          rightY += 5
+        }
+        
+        if (workStart && workEnd) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('WORK PERIOD:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(`${workStart} - ${workEnd}`, rightX + 30, rightY)
+          rightY += 5
+        } else if (workStart || workEnd) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('WORK PERIOD:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(workStart || workEnd, rightX + 30, rightY)
+          rightY += 5
+        }
+        
+        if (country) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('COUNTRY:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(country, rightX + 22, rightY)
+          rightY += 5
+        }
+        rightY += 3
 
         // Divider
         pdf.setDrawColor(...gray)
         pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
         rightY += 5
+        return true
       }
 
-      addExpBlock(formData.position1, formData.company1, `${formData.workStart1} - ${formData.workEnd1}`, formData.country1)
-      addExpBlock(formData.position2, formData.company2, `${formData.workStart2} - ${formData.workEnd2}`, formData.country2)
-      addExpBlock(formData.position3, formData.company3, `${formData.workStart3} - ${formData.workEnd3}`, formData.country3)
+      // Check if any experience exists
+      const hasExp1 = formData.position1 || formData.company1 || formData.country1
+      const hasExp2 = formData.position2 || formData.company2 || formData.country2
+      const hasExp3 = formData.position3 || formData.company3 || formData.country3
+      const hasAnyExperience = hasExp1 || hasExp2 || hasExp3
+
+      if (hasAnyExperience) {
+        pdf.setTextColor(30, 58, 95)
+        pdf.setFontSize(14)
+        pdf.setFont(undefined, 'bold')
+        pdf.text('EXPERIENCE', rightX, rightY)
+        rightY += 8
+
+        pdf.setTextColor(...black)
+        pdf.setFontSize(9)
+
+        if (hasExp1) addExpBlock(formData.position1, formData.company1, formData.workStart1, formData.workEnd1, formData.country1)
+        if (hasExp2) addExpBlock(formData.position2, formData.company2, formData.workStart2, formData.workEnd2, formData.country2)
+        if (hasExp3) addExpBlock(formData.position3, formData.company3, formData.workStart3, formData.workEnd3, formData.country3)
+      }
 
       rightY += 5
 
-      // LANGUAGES section
-      pdf.setTextColor(30, 58, 95)
-      pdf.setFontSize(14)
-      pdf.setFont(undefined, 'bold')
-      pdf.text('LANGUAGES', rightX, rightY)
-      rightY += 8
+      // LANGUAGES section - only show if any language is filled
+      const hasLanguages = formData.english || formData.turkish || formData.russian
+      if (hasLanguages) {
+        pdf.setTextColor(30, 58, 95)
+        pdf.setFontSize(14)
+        pdf.setFont(undefined, 'bold')
+        pdf.text('LANGUAGES', rightX, rightY)
+        rightY += 8
 
-      pdf.setTextColor(...black)
-      pdf.setFontSize(9)
+        pdf.setTextColor(...black)
+        pdf.setFontSize(9)
 
-      pdf.setFont(undefined, 'bold')
-      pdf.text('ENGLISH:', rightX, rightY)
-      pdf.setFont(undefined, 'normal')
-      pdf.text(formData.english || '-', rightX + 22, rightY)
-      rightY += 5
+        if (formData.english) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('ENGLISH:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(formData.english, rightX + 22, rightY)
+          rightY += 5
+        }
 
-      pdf.setFont(undefined, 'bold')
-      pdf.text('TURKCE:', rightX, rightY)
-      pdf.setFont(undefined, 'normal')
-      pdf.text(formData.turkish || '-', rightX + 20, rightY)
-      rightY += 5
+        if (formData.turkish) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('TURKCE:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(formData.turkish, rightX + 20, rightY)
+          rightY += 5
+        }
 
-      pdf.setFont(undefined, 'bold')
-      pdf.text('RUSSIAN:', rightX, rightY)
-      pdf.setFont(undefined, 'normal')
-      pdf.text(formData.russian || '-', rightX + 22, rightY)
-      rightY += 10
+        if (formData.russian) {
+          pdf.setFont(undefined, 'bold')
+          pdf.text('RUSSIAN:', rightX, rightY)
+          pdf.setFont(undefined, 'normal')
+          pdf.text(formData.russian, rightX + 22, rightY)
+          rightY += 5
+        }
+        rightY += 5
+      }
 
-      // COURSES AND INTERESTS section
-      pdf.setTextColor(30, 58, 95)
-      pdf.setFontSize(14)
-      pdf.setFont(undefined, 'bold')
-      pdf.text('COURSES AND INTERESTS', rightX, rightY)
-      rightY += 8
+      // COURSES AND INTERESTS section - only show if there's data
+      const hasCourses = formData.courses || formData.hobbies
+      if (hasCourses) {
+        pdf.setTextColor(30, 58, 95)
+        pdf.setFontSize(14)
+        pdf.setFont(undefined, 'bold')
+        pdf.text('COURSES AND INTERESTS', rightX, rightY)
+        rightY += 8
 
-      pdf.setTextColor(...black)
-      pdf.setFontSize(9)
-      pdf.setFont(undefined, 'normal')
-      
-      const coursesText = `${formData.courses || '-'}, ${formData.hobbies || '-'}`
-      const coursesLines = pdf.splitTextToSize(coursesText, rightColWidth - rightPadding * 2)
-      pdf.text(coursesLines, rightX, rightY)
+        pdf.setTextColor(...black)
+        pdf.setFontSize(9)
+        pdf.setFont(undefined, 'normal')
+        
+        const parts = []
+        if (formData.courses) parts.push(formData.courses)
+        if (formData.hobbies) parts.push(formData.hobbies)
+        const coursesText = parts.join(', ')
+        const coursesLines = pdf.splitTextToSize(coursesText, rightColWidth - rightPadding * 2)
+        pdf.text(coursesLines, rightX, rightY)
+      }
 
       // Generate blob URL
       const pdfBlob = pdf.output('blob')
