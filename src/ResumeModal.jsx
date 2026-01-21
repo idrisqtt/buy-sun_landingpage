@@ -63,6 +63,8 @@ function ResumeModal({ isOpen, onClose }) {
     courses: '',
     selfiePhoto: null,
     fullBodyPhoto: null,
+    additionalPhoto1: null,
+    additionalPhoto2: null,
     instagram: '',
     source: ''
   })
@@ -144,7 +146,7 @@ function ResumeModal({ isOpen, onClose }) {
       const rightPadding = 10
 
       // Colors
-      const darkBlue = [30, 58, 95] // #1E3A5F
+      const darkBlue = [3, 72, 125] // #03487D
       const gold = [218, 165, 32] // Gold for logo
       const white = [255, 255, 255]
       const black = [0, 0, 0]
@@ -208,7 +210,7 @@ function ResumeModal({ isOpen, onClose }) {
 
       // PERSONAL DETAILS section
       pdf.setTextColor(...white)
-      pdf.setFontSize(18) // Larger section title
+      pdf.setFontSize(14) // Section title (39px equivalent)
       pdf.setFont(undefined, 'bold')
       pdf.text('PERSONAL DETAILS', leftPadding, leftY)
       leftY += 12
@@ -247,7 +249,7 @@ function ResumeModal({ isOpen, onClose }) {
       // EDUCATION section - only show if there's education data
       const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd || formData.manager
       if (hasEducation) {
-        pdf.setFontSize(18) // Larger section title
+        pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('EDUCATION', leftPadding, leftY)
         leftY += 12
@@ -275,7 +277,7 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.addImage(logoAnketa, 'PNG', rightX, rightY, 50, 20)
       } catch (err) {
         // Fallback to text if image fails
-        pdf.setTextColor(30, 58, 95)
+        pdf.setTextColor(3, 72, 125) // #03487D
         pdf.setFontSize(28)
         pdf.setFont(undefined, 'bold')
         pdf.text('BUY', rightX, rightY + 15)
@@ -397,8 +399,8 @@ function ResumeModal({ isOpen, onClose }) {
       const hasAnyExperience = hasExp1 || hasExp2 || hasExp3
 
       if (hasAnyExperience) {
-        pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(18) // Larger section title
+        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('EXPERIENCE', rightX, rightY)
         rightY += 12
@@ -416,8 +418,8 @@ function ResumeModal({ isOpen, onClose }) {
       // LANGUAGES section - only show if any language is filled
       const hasLanguages = formData.english || formData.turkish || formData.russian
       if (hasLanguages) {
-        pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(18) // Larger section title
+        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('LANGUAGES', rightX, rightY)
         rightY += 12
@@ -453,8 +455,8 @@ function ResumeModal({ isOpen, onClose }) {
 
       // COURSES section - only show if there's data
       if (formData.courses && formData.courses.trim()) {
-        pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(18) // Larger section title
+        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('COURSES', rightX, rightY)
         rightY += 12
@@ -470,8 +472,8 @@ function ResumeModal({ isOpen, onClose }) {
 
       // HOBBIES section - only show if there's data
       if (formData.hobbies && formData.hobbies.trim()) {
-        pdf.setTextColor(30, 58, 95)
-        pdf.setFontSize(18) // Larger section title
+        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('HOBBIES', rightX, rightY)
         rightY += 12
@@ -482,6 +484,47 @@ function ResumeModal({ isOpen, onClose }) {
         
         const hobbiesLines = pdf.splitTextToSize(formData.hobbies, rightColWidth - rightPadding * 2)
         pdf.text(hobbiesLines, rightX, rightY)
+      }
+
+      // ========== PAGE 2: PHOTOS ==========
+      const hasAnyPhoto = formData.selfiePhoto || formData.fullBodyPhoto || formData.additionalPhoto1 || formData.additionalPhoto2
+      
+      if (hasAnyPhoto) {
+        pdf.addPage()
+        
+        // Photo grid settings (2x2)
+        const photoWidth = 90   // mm
+        const photoHeight = 125 // mm
+        const photoGap = 10     // mm
+        const startX = 10
+        const startY = 15
+
+        // Helper function to add photo
+        const addPhotoToPage = async (file, x, y) => {
+          if (!file) return
+          try {
+            const photoData = await new Promise((resolve) => {
+              const reader = new FileReader()
+              reader.onload = (e) => resolve(e.target.result)
+              reader.onerror = () => resolve(null)
+              reader.readAsDataURL(file)
+            })
+            if (photoData) {
+              pdf.addImage(photoData, 'JPEG', x, y, photoWidth, photoHeight)
+            }
+          } catch (err) {
+            console.log('Could not add photo:', err)
+          }
+        }
+
+        // Add photos in 2x2 grid
+        // Row 1: selfiePhoto (top-left), fullBodyPhoto (top-right)
+        await addPhotoToPage(formData.selfiePhoto, startX, startY)
+        await addPhotoToPage(formData.fullBodyPhoto, startX + photoWidth + photoGap, startY)
+        
+        // Row 2: additionalPhoto1 (bottom-left), additionalPhoto2 (bottom-right)
+        await addPhotoToPage(formData.additionalPhoto1, startX, startY + photoHeight + photoGap)
+        await addPhotoToPage(formData.additionalPhoto2, startX + photoWidth + photoGap, startY + photoHeight + photoGap)
       }
 
       // Generate blob URL
@@ -1076,6 +1119,14 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                   <div className="form-group">
                     <label>Фотография в полный рост (обязательно)</label>
                     <input type="file" name="fullBodyPhoto" onChange={handleChange} accept="image/*" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Дополнительная фотография 1</label>
+                    <input type="file" name="additionalPhoto1" onChange={handleChange} accept="image/*" />
+                  </div>
+                  <div className="form-group">
+                    <label>Дополнительная фотография 2</label>
+                    <input type="file" name="additionalPhoto2" onChange={handleChange} accept="image/*" />
                   </div>
                   <div className="form-group">
                     <label>Логин в Instagram (без @)</label>
