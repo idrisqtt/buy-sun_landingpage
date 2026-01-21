@@ -57,24 +57,49 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .gallery-item:hover img {
   transform: scale(1.1);
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
+/* Tablet adjustments */
+@media (max-width: 1024px) {
+  .gallery-row {
+    height: 300px;
+  }
+}
+
+@media (max-width: 900px) {
   .gallery-row {
     flex-wrap: wrap;
     height: auto;
   }
 
   .gallery-item {
-    flex: 1 1 calc(50% - 0.5rem);
-    min-width: calc(50% - 0.5rem);
-    height: clamp(150px, 30vw, 250px);
+    /* On smaller tablets, make them 2 per row roughly */
+    flex: 1 1 45%;
+    min-width: 45%;
+    height: 250px;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .gallery-row {
+    gap: 0.5rem;
+  }
+
+  .gallery-item {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: calc(50% - 0.25rem);
+    height: clamp(150px, 30vw, 200px);
+    border-radius: 8px;
+  }
+
+  .gallery-rows {
+    gap: 0.5rem;
   }
 }
 

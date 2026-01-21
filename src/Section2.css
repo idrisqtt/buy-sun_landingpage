@@ -93,37 +93,61 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .section2-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
   }
+
+  /* Make the last odd item span 2 columns to look centered */
+  .section2-card:last-child:nth-child(odd) {
+    grid-column: span 2;
+    max-width: 50%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 900px) {
+  /* Keep existing style overwrites or minor tweaks if needed */
+  /* The 1024px rule above handles the transition better, 
+     but at 900px we might want to stay 2 cols until 768px or go to 1 col earlier.
+     Let's stick to 2 cols until 768px for better tablet use.
+  */
 }
 
 @media (max-width: 768px) {
   .section2 {
-    padding-top: clamp(4rem, 8vw, 6rem);
-    padding-bottom: clamp(4rem, 8vw, 6rem);
+    padding-top: clamp(4rem, 8vw, 6rem) !important;
+    padding-bottom: clamp(4rem, 8vw, 6rem) !important;
     padding-left: clamp(1.5rem, 4vw, 3rem);
     padding-right: clamp(1.5rem, 4vw, 3rem);
   }
-  
+
   .section2-cards {
     grid-template-columns: 1fr;
     gap: clamp(2.5rem, 5vw, 3.5rem);
   }
 
-  .section2-card {
+  .section2-card,
+  .section2-card:last-child:nth-child(odd) {
+    grid-column: span 1;
     max-width: 100%;
     width: 100%;
     margin: 0 auto;
   }
-  
+
   .section2-description {
     width: 100%;
     max-width: 100%;
     min-height: auto;
     height: auto;
     padding: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: 14px;
+  }
+
+  .section2-icon {
+    width: clamp(100px, 15vw, 150px);
+    height: clamp(60px, 12vw, 100px);
   }
 }
 

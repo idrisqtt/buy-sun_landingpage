@@ -26,6 +26,8 @@
 .section8-scroll-content {
   display: flex;
   width: fit-content;
+  gap: 10px;
+  /* Space between carousel loops */
   animation: scroll-horizontal 60s linear infinite;
   will-change: transform;
 }
@@ -43,6 +45,7 @@
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(-50%);
   }
@@ -51,11 +54,17 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .section8 {
-    padding: clamp(2rem, 5vw, 4rem) 0;
+    padding: clamp(2rem, 5vw, 4rem) 0 !important;
   }
 
   .section8-scroll-content {
-    animation-duration: 40s;
+    animation-duration: 30s;
+    /* Faster on mobile/smaller screens */
+  }
+
+  .section8-image {
+    max-height: 200px;
+    /* Smaller images on mobile */
   }
 }
 

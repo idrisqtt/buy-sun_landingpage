@@ -12,7 +12,8 @@
   justify-content: center;
   position: relative;
   box-sizing: border-box;
-  overflow-x: hidden; /* Предотвращаем горизонтальный скролл */
+  overflow-x: hidden;
+  /* Предотвращаем горизонтальный скролл */
 }
 
 .section3-container {
@@ -32,7 +33,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(40px, 10vw, 150px); /* Отступ 10-15% между текстом и изображением */
+  gap: clamp(40px, 10vw, 150px);
+  /* Отступ 10-15% между текстом и изображением */
   width: 100%;
   max-width: 1281px;
   position: relative;
@@ -49,7 +51,8 @@
   text-align: left;
   position: relative;
   z-index: 1;
-  order: 1; /* Текст слева */
+  order: 1;
+  /* Текст слева */
 }
 
 .section3-title {
@@ -92,7 +95,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  order: 2; /* Изображение справа */
+  order: 2;
+  /* Изображение справа */
 }
 
 .section3-image img {
@@ -107,27 +111,40 @@
 }
 
 /* Responsive adjustments */
+@media (max-width: 1024px) {
+  .section3-content {
+    gap: 2rem;
+  }
+
+  .section3-image {
+    width: 250px;
+  }
+}
+
 @media (max-width: 900px) {
   .section3 {
     overflow-x: hidden;
     min-height: auto;
     padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 2rem);
+    background-size: cover;
+    background-position: center;
   }
 
   .section3-container {
-    padding: clamp(1rem, 3vw, 2rem);
+    padding: 0;
   }
 
   .section3-content {
     flex-direction: column;
-    gap: clamp(2rem, 5vw, 3rem);
+    gap: 2rem;
     align-items: center;
   }
 
   .section3-image {
     width: 100%;
-    max-width: 250px;
-    order: -1; /* Изображение сверху на мобильных */
+    max-width: 300px;
+    order: -1;
+    /* Изображение сверху на мобильных */
   }
 
   .section3-image img {
@@ -141,6 +158,18 @@
     max-width: 100%;
     width: 100%;
     order: 1;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .section3-title {
+    text-align: center;
+    font-size: clamp(20px, 5vw, 28px);
+  }
+
+  .section3-text-p {
+    text-align: center;
+    font-size: 16px;
   }
 }
 

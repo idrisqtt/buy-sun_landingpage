@@ -34,6 +34,7 @@ function ResumeModal({ isOpen, onClose }) {
     specialty: '',
     studyStart: '',
     studyEnd: '',
+    manager: '',
     company1: '',
     country1: '',
     position1: '',
@@ -61,6 +62,7 @@ function ResumeModal({ isOpen, onClose }) {
     hobbies: '',
     courses: '',
     selfiePhoto: null,
+    fullBodyPhoto: null,
     instagram: '',
     source: ''
   })
@@ -243,7 +245,7 @@ function ResumeModal({ isOpen, onClose }) {
       leftY += 10
 
       // EDUCATION section - only show if there's education data
-      const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd
+      const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd || formData.manager
       if (hasEducation) {
         pdf.setFontSize(18) // Larger section title
         pdf.setFont(undefined, 'bold')
@@ -261,6 +263,7 @@ function ResumeModal({ isOpen, onClose }) {
         } else if (formData.studyEnd) {
           addLeftField('DATE', formData.studyEnd)
         }
+        addLeftField('MANAGER', formData.manager)
       }
 
       // ========== RIGHT COLUMN ==========
@@ -824,6 +827,12 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <input type="number" name="studyEnd" value={formData.studyEnd} onChange={handleChange} min="1950" max="2030" />
                     </div>
                   </div>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Менеджер (имя консультанта)</label>
+                      <input type="text" name="manager" value={formData.manager} onChange={handleChange} placeholder="Имя менеджера, который вас консультировал" />
+                    </div>
+                  </div>
                 </section>
 
                 <section className="form-section">
@@ -1046,10 +1055,27 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                 </section>
 
                 <section className="form-section">
-                  <h3 className="section-title">Фотография</h3>
+                  <h3 className="section-title">Фотографии</h3>
+                  <div className="photo-requirements">
+                    <p><strong>Требования к фотографиям:</strong></p>
+                    <ul>
+                      <li>Фотографии должны быть хорошего качества</li>
+                      <li>Без солнцезащитных очков</li>
+                      <li>Без фото с телефоном у зеркала</li>
+                      <li>Без купальников</li>
+                      <li>Без цветов на руках</li>
+                      <li>Не фото издалека</li>
+                      <li>Чем лучше фото — тем больше шанс одобрения вакансии!</li>
+                      <li><strong>Фото для главной должно быть более официальным!</strong></li>
+                    </ul>
+                  </div>
                   <div className="form-group">
-                    <label>Ваша фотография (лицо)</label>
+                    <label>Главная фотография (лицо, официальная)</label>
                     <input type="file" name="selfiePhoto" onChange={handleChange} accept="image/*" required />
+                  </div>
+                  <div className="form-group">
+                    <label>Фотография в полный рост (обязательно)</label>
+                    <input type="file" name="fullBodyPhoto" onChange={handleChange} accept="image/*" required />
                   </div>
                   <div className="form-group">
                     <label>Логин в Instagram (без @)</label>

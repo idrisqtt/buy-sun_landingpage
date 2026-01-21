@@ -107,11 +107,12 @@ section {
     overflow-x: hidden;
     width: 100%;
     max-width: 100vw;
+    position: relative; /* Важно для предотвращения горизонтального скролла */
   }
   
   section {
     width: 100%;
-    max-width: 100%;
+    max-width: 100vw; /* Используем vw явно */
     overflow-x: hidden;
   }
 }

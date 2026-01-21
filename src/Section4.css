@@ -8,7 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow-x: hidden; /* Предотвращаем горизонтальный скролл */
+  overflow-x: hidden;
+  /* Предотвращаем горизонтальный скролл */
   box-sizing: border-box;
 }
 
@@ -144,13 +145,21 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1200px) {
+/* Responsive adjustments */
+@media (max-width: 1024px) {
   .tariffs-grid {
     grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+  }
+
+  /* Center the last item if odd number of cards */
+  .tariff-card:last-child:nth-child(odd) {
+    grid-column: span 2;
+    max-width: 50%;
   }
 
   .included-grid {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 }
 
@@ -164,6 +173,11 @@
     justify-items: center;
   }
 
+  .tariff-card:last-child:nth-child(odd) {
+    grid-column: span 1;
+    max-width: 100%;
+  }
+
   .tariff-card {
     max-width: 100%;
     width: 100%;
@@ -172,14 +186,27 @@
   }
 
   .included-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     justify-items: center;
-    gap: clamp(1.5rem, 3vw, 2rem);
+    gap: 2rem 1rem;
   }
 
   .included-card {
     max-width: 100%;
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .included-grid {
+    grid-template-columns: repeat(2, 1fr);
+    /* Keep 2 cols on mobile for density, or 1 if content too wide */
+    gap: 2rem 1rem;
+  }
+
+  .included-text {
+    font-size: 14px;
+    line-height: 1.4;
   }
 }
 

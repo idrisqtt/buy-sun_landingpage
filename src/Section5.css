@@ -13,7 +13,8 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow-x: hidden; /* Предотвращаем горизонтальный скролл */
+  overflow-x: hidden;
+  /* Предотвращаем горизонтальный скролл */
   box-sizing: border-box;
 }
 
@@ -23,7 +24,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: transparent; /* Убираем синее наложение */
+  background-color: transparent;
+  /* Убираем синее наложение */
   z-index: 1;
 }
 
@@ -36,8 +38,10 @@
   display: flex;
   flex-direction: column;
   gap: clamp(3rem, 6vw, 5rem);
-  padding-top: clamp(2rem, 4vw, 4rem); /* Добавляем паддинг сверху от элементов */
-  padding-bottom: clamp(2rem, 4vw, 4rem); /* Добавляем паддинг снизу от элементов */
+  padding-top: clamp(2rem, 4vw, 4rem);
+  /* Добавляем паддинг сверху от элементов */
+  padding-bottom: clamp(2rem, 4vw, 4rem);
+  /* Добавляем паддинг снизу от элементов */
 }
 
 .section5-title-banner {
@@ -147,6 +151,12 @@
 @media (max-width: 1200px) {
   .section5-cards {
     grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+  }
+
+  .section5-card {
+    max-width: 100%;
+    /* Fill the grid cell */
   }
 }
 
@@ -154,18 +164,25 @@
   .section5-cards {
     grid-template-columns: 1fr;
     justify-items: center;
-    gap: clamp(1.5rem, 3vw, 2rem);
+    gap: 1.5rem;
   }
 
   .section5-card {
     max-width: 100%;
     width: 100%;
+    min-height: auto;
+    padding: 2rem 1.5rem;
   }
 
   .section5-title-banner {
     max-width: 100%;
     width: 100%;
-    padding: clamp(1rem, 3vw, 2rem);
+    padding: 1.5rem;
+    min-height: auto;
+  }
+
+  .section5-title {
+    font-size: clamp(24px, 5vw, 32px);
   }
 }
 

@@ -1,16 +1,20 @@
 .section7 {
   width: 100%;
   background-image: url('/s7.png');
-  background-size: cover; /* Заполняем всю ширину и высоту, обрезая при необходимости */
+  background-size: cover;
+  /* Заполняем всю ширину и высоту, обрезая при необходимости */
   background-position: center center;
   background-repeat: no-repeat;
   padding-left: clamp(2rem, 5vw, 4rem);
   padding-right: clamp(2rem, 5vw, 4rem);
   padding-top: 0;
-  padding-bottom: 0; /* Убираем padding-bottom, так как используем абсолютное позиционирование для текста */
+  padding-bottom: 0;
+  /* Убираем padding-bottom, так как используем абсолютное позиционирование для текста */
   /* Высота секции = высота изображения (1920x1080 = соотношение 16:9) */
-  aspect-ratio: 16 / 9; /* Соотношение сторон изображения 1920x1080 */
-  min-height: 100vh; /* Минимум полный экран, но может быть больше если нужно */
+  aspect-ratio: 16 / 9;
+  /* Соотношение сторон изображения 1920x1080 */
+  min-height: 100vh;
+  /* Минимум полный экран, но может быть больше если нужно */
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -22,8 +26,10 @@
   width: 100%;
   max-width: 1920px;
   margin: 0 auto;
-  position: absolute; /* Абсолютное позиционирование для точного размещения внизу */
-  bottom: clamp(2rem, 4vw, 3rem); /* Текст внизу секции с небольшим отступом */
+  position: absolute;
+  /* Абсолютное позиционирование для точного размещения внизу */
+  bottom: clamp(2rem, 4vw, 3rem);
+  /* Текст внизу секции с небольшим отступом */
   left: 0;
   right: 0;
   padding-left: clamp(2rem, 5vw, 4rem);
@@ -82,42 +88,53 @@
   .section7 {
     align-items: flex-end;
     padding: 0;
-    min-height: 50vw; /* Пропорциональная высота относительно ширины */
-    aspect-ratio: 16 / 9; /* Сохраняем пропорции изображения */
+    min-height: 500px;
+    /* Fixed min-height for better mobile view */
+    height: 60vh;
+    aspect-ratio: auto;
     background-size: cover;
-    background-position: center center;
+    background-position: center;
     margin: 0;
     width: 100%;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .section7-container {
     position: absolute;
-    bottom: clamp(1rem, 3vw, 2rem);
+    bottom: 2rem;
     left: 0;
     right: 0;
-    padding: 0 clamp(0.5rem, 2vw, 1rem);
+    padding: 0 1rem;
   }
 
   .section7-stats {
-    grid-template-columns: repeat(3, 1fr); /* Все 3 в одну линию */
-    gap: clamp(0.5rem, 2vw, 1rem);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
     margin-bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    /* Add slight darker bg for readability */
+    padding: 1rem;
+    border-radius: 16px;
+    backdrop-filter: blur(4px);
   }
 
   .stat-number {
-    font-size: clamp(1.2rem, 4vw, 1.8rem); /* Меньший размер */
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
   }
 
   .stat-label {
-    font-size: clamp(0.6rem, 2vw, 0.9rem); /* Меньший размер */
-    padding-top: clamp(0.3rem, 1vw, 0.5rem);
-    white-space: nowrap; /* В одну линию */
+    font-size: 11px;
+    padding-top: 0.5rem;
+    white-space: normal;
+    /* Allow wrapping */
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   }
 
   .stat-label::before {
-    height: 2px; /* Тоньше линия */
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.7);
   }
 }
 

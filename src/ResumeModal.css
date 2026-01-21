@@ -360,6 +360,37 @@
   cursor: pointer;
 }
 
+/* Photo requirements styling */
+.photo-requirements {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.photo-requirements p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #856404;
+}
+
+.photo-requirements ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.photo-requirements li {
+  font-size: 13px;
+  color: #856404;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.photo-requirements li strong {
+  color: #664d03;
+}
+
 .checkbox-group {
   flex-direction: row;
   align-items: center;

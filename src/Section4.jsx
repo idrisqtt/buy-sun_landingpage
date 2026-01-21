@@ -310,6 +310,18 @@ function Section4() {
               </div>
               <div className="included-text">Тренинги и подготовка к вылету от наших специалиство</div>
             </motion.div>
+
+            <motion.div 
+              className="included-card"
+              variants={itemVariants}
+              whileHover={{ y: -5, scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="included-icon">
+                <img src="/s4-1.png" alt="Тур на двоих" />
+              </div>
+              <div className="included-text">Тур на двоих на 7 дней вместе с проживанием в Кападокию-Памуккале-Каш-Капулташ-Демре-Мира-Кекова-Анталия</div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>

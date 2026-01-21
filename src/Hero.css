@@ -51,7 +51,23 @@
   flex: 1;
   justify-content: flex-end;
   align-items: stretch;
-  min-height: 0; /* Позволяет flex-элементам сжиматься */
+  min-height: 0;
+  /* Позволяет flex-элементам сжиматься */
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) {
+  .hero {
+    padding-top: clamp(2rem, 5vw, 3rem);
+  }
+
+  .hero-container {
+    gap: 2rem;
+  }
+
+  .hero-header {
+    gap: 1rem;
+  }
 }
 
 /* Убеждаемся, что на всех размерах экрана изображение прилегает к низу */
@@ -59,21 +75,26 @@
   .hero-container {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
-    gap: clamp(2rem, 5vw, 4rem); /* Сохраняем gap между header и content */
+    gap: clamp(2rem, 5vw, 4rem);
+    /* Сохраняем gap между header и content */
   }
-  
+
   .hero-content {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
-    align-items: end; /* Выравниваем по низу */
-    align-self: stretch; /* Растягиваемся на всю высоту flex-контейнера */
-    min-height: 0; /* Позволяет сжиматься */
+    align-items: end;
+    /* Выравниваем по низу */
+    align-self: stretch;
+    /* Растягиваемся на всю высоту flex-контейнера */
+    min-height: 0;
+    /* Позволяет сжиматься */
   }
-  
+
   .hero-text {
-    align-self: center; /* Текст остается по центру */
+    align-self: center;
+    /* Текст остается по центру */
   }
-  
+
   .hero-image {
     margin: 0 !important;
     margin-bottom: 0 !important;
@@ -85,7 +106,7 @@
     justify-content: flex-end;
     height: auto;
   }
-  
+
   .hero-image img {
     margin: 0 !important;
     margin-bottom: 0 !important;
@@ -193,14 +214,17 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 5vw, 4rem);
-  align-items: end; /* Выравниваем элементы по низу grid строки */
+  align-items: end;
+  /* Выравниваем элементы по низу grid строки */
   width: 100%;
   margin: 0;
   margin-bottom: 0 !important;
   padding: 0;
   padding-bottom: 0 !important;
-  align-self: flex-end; /* Прижимаем контент к низу контейнера */
-  min-height: 0; /* Позволяет grid сжиматься */
+  align-self: flex-end;
+  /* Прижимаем контент к низу контейнера */
+  min-height: 0;
+  /* Позволяет grid сжиматься */
   position: relative;
 }
 
@@ -210,7 +234,8 @@
   gap: 0;
   width: 100%;
   max-width: 759px;
-  align-self: center; /* Текстовый блок остается по центру */
+  align-self: center;
+  /* Текстовый блок остается по центру */
 }
 
 .hero-greeting {
@@ -283,7 +308,8 @@
   align-items: flex-end;
   justify-content: flex-end;
   position: relative;
-  align-self: end; /* Выравниваем по низу grid ячейки */
+  align-self: end;
+  /* Выравниваем по низу grid ячейки */
   margin: 0 !important;
   margin-bottom: 0 !important;
   padding: 0 !important;
@@ -373,33 +399,65 @@
   }
 }
 
+/* Landscape mobile fix */
+@media (max-width: 900px) and (orientation: landscape) {
+  .hero {
+    min-height: 100vh;
+    padding-bottom: 1rem;
+  }
+
+  .hero-image img {
+    max-height: 60vh;
+  }
+}
+
+/* Small mobile optimization */
+@media (max-width: 380px) {
+  .hero-greeting {
+    font-size: 28px;
+  }
+
+  .hero-service {
+    font-size: 16px;
+  }
+
+  .hero-cta-btn {
+    width: 100%;
+    font-size: 16px;
+  }
+}
+
 /* Убеждаемся, что на больших экранах (от 1300px) изображение прилегает к низу */
 @media (min-width: 1300px) {
   .hero-container {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
   }
-  
+
   .hero-content {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
-    align-items: end; /* Выравниваем по низу */
-    align-self: stretch; /* Растягиваемся на всю высоту */
+    align-items: end;
+    /* Выравниваем по низу */
+    align-self: stretch;
+    /* Растягиваемся на всю высоту */
   }
-  
+
   .hero-text {
-    align-self: center; /* Текст остается по центру */
+    align-self: center;
+    /* Текст остается по центру */
   }
-  
+
   .hero-image {
     margin: 0 !important;
     padding: 0 !important;
     align-self: end !important;
     display: flex;
-    align-items: flex-end; /* Прижимаем изображение к низу flex-контейнера */
+    align-items: flex-end;
+    /* Прижимаем изображение к низу flex-контейнера */
     justify-content: flex-end;
   }
-  
+
   .hero-image img {
     margin: 0 !important;
     padding: 0 !important;
@@ -415,27 +473,31 @@
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
   }
-  
+
   .hero-content {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
-    align-items: end; /* Выравниваем по низу */
-    align-self: stretch; /* Растягиваемся на всю высоту */
+    align-items: end;
+    /* Выравниваем по низу */
+    align-self: stretch;
+    /* Растягиваемся на всю высоту */
   }
-  
+
   .hero-text {
-    align-self: center; /* Текст остается по центру */
+    align-self: center;
+    /* Текст остается по центру */
   }
-  
+
   .hero-image {
     margin: 0 !important;
     padding: 0 !important;
     align-self: end !important;
     display: flex;
-    align-items: flex-end; /* Прижимаем изображение к низу flex-контейнера */
+    align-items: flex-end;
+    /* Прижимаем изображение к низу flex-контейнера */
     justify-content: flex-end;
   }
-  
+
   .hero-image img {
     margin: 0 !important;
     padding: 0 !important;
