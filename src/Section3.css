@@ -2,10 +2,7 @@
   width: 100%;
   min-height: 551px;
   height: auto;
-  background-image: url('/s3-1.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
   padding: 0;
   display: flex;
   align-items: center;
@@ -13,7 +10,6 @@
   position: relative;
   box-sizing: border-box;
   overflow-x: hidden;
-  /* Предотвращаем горизонтальный скролл */
 }
 
 .section3-container {
@@ -40,19 +36,34 @@
   position: relative;
 }
 
+.section3-flag {
+  flex-shrink: 0;
+  order: 1;
+  width: clamp(200px, 25vw, 350px);
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section3-flag img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
 .section3-text {
   display: flex;
   flex-direction: column;
-  gap: clamp(2rem, 4vw, 3rem);
+  gap: clamp(1rem, 2vw, 1.5rem);
   color: var(--text-white);
-  max-width: 600px;
+  max-width: 500px;
   width: 100%;
   flex: 1;
   text-align: left;
   position: relative;
   z-index: 1;
-  order: 1;
-  /* Текст слева */
+  order: 2;
 }
 
 .section3-title {
@@ -95,8 +106,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  order: 2;
-  /* Изображение справа */
+  order: 3;
 }
 
 .section3-image img {
@@ -126,8 +136,6 @@
     overflow-x: hidden;
     min-height: auto;
     padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 2rem);
-    background-size: cover;
-    background-position: center;
   }
 
   .section3-container {
@@ -140,11 +148,14 @@
     align-items: center;
   }
 
+  .section3-flag {
+    display: none;
+  }
+
   .section3-image {
     width: 100%;
     max-width: 300px;
-    order: -1;
-    /* Изображение сверху на мобильных */
+    order: 1;
   }
 
   .section3-image img {
@@ -157,7 +168,7 @@
   .section3-text {
     max-width: 100%;
     width: 100%;
-    order: 1;
+    order: 2;
     text-align: center;
     gap: 1.5rem;
   }

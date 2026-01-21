@@ -43,17 +43,15 @@ function Section3() {
       <div className="section3-container">
         <div className="section3-content">
           <motion.div 
-            className="section3-image"
+            className="section3-flag"
             variants={imageVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
           >
-            <motion.img 
-              src="/s3-2.png" 
-              alt="Команда BUY SUN"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
+            <img 
+              src="/s3-1.png" 
+              alt="Флаг Турции"
             />
           </motion.div>
           <motion.div 
@@ -77,15 +75,29 @@ function Section3() {
                 className="section3-text-p"
                 variants={itemVariants}
               >
-                Мой 7-летний стаж работы <strong>гидом</strong> в Турции дал мне глубокое понимание местного рынка и специфики региона. Дополнительно, <strong>5 лет опыта в сфере трудоустройства</strong> позволили мне чётко определить, что наиболее важно для наших клиентов.
+                Мой 7-летний стаж работы гидом в Турции дал мне глубокое понимание местного рынка и специфики региона. Дополнительно, 5 лет опыта в сфере трудоустройства позволили мне чётко определить, что наиболее важно для наших клиентов.
               </motion.p>
               <motion.p 
                 className="section3-text-p"
                 variants={itemVariants}
               >
-                Моя главная задача — <strong>обеспечить</strong> каждому соискателю максимально комфортное и <strong>безопасное</strong> пребывание на рабочем месте в Турции. Мы уделяем особое внимание деталям, чтобы <strong>гарантировать</strong> одинаково благоприятные и <strong>надёжные</strong> условия для всех наших клиентов.
+                Моя главная задача — обеспечить каждому соискателю максимально комфортное и безопасное пребывание на рабочем месте в Турции. Мы уделяем особое внимание деталям, чтобы гарантировать одинаково благоприятные и надёжные условия для всех наших клиентов.
               </motion.p>
             </motion.div>
+          </motion.div>
+          <motion.div 
+            className="section3-image"
+            variants={imageVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <motion.img 
+              src="/s3-2.png" 
+              alt="Команда BUY SUN"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            />
           </motion.div>
         </div>
       </div>
