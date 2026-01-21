@@ -298,7 +298,7 @@ function ResumeModal({ isOpen, onClose }) {
       
       // Divider line
       pdf.setDrawColor(...gray)
-      pdf.setLineWidth(2) // 6px line
+      pdf.setLineWidth(0.7) // 2px line
       pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
       rightY += 6
 
@@ -307,8 +307,6 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFontSize(10)
         pdf.setFont(undefined, 'bold')
         pdf.text('POSITION:', rightX, rightY)
-        pdf.setFontSize(12)
-        pdf.setFont(undefined, 'normal')
         pdf.text(formData.desiredPosition, rightX + 25, rightY)
         rightY += 7
       }
@@ -318,8 +316,6 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFontSize(10)
         pdf.setFont(undefined, 'bold')
         pdf.text('YEARS:', rightX, rightY)
-        pdf.setFontSize(12)
-        pdf.setFont(undefined, 'normal')
         pdf.text(formData.age, rightX + 18, rightY)
         rightY += 7
       }
@@ -336,46 +332,36 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (!hasPosition && !hasCompany && !hasCountry) return false
         
+        pdf.setFont(undefined, 'bold')
+        
         if (hasPosition) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('POSITION:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(position, rightX + 25, rightY)
           rightY += 5
         }
         
         if (hasCompany) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('PLACE OF WORK:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(company, rightX + 35, rightY)
           rightY += 5
         }
         
         if (hasWorkStart && hasWorkEnd) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(`${workStart} - ${workEnd}`, rightX + 30, rightY)
           rightY += 5
         } else if (hasWorkStart) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(workStart, rightX + 30, rightY)
           rightY += 5
         } else if (hasWorkEnd) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(workEnd, rightX + 30, rightY)
           rightY += 5
         }
         
         if (hasCountry) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('COUNTRY:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(country, rightX + 22, rightY)
           rightY += 5
         }
@@ -383,7 +369,7 @@ function ResumeModal({ isOpen, onClose }) {
 
         // Divider only if block was rendered
         pdf.setDrawColor(...gray)
-        pdf.setLineWidth(2) // 6px line
+        pdf.setLineWidth(0.7) // 2px line
         pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
         rightY += 5
         return true
@@ -402,7 +388,7 @@ function ResumeModal({ isOpen, onClose }) {
       const hasAnyExperience = hasExp1 || hasExp2 || hasExp3
 
       if (hasAnyExperience) {
-        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setTextColor(...black) // Black color
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('EXPERIENCE', rightCenter, rightY, { align: 'center' })
@@ -421,7 +407,7 @@ function ResumeModal({ isOpen, onClose }) {
       // LANGUAGES section - only show if any language is filled
       const hasLanguages = formData.english || formData.turkish || formData.russian
       if (hasLanguages) {
-        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setTextColor(...black) // Black color
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('LANGUAGES', rightCenter, rightY, { align: 'center' })
@@ -430,26 +416,22 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setTextColor(...black)
         pdf.setFontSize(11)
 
+        pdf.setFont(undefined, 'bold')
+
         if (formData.english) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('ENGLISH:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(formData.english, rightX + 22, rightY)
           rightY += 5
         }
 
         if (formData.turkish) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('TURKCE:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(formData.turkish, rightX + 20, rightY)
           rightY += 5
         }
 
         if (formData.russian) {
-          pdf.setFont(undefined, 'bold')
           pdf.text('RUSSIAN:', rightX, rightY)
-          pdf.setFont(undefined, 'normal')
           pdf.text(formData.russian, rightX + 22, rightY)
           rightY += 5
         }
@@ -458,7 +440,7 @@ function ResumeModal({ isOpen, onClose }) {
 
       // COURSES section - only show if there's data
       if (formData.courses && formData.courses.trim()) {
-        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setTextColor(...black) // Black color
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('COURSES', rightCenter, rightY, { align: 'center' })
@@ -466,7 +448,7 @@ function ResumeModal({ isOpen, onClose }) {
 
         pdf.setTextColor(...black)
         pdf.setFontSize(11)
-        pdf.setFont(undefined, 'normal')
+        pdf.setFont(undefined, 'bold')
         
         const coursesLines = pdf.splitTextToSize(formData.courses, rightColWidth - rightPadding * 2)
         pdf.text(coursesLines, rightX, rightY)
@@ -475,7 +457,7 @@ function ResumeModal({ isOpen, onClose }) {
 
       // HOBBIES section - only show if there's data
       if (formData.hobbies && formData.hobbies.trim()) {
-        pdf.setTextColor(3, 72, 125) // #03487D
+        pdf.setTextColor(...black) // Black color
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
         pdf.text('HOBBIES', rightCenter, rightY, { align: 'center' })
@@ -483,7 +465,7 @@ function ResumeModal({ isOpen, onClose }) {
 
         pdf.setTextColor(...black)
         pdf.setFontSize(11)
-        pdf.setFont(undefined, 'normal')
+        pdf.setFont(undefined, 'bold')
         
         const hobbiesLines = pdf.splitTextToSize(formData.hobbies, rightColWidth - rightPadding * 2)
         pdf.text(hobbiesLines, rightX, rightY)
