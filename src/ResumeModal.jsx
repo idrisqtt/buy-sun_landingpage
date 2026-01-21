@@ -144,6 +144,8 @@ function ResumeModal({ isOpen, onClose }) {
       const rightColWidth = pageWidth - leftColWidth
       const leftPadding = 8
       const rightPadding = 10
+      const leftCenter = leftColWidth / 2
+      const rightCenter = rightColStart + rightColWidth / 2
 
       // Colors
       const darkBlue = [3, 72, 125] // #03487D
@@ -212,7 +214,7 @@ function ResumeModal({ isOpen, onClose }) {
       pdf.setTextColor(...white)
       pdf.setFontSize(14) // Section title (39px equivalent)
       pdf.setFont(undefined, 'bold')
-      pdf.text('PERSONAL DETAILS', leftPadding, leftY)
+      pdf.text('PERSONAL DETAILS', leftCenter, leftY, { align: 'center' })
       leftY += 12
 
       pdf.setFontSize(12) // Larger field values
@@ -251,7 +253,7 @@ function ResumeModal({ isOpen, onClose }) {
       if (hasEducation) {
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
-        pdf.text('EDUCATION', leftPadding, leftY)
+        pdf.text('EDUCATION', leftCenter, leftY, { align: 'center' })
         leftY += 12
 
         pdf.setFontSize(12)
@@ -296,7 +298,7 @@ function ResumeModal({ isOpen, onClose }) {
       
       // Divider line
       pdf.setDrawColor(...gray)
-      pdf.setLineWidth(0.3)
+      pdf.setLineWidth(2) // 6px line
       pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
       rightY += 6
 
@@ -381,6 +383,7 @@ function ResumeModal({ isOpen, onClose }) {
 
         // Divider only if block was rendered
         pdf.setDrawColor(...gray)
+        pdf.setLineWidth(2) // 6px line
         pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
         rightY += 5
         return true
@@ -402,7 +405,7 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setTextColor(3, 72, 125) // #03487D
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
-        pdf.text('EXPERIENCE', rightX, rightY)
+        pdf.text('EXPERIENCE', rightCenter, rightY, { align: 'center' })
         rightY += 12
 
         pdf.setTextColor(...black)
@@ -421,7 +424,7 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setTextColor(3, 72, 125) // #03487D
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
-        pdf.text('LANGUAGES', rightX, rightY)
+        pdf.text('LANGUAGES', rightCenter, rightY, { align: 'center' })
         rightY += 12
 
         pdf.setTextColor(...black)
@@ -458,7 +461,7 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setTextColor(3, 72, 125) // #03487D
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
-        pdf.text('COURSES', rightX, rightY)
+        pdf.text('COURSES', rightCenter, rightY, { align: 'center' })
         rightY += 12
 
         pdf.setTextColor(...black)
@@ -475,7 +478,7 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setTextColor(3, 72, 125) // #03487D
         pdf.setFontSize(14) // Section title (39px equivalent)
         pdf.setFont(undefined, 'bold')
-        pdf.text('HOBBIES', rightX, rightY)
+        pdf.text('HOBBIES', rightCenter, rightY, { align: 'center' })
         rightY += 12
 
         pdf.setTextColor(...black)
