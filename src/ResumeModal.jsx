@@ -274,17 +274,17 @@ function ResumeModal({ isOpen, onClose }) {
       let rightY = 15
       const rightX = rightColStart + rightPadding
 
-      // BUY SUN Logo (image) - 25% smaller, aligned with text start
+      // BUY SUN Logo (image) - 35% larger, centered
       try {
-        pdf.addImage(logoAnketa, 'PNG', rightX, rightY, 37.5, 15)
+        pdf.addImage(logoAnketa, 'PNG', rightCenter - 25, rightY, 50, 20)
       } catch (err) {
         // Fallback to text if image fails
         pdf.setTextColor(3, 72, 125) // #03487D
         pdf.setFontSize(28)
         pdf.setFont(undefined, 'bold')
-        pdf.text('BUY', rightX, rightY + 15)
+        pdf.text('BUY', rightCenter - 25, rightY + 15)
         pdf.setTextColor(218, 165, 32)
-        pdf.text('SUN', rightX + 30, rightY + 15)
+        pdf.text('SUN', rightCenter + 5, rightY + 15)
       }
 
       rightY += 30
@@ -304,22 +304,22 @@ function ResumeModal({ isOpen, onClose }) {
 
       // Only show POSITION if filled
       if (formData.desiredPosition) {
-        pdf.setFontSize(10)
+        pdf.setFontSize(12) // 20% larger (was 10)
         pdf.setFont(undefined, 'bold')
         pdf.text('POSITION:', rightX, rightY)
-        pdf.text(formData.desiredPosition, rightX + 25, rightY)
-        rightY += 7
+        pdf.text(formData.desiredPosition, rightX + 30, rightY)
+        rightY += 8
       }
 
       // Only show YEARS if filled
       if (formData.age) {
-        pdf.setFontSize(10)
+        pdf.setFontSize(12) // 20% larger (was 10)
         pdf.setFont(undefined, 'bold')
         pdf.text('YEARS:', rightX, rightY)
-        pdf.text(formData.age, rightX + 18, rightY)
-        rightY += 7
+        pdf.text(formData.age, rightX + 22, rightY)
+        rightY += 8
       }
-      rightY += 4
+      rightY += 5
 
       // EXPERIENCE section - helper to add experience block only if has data
       const addExpBlock = (position, company, workStart, workEnd, country) => {
@@ -336,42 +336,42 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasPosition) {
           pdf.text('POSITION:', rightX, rightY)
-          pdf.text(position, rightX + 25, rightY)
-          rightY += 5
+          pdf.text(position, rightX + 30, rightY)
+          rightY += 6
         }
         
         if (hasCompany) {
           pdf.text('PLACE OF WORK:', rightX, rightY)
-          pdf.text(company, rightX + 35, rightY)
-          rightY += 5
+          pdf.text(company, rightX + 40, rightY)
+          rightY += 6
         }
         
         if (hasWorkStart && hasWorkEnd) {
           pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.text(`${workStart} - ${workEnd}`, rightX + 30, rightY)
-          rightY += 5
+          pdf.text(`${workStart} - ${workEnd}`, rightX + 36, rightY)
+          rightY += 6
         } else if (hasWorkStart) {
           pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.text(workStart, rightX + 30, rightY)
-          rightY += 5
+          pdf.text(workStart, rightX + 36, rightY)
+          rightY += 6
         } else if (hasWorkEnd) {
           pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.text(workEnd, rightX + 30, rightY)
-          rightY += 5
+          pdf.text(workEnd, rightX + 36, rightY)
+          rightY += 6
         }
         
         if (hasCountry) {
           pdf.text('COUNTRY:', rightX, rightY)
-          pdf.text(country, rightX + 22, rightY)
-          rightY += 5
+          pdf.text(country, rightX + 26, rightY)
+          rightY += 6
         }
-        rightY += 3
+        rightY += 4
 
         // Divider only if block was rendered
         pdf.setDrawColor(...gray)
         pdf.setLineWidth(0.7) // 2px line
         pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
-        rightY += 5
+        rightY += 6
         return true
       }
 
@@ -389,86 +389,81 @@ function ResumeModal({ isOpen, onClose }) {
 
       if (hasAnyExperience) {
         pdf.setTextColor(...black) // Black color
-        pdf.setFontSize(14) // Section title (39px equivalent)
+        pdf.setFontSize(17) // 20% larger (was 14)
         pdf.setFont(undefined, 'bold')
         pdf.text('EXPERIENCE', rightCenter, rightY, { align: 'center' })
-        rightY += 12
+        rightY += 14
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(11)
+        pdf.setFontSize(13) // 20% larger (was 11)
 
         if (hasExp1) addExpBlock(formData.position1, formData.company1, formData.workStart1, formData.workEnd1, formData.country1)
         if (hasExp2) addExpBlock(formData.position2, formData.company2, formData.workStart2, formData.workEnd2, formData.country2)
         if (hasExp3) addExpBlock(formData.position3, formData.company3, formData.workStart3, formData.workEnd3, formData.country3)
       }
 
-      rightY += 5
+      rightY += 15 // Larger space between sections
 
       // LANGUAGES section - only show if any language is filled
       const hasLanguages = formData.english || formData.turkish || formData.russian
       if (hasLanguages) {
         pdf.setTextColor(...black) // Black color
-        pdf.setFontSize(14) // Section title (39px equivalent)
+        pdf.setFontSize(17) // 20% larger (was 14)
         pdf.setFont(undefined, 'bold')
-        pdf.text('LANGUAGES', rightCenter, rightY, { align: 'center' })
-        rightY += 12
+        pdf.text('LANGUAGES:', rightCenter, rightY, { align: 'center' })
+        rightY += 14
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(11)
+        pdf.setFontSize(13) // 20% larger (was 11)
 
         pdf.setFont(undefined, 'bold')
 
         if (formData.english) {
           pdf.text('ENGLISH:', rightX, rightY)
-          pdf.text(formData.english, rightX + 22, rightY)
-          rightY += 5
+          pdf.text(formData.english, rightX + 26, rightY)
+          rightY += 6
         }
 
         if (formData.turkish) {
           pdf.text('TURKCE:', rightX, rightY)
-          pdf.text(formData.turkish, rightX + 20, rightY)
-          rightY += 5
+          pdf.text(formData.turkish, rightX + 24, rightY)
+          rightY += 6
         }
 
         if (formData.russian) {
           pdf.text('RUSSIAN:', rightX, rightY)
-          pdf.text(formData.russian, rightX + 22, rightY)
-          rightY += 5
+          pdf.text(formData.russian, rightX + 26, rightY)
+          rightY += 6
         }
-        rightY += 5
+        rightY += 15 // Larger space between sections
       }
 
-      // COURSES section - only show if there's data
-      if (formData.courses && formData.courses.trim()) {
+      // HOBBY AND INTERESTS section - combined courses and hobbies
+      const hasHobbyInterests = (formData.courses && formData.courses.trim()) || 
+                                (formData.hobbies && formData.hobbies.trim())
+      if (hasHobbyInterests) {
         pdf.setTextColor(...black) // Black color
-        pdf.setFontSize(14) // Section title (39px equivalent)
+        pdf.setFontSize(17) // 20% larger (was 14)
         pdf.setFont(undefined, 'bold')
-        pdf.text('COURSES', rightCenter, rightY, { align: 'center' })
-        rightY += 12
+        pdf.text('HOBBY AND INTERESTS', rightCenter, rightY, { align: 'center' })
+        rightY += 14
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(11)
+        pdf.setFontSize(13) // 20% larger (was 11)
         pdf.setFont(undefined, 'bold')
         
-        const coursesLines = pdf.splitTextToSize(formData.courses, rightColWidth - rightPadding * 2)
-        pdf.text(coursesLines, rightX, rightY)
-        rightY += coursesLines.length * 5 + 10
-      }
-
-      // HOBBIES section - only show if there's data
-      if (formData.hobbies && formData.hobbies.trim()) {
-        pdf.setTextColor(...black) // Black color
-        pdf.setFontSize(14) // Section title (39px equivalent)
-        pdf.setFont(undefined, 'bold')
-        pdf.text('HOBBIES', rightCenter, rightY, { align: 'center' })
-        rightY += 12
-
-        pdf.setTextColor(...black)
-        pdf.setFontSize(11)
-        pdf.setFont(undefined, 'bold')
+        // Combine courses and hobbies
+        let combinedText = ''
+        if (formData.courses && formData.courses.trim()) {
+          combinedText += formData.courses.trim()
+        }
+        if (formData.hobbies && formData.hobbies.trim()) {
+          if (combinedText) combinedText += ', '
+          combinedText += formData.hobbies.trim()
+        }
         
-        const hobbiesLines = pdf.splitTextToSize(formData.hobbies, rightColWidth - rightPadding * 2)
-        pdf.text(hobbiesLines, rightX, rightY)
+        const hobbyLines = pdf.splitTextToSize(combinedText, rightColWidth - rightPadding * 2)
+        pdf.text(hobbyLines, rightX, rightY)
       }
 
       // ========== PHOTO PAGES ==========
