@@ -49,11 +49,10 @@
   position: relative;
   z-index: 1;
   flex: 1;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: stretch;
-  min-height: 0;
-  align-self: flex-end;
-  /* Прижимаем контейнер к низу */
+  min-height: calc(100vh - clamp(3rem, 8vw, 8rem));
+  align-self: stretch;
 }
 
 /* Tablet styles */
@@ -234,6 +233,7 @@
   /* Позволяет grid сжиматься */
   position: relative;
   flex-shrink: 0;
+  flex-grow: 1;
 }
 
 .hero-text {
@@ -330,8 +330,9 @@
 }
 
 .hero-image img {
-  width: 444px;
-  height: 613px;
+  width: auto;
+  height: clamp(400px, 60vh, 613px);
+  max-width: 444px;
   object-fit: contain;
   object-position: bottom;
   display: block;
@@ -534,5 +535,28 @@
     padding-bottom: 0 !important;
     display: block;
     vertical-align: bottom;
+  }
+}
+
+/* Для масштабов 50-90% (соответствует увеличенным viewport размерам) */
+@media (min-width: 1400px) and (max-width: 2500px) {
+  .hero {
+    min-height: 100vh;
+    align-items: flex-end;
+  }
+  
+  .hero-container {
+    min-height: 100vh;
+    justify-content: flex-end;
+  }
+  
+  .hero-content {
+    min-height: 0;
+    align-items: flex-end;
+  }
+  
+  .hero-image img {
+    height: clamp(450px, 65vh, 650px);
+    max-width: 500px;
   }
 }
