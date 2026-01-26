@@ -140,9 +140,24 @@
   }
 }
 
+@media (min-width: 1200px) {
+  .section3-title {
+    font-size: 32px;
+    margin-bottom: 0.5rem;
+  }
+
+  .section3-text-p {
+    font-size: 18px;
+  }
+
+  .section3-text {
+    max-width: 650px;
+  }
+}
+
 @media (min-width: 1400px) {
   .section3-text {
-    max-width: clamp(600px, 45vw, 700px);
+    max-width: 650px;
   }
 }
 
