@@ -91,14 +91,14 @@
 .section3-text-p {
   font-family: 'Inter', sans-serif;
   font-size: clamp(14px, 2vw, 18px);
-  line-height: 1.6;
+  line-height: 1.4;
   color: var(--text-white);
   margin: 0;
   text-align: left;
 }
 
 .section3-text-p:not(:first-child) {
-  margin-top: 0.5em;
+  margin-top: 0.3em;
 }
 
 .section3-text-p strong {
