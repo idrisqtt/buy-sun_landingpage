@@ -48,6 +48,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .section3-flag img {
