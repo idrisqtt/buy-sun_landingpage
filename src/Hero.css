@@ -332,8 +332,8 @@
 
 .hero-image img {
   width: auto;
-  height: clamp(500px, 80vh, 800px);
-  max-width: 500px;
+  height: clamp(450px, 75vh, 750px);
+  max-width: 480px;
   object-fit: contain;
   object-position: bottom;
   display: block;
@@ -536,6 +536,14 @@
     padding-bottom: 0 !important;
     display: block;
     vertical-align: bottom;
+  }
+}
+
+/* Для нормального масштаба 100% */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .hero-image img {
+    height: clamp(400px, 70vh, 613px);
+    max-width: 444px;
   }
 }
 
