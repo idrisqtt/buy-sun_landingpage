@@ -234,11 +234,20 @@ function ResumeModal({ isOpen, onClose }) {
         if (!value || value.trim() === '' || value === '-' || value === ' - ') return
         pdf.setFontSize(13) // Same as right column (was 10)
         pdf.setFont(undefined, 'bold')
-        pdf.text(`${label}: `, leftPadding, leftY)
-        // Use fixed offset for value (similar to right column approach)
-        const maxLabelWidth = 45 // Approximate max width for longest labels
-        pdf.text(value, leftPadding + maxLabelWidth, leftY)
-        leftY += 6
+        
+        // For NAME OF EMPLOYER and MANAGER, put value on next line
+        if (label === 'NAME OF EMPLOYER' || label === 'MANAGER') {
+          pdf.text(`${label}:`, leftPadding, leftY)
+          leftY += 6  // Move to next line
+          pdf.text(value, leftPadding, leftY)
+          leftY += 6  // Space after value
+        } else {
+          pdf.text(`${label}: `, leftPadding, leftY)
+          // Use fixed offset for value (similar to right column approach)
+          const maxLabelWidth = 45 // Approximate max width for longest labels
+          pdf.text(value, leftPadding + maxLabelWidth, leftY)
+          leftY += 6
+        }
       }
 
       addLeftField('DATE OF BIRTH', formData.birthDate)
@@ -295,7 +304,7 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.text('SUN', rightCenter + 4, rightY + 16)
       }
 
-      rightY += 25
+      rightY += 27
 
       // Name and position
       pdf.setTextColor(...black)
@@ -308,7 +317,7 @@ function ResumeModal({ isOpen, onClose }) {
       pdf.setDrawColor(...gray)
       pdf.setLineWidth(0.7) // 2px line
       pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
-      rightY += 6
+      rightY += 3
 
       // Only show POSITION if filled
       if (formData.desiredPosition) {
@@ -471,7 +480,7 @@ function ResumeModal({ isOpen, onClose }) {
         }
         
         const hobbyLines = pdf.splitTextToSize(combinedText, rightColWidth - rightPadding * 2)
-        pdf.text(hobbyLines, rightX, rightY)
+        pdf.text(hobbyLines, rightX, rightY, { lineHeightFactor: 1.5 })
       }
 
       // ========== PHOTO PAGES ==========
