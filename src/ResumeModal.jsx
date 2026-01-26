@@ -317,7 +317,7 @@ function ResumeModal({ isOpen, onClose }) {
       pdf.setDrawColor(...gray)
       pdf.setLineWidth(0.7) // 2px line
       pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
-      rightY += 3
+      rightY += 8
 
       // Only show POSITION if filled
       if (formData.desiredPosition) {
@@ -469,18 +469,17 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFontSize(13) // 20% larger (was 11)
         pdf.setFont(undefined, 'bold')
         
-        // Combine courses and hobbies
-        let combinedText = ''
+        // Display courses and hobbies on separate lines
         if (formData.courses && formData.courses.trim()) {
-          combinedText += formData.courses.trim()
-        }
-        if (formData.hobbies && formData.hobbies.trim()) {
-          if (combinedText) combinedText += ', '
-          combinedText += formData.hobbies.trim()
+          const coursesLines = pdf.splitTextToSize(formData.courses.trim(), rightColWidth - rightPadding * 2)
+          pdf.text(coursesLines, rightX, rightY, { lineHeightFactor: 1.5 })
+          rightY += coursesLines.length * 6 * 1.5 + 4 // Add space after courses
         }
         
-        const hobbyLines = pdf.splitTextToSize(combinedText, rightColWidth - rightPadding * 2)
-        pdf.text(hobbyLines, rightX, rightY, { lineHeightFactor: 1.5 })
+        if (formData.hobbies && formData.hobbies.trim()) {
+          const hobbiesLines = pdf.splitTextToSize(formData.hobbies.trim(), rightColWidth - rightPadding * 2)
+          pdf.text(hobbiesLines, rightX, rightY, { lineHeightFactor: 1.5 })
+        }
       }
 
       // ========== PHOTO PAGES ==========
