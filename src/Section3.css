@@ -36,7 +36,7 @@
   gap: clamp(40px, 10vw, 150px);
   /* Отступ 10-15% между текстом и изображением */
   width: 100%;
-  max-width: 1800px;
+  max-width: 1400px;
   position: relative;
 }
 
@@ -63,9 +63,9 @@
   flex-direction: column;
   gap: clamp(0.5rem, 1vw, 1rem);
   color: var(--text-white);
-  width: clamp(800px, 70vw, 1400px);
-  min-width: 800px;
-  flex: 0 1 auto;
+  max-width: 575px;
+  width: 100%;
+  flex: 1;
   text-align: left;
   position: relative;
   z-index: 1;
@@ -136,22 +136,13 @@
   }
 
   .section3-text {
-    width: clamp(900px, 70vw, 1600px);
-    min-width: 900px;
+    max-width: clamp(575px, 40vw, 650px);
   }
 }
 
 @media (min-width: 1400px) {
   .section3-text {
-    width: clamp(1000px, 75vw, 1800px);
-    min-width: 1000px;
-  }
-}
-
-@media (max-width: 900px) {
-  .section3-text {
-    width: 100%;
-    min-width: auto;
+    max-width: clamp(600px, 45vw, 700px);
   }
 }
 
