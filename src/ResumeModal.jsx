@@ -282,17 +282,17 @@ function ResumeModal({ isOpen, onClose }) {
       let rightY = 15
       const rightX = rightColStart + rightPadding
 
-      // BUY SUN Logo (image) - 35% larger, centered
+      // BUY SUN Logo (image) - larger, centered
       try {
-        pdf.addImage(logoAnketa, 'PNG', rightCenter - 25, rightY, 50, 20)
+        pdf.addImage(logoAnketa, 'PNG', rightCenter - 35, rightY, 70, 28)
       } catch (err) {
         // Fallback to text if image fails
         pdf.setTextColor(3, 72, 125) // #03487D
-        pdf.setFontSize(28)
+        pdf.setFontSize(36)
         pdf.setFont(undefined, 'bold')
-        pdf.text('BUY', rightCenter - 25, rightY + 15)
+        pdf.text('BUY', rightCenter - 35, rightY + 20)
         pdf.setTextColor(218, 165, 32)
-        pdf.text('SUN', rightCenter + 5, rightY + 15)
+        pdf.text('SUN', rightCenter + 5, rightY + 20)
       }
 
       rightY += 30
