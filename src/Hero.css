@@ -1,5 +1,6 @@
 .hero {
   width: 100%;
+  height: auto;
   min-height: 100vh;
   position: relative;
   background-color: var(--bg-black);
@@ -331,8 +332,8 @@
 
 .hero-image img {
   width: auto;
-  height: clamp(400px, 60vh, 613px);
-  max-width: 444px;
+  height: clamp(500px, 80vh, 800px);
+  max-width: 500px;
   object-fit: contain;
   object-position: bottom;
   display: block;
@@ -541,12 +542,14 @@
 /* Для масштабов 50-90% (соответствует увеличенным viewport размерам) */
 @media (min-width: 1400px) and (max-width: 2500px) {
   .hero {
-    min-height: 100vh;
+    height: auto;
+    min-height: auto;
     align-items: flex-end;
   }
   
   .hero-container {
-    min-height: 100vh;
+    height: auto;
+    min-height: auto;
     justify-content: flex-end;
   }
   
@@ -556,7 +559,25 @@
   }
   
   .hero-image img {
-    height: clamp(450px, 65vh, 650px);
-    max-width: 500px;
+    height: clamp(550px, 75vh, 750px);
+    max-width: 550px;
+  }
+}
+
+/* Для очень маленьких масштабов (менее 70%) */
+@media (min-width: 2000px) {
+  .hero {
+    height: auto;
+    min-height: auto;
+  }
+  
+  .hero-container {
+    height: auto;
+    min-height: auto;
+  }
+  
+  .hero-image img {
+    height: clamp(600px, 85vh, 850px);
+    max-width: 600px;
   }
 }
