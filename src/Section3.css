@@ -13,7 +13,7 @@
   justify-content: center;
   position: relative;
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .section3-container {
@@ -107,7 +107,7 @@
 }
 
 .section3-image {
-  width: clamp(200px, 25vw, 303px);
+  width: clamp(200px, 20vw, 280px);
   height: auto;
   display: flex;
   align-items: center;
@@ -118,9 +118,9 @@
 
 .section3-image img {
   width: 100%;
-  max-width: 303px;
+  max-width: 280px;
   height: auto;
-  max-height: 307px;
+  max-height: 280px;
   border-radius: 47px;
   object-fit: contain;
   display: block;
@@ -131,8 +131,10 @@
 @media (min-width: 901px) {
   .section3 {
     aspect-ratio: 1919 / 551;
+    height: auto;
     background-size: 100% auto;
     background-position: left top;
+    overflow: hidden;
   }
 
   .section3-text {
@@ -153,17 +155,44 @@
   .section3-text {
     max-width: 600px;
   }
+
+  .section3-image {
+    width: 280px;
+  }
+
+  .section3-image img {
+    max-width: 280px;
+    max-height: 280px;
+  }
 }
 
 @media (min-width: 1200px) {
   .section3-text {
     max-width: 600px;
   }
+
+  .section3-image {
+    width: 280px;
+  }
+
+  .section3-image img {
+    max-width: 280px;
+    max-height: 280px;
+  }
 }
 
 @media (min-width: 1400px) {
   .section3-text {
     max-width: 600px;
+  }
+
+  .section3-image {
+    width: 280px;
+  }
+
+  .section3-image img {
+    max-width: 280px;
+    max-height: 280px;
   }
 }
 
