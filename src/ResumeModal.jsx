@@ -353,33 +353,33 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasPosition) {
           pdf.text('POSITION: ', rightX, rightY)
-          pdf.text(position, rightX + 32, rightY)
+          pdf.text(position, rightX + 50, rightY)
           rightY += 6
         }
         
         if (hasCompany) {
           pdf.text('PLACE OF WORK: ', rightX, rightY)
-          pdf.text(company, rightX + 42, rightY)
+          pdf.text(company, rightX + 50, rightY)
           rightY += 6
         }
         
         if (hasWorkStart && hasWorkEnd) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.text(`${workStart} - ${workEnd}`, rightX + 38, rightY)
+          pdf.text(`${workStart} - ${workEnd}`, rightX + 50, rightY)
           rightY += 6
         } else if (hasWorkStart) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.text(workStart, rightX + 38, rightY)
+          pdf.text(workStart, rightX + 50, rightY)
           rightY += 6
         } else if (hasWorkEnd) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.text(workEnd, rightX + 38, rightY)
+          pdf.text(workEnd, rightX + 50, rightY)
           rightY += 6
         }
         
         if (hasCountry) {
           pdf.text('COUNTRY: ', rightX, rightY)
-          pdf.text(country, rightX + 28, rightY)
+          pdf.text(country, rightX + 50, rightY)
           rightY += 6
         }
         rightY += 4
@@ -437,19 +437,19 @@ function ResumeModal({ isOpen, onClose }) {
 
         if (formData.english) {
           pdf.text('ENGLISH: ', rightX, rightY)
-          pdf.text(formData.english, rightX + 28, rightY)
+          pdf.text(formData.english, rightX + 35, rightY)
           rightY += 6
         }
 
         if (formData.turkish) {
           pdf.text('TURKCE: ', rightX, rightY)
-          pdf.text(formData.turkish, rightX + 26, rightY)
+          pdf.text(formData.turkish, rightX + 35, rightY)
           rightY += 6
         }
 
         if (formData.russian) {
           pdf.text('RUSSIAN: ', rightX, rightY)
-          pdf.text(formData.russian, rightX + 28, rightY)
+          pdf.text(formData.russian, rightX + 35, rightY)
           rightY += 6
         }
         rightY += 20 // Larger space between sections
