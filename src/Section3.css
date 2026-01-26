@@ -4,7 +4,7 @@
   height: auto;
   background-image: url('/s3-1.png');
   background-size: cover;
-  background-position: center;
+  background-position: left center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   padding: 0;
@@ -144,7 +144,7 @@
     padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 2rem);
     background-attachment: scroll;
     background-size: cover;
-    background-position: center;
+    background-position: left center;
   }
 
   .section3-container {
