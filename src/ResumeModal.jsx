@@ -487,12 +487,28 @@ function ResumeModal({ isOpen, onClose }) {
       const photoFiles = [formData.selfiePhoto, formData.fullBodyPhoto, formData.additionalPhoto1, formData.additionalPhoto2].filter(Boolean)
       
       if (photoFiles.length > 0) {
-        const pageMargin = 10 // mm
-        const maxPhotoWidth = pageWidth - pageMargin * 2
-        let currentY = pageMargin
-        let isFirstPhoto = true
+        // Add new page for photos
+        pdf.addPage()
+        
+        const pageMargin = 15 // mm
+        const gap = 10 // mm gap between photos
+        const availableWidth = pageWidth - pageMargin * 2
+        const availableHeight = pageHeight - pageMargin * 2
+        const photoWidth = (availableWidth - gap) / 2 // 2 columns
+        const photoHeight = (availableHeight - gap) / 2 // 2 rows
+        
+        // Grid positions for 2x2 layout
+        const positions = [
+          { x: pageMargin, y: pageMargin }, // Top-left
+          { x: pageMargin + photoWidth + gap, y: pageMargin }, // Top-right
+          { x: pageMargin, y: pageMargin + photoHeight + gap }, // Bottom-left
+          { x: pageMargin + photoWidth + gap, y: pageMargin + photoHeight + gap } // Bottom-right
+        ]
 
-        for (const file of photoFiles) {
+        for (let i = 0; i < Math.min(photoFiles.length, 4); i++) {
+          const file = photoFiles[i]
+          const position = positions[i]
+          
           try {
             const photoData = await new Promise((resolve) => {
               const reader = new FileReader()
@@ -511,25 +527,23 @@ function ResumeModal({ isOpen, onClose }) {
               })
               
               if (imgDimensions) {
-                // Calculate photo dimensions maintaining aspect ratio
+                // Calculate dimensions to fit in grid cell while maintaining aspect ratio
                 const aspectRatio = imgDimensions.height / imgDimensions.width
-                const photoWidth = maxPhotoWidth
-                const photoHeight = photoWidth * aspectRatio
+                let finalWidth = photoWidth
+                let finalHeight = photoWidth * aspectRatio
                 
-                // Check if photo fits on current page
-                if (!isFirstPhoto && currentY + photoHeight > pageHeight - pageMargin) {
-                  // Add new page
-                  pdf.addPage()
-                  currentY = pageMargin
-                } else if (isFirstPhoto) {
-                  // Add first photo page
-                  pdf.addPage()
-                  isFirstPhoto = false
+                // If height exceeds cell height, scale by height instead
+                if (finalHeight > photoHeight) {
+                  finalHeight = photoHeight
+                  finalWidth = photoHeight / aspectRatio
                 }
                 
-                // Add photo at original aspect ratio
-                pdf.addImage(photoData, 'JPEG', pageMargin, currentY, photoWidth, photoHeight)
-                currentY += photoHeight + 10 // 10mm gap between photos
+                // Center the photo in the grid cell
+                const centerX = position.x + (photoWidth - finalWidth) / 2
+                const centerY = position.y + (photoHeight - finalHeight) / 2
+                
+                // Add photo to grid position
+                pdf.addImage(photoData, 'JPEG', centerX, centerY, finalWidth, finalHeight)
               }
             }
           } catch (err) {
