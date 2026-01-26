@@ -541,9 +541,23 @@
 
 /* Для нормального масштаба 100% */
 @media (min-width: 1200px) and (max-width: 1399px) {
+  .hero {
+    align-items: flex-end;
+  }
+  
+  .hero-container {
+    align-items: flex-end;
+  }
+  
+  .hero-image {
+    align-self: flex-end;
+  }
+  
   .hero-image img {
-    height: clamp(500px, 80vh, 700px);
-    max-width: 500px;
+    height: clamp(550px, 85vh, 750px);
+    max-width: 550px;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
   }
 }
 
