@@ -188,8 +188,6 @@ function Hero() {
             <motion.img 
               src="/man1.png" 
               alt="Ахмед"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
             />
           </motion.div>
         </div>

@@ -551,6 +551,7 @@
   
   .hero-image {
     align-self: flex-end;
+    position: relative;
   }
   
   .hero-image img {
@@ -558,6 +559,10 @@
     max-width: 550px;
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
+    transform: none !important;
+    transition: none !important;
+    position: relative;
+    bottom: 0;
   }
 }
 
