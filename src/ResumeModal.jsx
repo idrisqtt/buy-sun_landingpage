@@ -210,27 +210,35 @@ function ResumeModal({ isOpen, onClose }) {
 
       leftY += 70
 
-      // PERSONAL DETAILS section
+      // Calculate right column position for EXPERIENCE to align with PERSONAL DETAILS
+      // rightY starts at 15, +30 for logo, +9 for name, +6 for divider, +5 for spacing = 65
+      // Then EXPERIENCE title starts at 65
+      // So leftY should also be at 65 for PERSONAL DETAILS
+      const experienceStartY = 15 + 30 + 9 + 6 + 5 // Logo + name + divider + spacing
+      if (leftY < experienceStartY) {
+        leftY = experienceStartY
+      }
+
+      // PERSONAL DETAILS section - aligned with EXPERIENCE
       pdf.setTextColor(...white)
-      pdf.setFontSize(14) // Section title (39px equivalent)
+      pdf.setFontSize(17) // Same as EXPERIENCE (was 14)
       pdf.setFont(undefined, 'bold')
       pdf.text('PERSONAL DETAILS', leftCenter, leftY, { align: 'center' })
-      leftY += 12
+      leftY += 14
 
-      pdf.setFontSize(12) // Larger field values
+      pdf.setFontSize(13) // Same as right column field values (was 12)
       pdf.setFont(undefined, 'bold')
 
       const addLeftField = (label, value) => {
         // Skip empty fields
         if (!value || value.trim() === '' || value === '-' || value === ' - ') return
-        pdf.setFontSize(10) // Label size
+        pdf.setFontSize(13) // Same as right column (was 10)
         pdf.setFont(undefined, 'bold')
-        pdf.text(`${label}:`, leftPadding, leftY)
-        leftY += 5
-        pdf.setFontSize(12) // Value size - larger
-        pdf.setFont(undefined, 'normal')
-        pdf.text(value, leftPadding + 2, leftY)
-        leftY += 8
+        pdf.text(`${label}: `, leftPadding, leftY)
+        // Use fixed offset for value (similar to right column approach)
+        const maxLabelWidth = 45 // Approximate max width for longest labels
+        pdf.text(value, leftPadding + maxLabelWidth, leftY)
+        leftY += 6
       }
 
       addLeftField('DATE OF BIRTH', formData.birthDate)
@@ -251,12 +259,12 @@ function ResumeModal({ isOpen, onClose }) {
       // EDUCATION section - only show if there's education data
       const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd || formData.manager
       if (hasEducation) {
-        pdf.setFontSize(14) // Section title (39px equivalent)
+        pdf.setFontSize(17) // Same as other section titles (was 14)
         pdf.setFont(undefined, 'bold')
         pdf.text('EDUCATION', leftCenter, leftY, { align: 'center' })
-        leftY += 12
+        leftY += 14
 
-        pdf.setFontSize(12)
+        pdf.setFontSize(13) // Same as right column (was 12)
         addLeftField('NAME OF EMPLOYER', formData.institution)
         addLeftField('MAJOR', formData.specialty)
         // Only show DATE if both start and end are filled
@@ -291,10 +299,10 @@ function ResumeModal({ isOpen, onClose }) {
 
       // Name and position
       pdf.setTextColor(...black)
-      pdf.setFontSize(14) // Larger name
+      pdf.setFontSize(17) // Larger name (increased)
       pdf.setFont(undefined, 'bold')
       pdf.text(`${formData.firstName} ${formData.lastName}`, rightX, rightY)
-      rightY += 7
+      rightY += 9
       
       // Divider line
       pdf.setDrawColor(...gray)
@@ -306,8 +314,8 @@ function ResumeModal({ isOpen, onClose }) {
       if (formData.desiredPosition) {
         pdf.setFontSize(12) // 20% larger (was 10)
         pdf.setFont(undefined, 'bold')
-        pdf.text('POSITION:', rightX, rightY)
-        pdf.text(formData.desiredPosition, rightX + 30, rightY)
+        pdf.text('POSITION: ', rightX, rightY)
+        pdf.text(formData.desiredPosition, rightX + 32, rightY)
         rightY += 8
       }
 
@@ -315,8 +323,8 @@ function ResumeModal({ isOpen, onClose }) {
       if (formData.age) {
         pdf.setFontSize(12) // 20% larger (was 10)
         pdf.setFont(undefined, 'bold')
-        pdf.text('YEARS:', rightX, rightY)
-        pdf.text(formData.age, rightX + 22, rightY)
+        pdf.text('YEARS: ', rightX, rightY)
+        pdf.text(formData.age, rightX + 24, rightY)
         rightY += 8
       }
       rightY += 5
@@ -335,34 +343,34 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFont(undefined, 'bold')
         
         if (hasPosition) {
-          pdf.text('POSITION:', rightX, rightY)
-          pdf.text(position, rightX + 30, rightY)
+          pdf.text('POSITION: ', rightX, rightY)
+          pdf.text(position, rightX + 32, rightY)
           rightY += 6
         }
         
         if (hasCompany) {
-          pdf.text('PLACE OF WORK:', rightX, rightY)
-          pdf.text(company, rightX + 40, rightY)
+          pdf.text('PLACE OF WORK: ', rightX, rightY)
+          pdf.text(company, rightX + 42, rightY)
           rightY += 6
         }
         
         if (hasWorkStart && hasWorkEnd) {
-          pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.text(`${workStart} - ${workEnd}`, rightX + 36, rightY)
+          pdf.text('WORK PERIOD: ', rightX, rightY)
+          pdf.text(`${workStart} - ${workEnd}`, rightX + 38, rightY)
           rightY += 6
         } else if (hasWorkStart) {
-          pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.text(workStart, rightX + 36, rightY)
+          pdf.text('WORK PERIOD: ', rightX, rightY)
+          pdf.text(workStart, rightX + 38, rightY)
           rightY += 6
         } else if (hasWorkEnd) {
-          pdf.text('WORK PERIOD:', rightX, rightY)
-          pdf.text(workEnd, rightX + 36, rightY)
+          pdf.text('WORK PERIOD: ', rightX, rightY)
+          pdf.text(workEnd, rightX + 38, rightY)
           rightY += 6
         }
         
         if (hasCountry) {
-          pdf.text('COUNTRY:', rightX, rightY)
-          pdf.text(country, rightX + 26, rightY)
+          pdf.text('COUNTRY: ', rightX, rightY)
+          pdf.text(country, rightX + 28, rightY)
           rightY += 6
         }
         rightY += 4
@@ -419,20 +427,20 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFont(undefined, 'bold')
 
         if (formData.english) {
-          pdf.text('ENGLISH:', rightX, rightY)
-          pdf.text(formData.english, rightX + 26, rightY)
+          pdf.text('ENGLISH: ', rightX, rightY)
+          pdf.text(formData.english, rightX + 28, rightY)
           rightY += 6
         }
 
         if (formData.turkish) {
-          pdf.text('TURKCE:', rightX, rightY)
-          pdf.text(formData.turkish, rightX + 24, rightY)
+          pdf.text('TURKCE: ', rightX, rightY)
+          pdf.text(formData.turkish, rightX + 26, rightY)
           rightY += 6
         }
 
         if (formData.russian) {
-          pdf.text('RUSSIAN:', rightX, rightY)
-          pdf.text(formData.russian, rightX + 26, rightY)
+          pdf.text('RUSSIAN: ', rightX, rightY)
+          pdf.text(formData.russian, rightX + 28, rightY)
           rightY += 6
         }
         rightY += 15 // Larger space between sections
