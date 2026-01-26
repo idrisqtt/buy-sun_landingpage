@@ -63,7 +63,7 @@
   flex-direction: column;
   gap: clamp(1rem, 2vw, 1.5rem);
   color: var(--text-white);
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
   flex: 1;
   text-align: left;
