@@ -235,8 +235,8 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFontSize(13) // Same as right column (was 10)
         pdf.setFont(undefined, 'bold')
         
-        // For NAME OF EMPLOYER and MANAGER, put value on next line
-        if (label === 'NAME OF EMPLOYER' || label === 'MANAGER') {
+        // For NAME OF EMPLOYER, MANAGER, MAJOR, and DATE, put value on next line
+        if (label === 'NAME OF EMPLOYER' || label === 'MANAGER' || label === 'MAJOR' || label === 'DATE') {
           pdf.text(`${label}:`, leftPadding, leftY)
           leftY += 6  // Move to next line
           pdf.text(value, leftPadding, leftY)
@@ -291,9 +291,9 @@ function ResumeModal({ isOpen, onClose }) {
       let rightY = 15
       const rightX = rightColStart + rightPadding
 
-      // BUY SUN Logo (image) - 20% smaller, centered
+      // BUY SUN Logo (image) - larger size, centered
       try {
-        pdf.addImage(logoAnketa, 'PNG', rightCenter - 28, rightY, 56, 22)
+        pdf.addImage(logoAnketa, 'PNG', rightCenter - 35, rightY, 70, 28)
       } catch (err) {
         // Fallback to text if image fails
         pdf.setTextColor(3, 72, 125) // #03487D
@@ -304,7 +304,7 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.text('SUN', rightCenter + 4, rightY + 16)
       }
 
-      rightY += 27
+      rightY += 35
 
       // Name and position
       pdf.setTextColor(...black)
@@ -419,7 +419,7 @@ function ResumeModal({ isOpen, onClose }) {
         if (hasExp3) addExpBlock(formData.position3, formData.company3, formData.workStart3, formData.workEnd3, formData.country3)
       }
 
-      rightY += 15 // Larger space between sections
+      rightY += 25 // Larger space between sections
 
       // LANGUAGES section - only show if any language is filled
       const hasLanguages = formData.english || formData.turkish || formData.russian
@@ -452,7 +452,7 @@ function ResumeModal({ isOpen, onClose }) {
           pdf.text(formData.russian, rightX + 28, rightY)
           rightY += 6
         }
-        rightY += 15 // Larger space between sections
+        rightY += 20 // Larger space between sections
       }
 
       // HOBBY AND INTERESTS section - combined courses and hobbies
