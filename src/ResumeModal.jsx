@@ -64,7 +64,6 @@ function ResumeModal({ isOpen, onClose }) {
     selfiePhoto: null,
     fullBodyPhoto: null,
     additionalPhoto1: null,
-    additionalPhoto2: null,
     instagram: '',
     source: ''
   })
@@ -130,6 +129,42 @@ function ResumeModal({ isOpen, onClose }) {
         [name]: value
       })
     }
+  }
+
+  // Helper function to crop images to 3:4 aspect ratio
+  const cropTo3x4 = async (imageData) => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      img.onload = () => {
+        const targetAspectRatio = 3/4 // width/height
+        const imgAspectRatio = img.width / img.height
+        
+        let cropWidth, cropHeight, cropX, cropY
+        
+        if (imgAspectRatio > targetAspectRatio) {
+          // Image is wider - crop width
+          cropHeight = img.height
+          cropWidth = cropHeight * targetAspectRatio
+          cropX = (img.width - cropWidth) / 2
+          cropY = 0
+        } else {
+          // Image is taller - crop height
+          cropWidth = img.width
+          cropHeight = cropWidth / targetAspectRatio
+          cropX = 0
+          cropY = (img.height - cropHeight) / 2
+        }
+        
+        const canvas = document.createElement('canvas')
+        canvas.width = cropWidth
+        canvas.height = cropHeight
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight)
+        resolve(canvas.toDataURL('image/jpeg'))
+      }
+      img.onerror = () => resolve(null)
+      img.src = imageData
+    })
   }
 
   const generatePDF = async () => {
@@ -221,25 +256,25 @@ function ResumeModal({ isOpen, onClose }) {
 
       // PERSONAL DETAILS section - aligned with EXPERIENCE
       pdf.setTextColor(...white)
-      pdf.setFontSize(17) // Same as EXPERIENCE (was 14)
+      pdf.setFontSize(20) // Increased from 17
       pdf.setFont(undefined, 'bold')
       pdf.text('PERSONAL DETAILS', leftCenter, leftY, { align: 'center' })
       leftY += 14
 
-      pdf.setFontSize(13) // Same as right column field values (was 12)
+      pdf.setFontSize(15) // Increased from 13
       pdf.setFont(undefined, 'bold')
 
       const addLeftField = (label, value) => {
         // Skip empty fields
         if (!value || value.trim() === '' || value === '-' || value === ' - ') return
-        pdf.setFontSize(13) // Same as right column (was 10)
+        pdf.setFontSize(15) // Increased from 13
         pdf.setFont(undefined, 'bold')
         
         // For NAME OF EMPLOYER, MANAGER, MAJOR, and DATE, put value on next line
         if (label === 'NAME OF EMPLOYER' || label === 'MANAGER' || label === 'MAJOR' || label === 'DATE') {
           pdf.text(`${label}:`, leftPadding, leftY)
           leftY += 6  // Move to next line
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(16) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(value, leftPadding, leftY)
           pdf.setFont(undefined, 'bold')
@@ -248,7 +283,7 @@ function ResumeModal({ isOpen, onClose }) {
           pdf.text(`${label}: `, leftPadding, leftY)
           // Use fixed offset for value (similar to right column approach)
           const maxLabelWidth = 45 // Approximate max width for longest labels
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(16) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(value, leftPadding + maxLabelWidth, leftY)
           pdf.setFont(undefined, 'bold')
@@ -274,12 +309,12 @@ function ResumeModal({ isOpen, onClose }) {
       // EDUCATION section - only show if there's education data
       const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd || formData.manager
       if (hasEducation) {
-        pdf.setFontSize(17) // Same as other section titles (was 14)
+        pdf.setFontSize(20) // Increased from 17
         pdf.setFont(undefined, 'bold')
         pdf.text('EDUCATION', leftCenter, leftY, { align: 'center' })
         leftY += 14
 
-        pdf.setFontSize(13) // Same as right column (was 12)
+        pdf.setFontSize(15) // Increased from 13
         addLeftField('NAME OF EMPLOYER', formData.institution)
         addLeftField('MAJOR', formData.specialty)
         // Only show DATE if both start and end are filled
@@ -314,7 +349,7 @@ function ResumeModal({ isOpen, onClose }) {
 
       // Name and position
       pdf.setTextColor(...black)
-      pdf.setFontSize(24) // Much larger name
+      pdf.setFontSize(28) // Increased from 24
       pdf.setFont(undefined, 'bold')
       pdf.text(`${formData.firstName} ${formData.lastName}`, rightX, rightY)
       rightY += 9
@@ -327,10 +362,10 @@ function ResumeModal({ isOpen, onClose }) {
 
       // Only show POSITION if filled
       if (formData.desiredPosition) {
-        pdf.setFontSize(12) // 20% larger (was 10)
+        pdf.setFontSize(15) // Increased from 12
         pdf.setFont(undefined, 'bold')
         pdf.text('POSITION: ', rightX, rightY)
-        pdf.setFontSize(14) // Larger font for value
+        pdf.setFontSize(17) // Increased from 14
         pdf.setFont(undefined, 'normal')
         pdf.text(formData.desiredPosition, rightX + 50, rightY)
         rightY += 8
@@ -338,10 +373,10 @@ function ResumeModal({ isOpen, onClose }) {
 
       // Only show YEARS if filled
       if (formData.age) {
-        pdf.setFontSize(12) // 20% larger (was 10)
+        pdf.setFontSize(15) // Increased from 12
         pdf.setFont(undefined, 'bold')
         pdf.text('YEARS: ', rightX, rightY)
-        pdf.setFontSize(14) // Larger font for value
+        pdf.setFontSize(17) // Increased from 14
         pdf.setFont(undefined, 'normal')
         pdf.text(formData.age, rightX + 24, rightY)
         rightY += 8
@@ -359,11 +394,12 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (!hasPosition && !hasCompany && !hasCountry) return false
         
+        pdf.setFontSize(15) // Increased from default
         pdf.setFont(undefined, 'bold')
         
         if (hasPosition) {
           pdf.text('POSITION: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(position, rightX + 50, rightY)
           pdf.setFont(undefined, 'bold')
@@ -372,7 +408,7 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasCompany) {
           pdf.text('PLACE OF WORK: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(company, rightX + 50, rightY)
           pdf.setFont(undefined, 'bold')
@@ -381,21 +417,21 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasWorkStart && hasWorkEnd) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(`${workStart} - ${workEnd}`, rightX + 50, rightY)
           pdf.setFont(undefined, 'bold')
           rightY += 6
         } else if (hasWorkStart) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(workStart, rightX + 50, rightY)
           pdf.setFont(undefined, 'bold')
           rightY += 6
         } else if (hasWorkEnd) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(workEnd, rightX + 50, rightY)
           pdf.setFont(undefined, 'bold')
@@ -404,7 +440,7 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasCountry) {
           pdf.text('COUNTRY: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(country, rightX + 50, rightY)
           pdf.setFont(undefined, 'bold')
@@ -434,13 +470,13 @@ function ResumeModal({ isOpen, onClose }) {
 
       if (hasAnyExperience) {
         pdf.setTextColor(...black) // Black color
-        pdf.setFontSize(17) // 20% larger (was 14)
+        pdf.setFontSize(20) // Increased from 17
         pdf.setFont(undefined, 'bold')
         pdf.text('EXPERIENCE', rightCenter, rightY, { align: 'center' })
         rightY += 14
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(13) // 20% larger (was 11)
+        pdf.setFontSize(15) // Increased from 13
 
         if (hasExp1) addExpBlock(formData.position1, formData.company1, formData.workStart1, formData.workEnd1, formData.country1)
         if (hasExp2) addExpBlock(formData.position2, formData.company2, formData.workStart2, formData.workEnd2, formData.country2)
@@ -453,19 +489,19 @@ function ResumeModal({ isOpen, onClose }) {
       const hasLanguages = formData.english || formData.turkish || formData.russian
       if (hasLanguages) {
         pdf.setTextColor(...black) // Black color
-        pdf.setFontSize(17) // 20% larger (was 14)
+        pdf.setFontSize(20) // Increased from 17
         pdf.setFont(undefined, 'bold')
         pdf.text('LANGUAGES:', rightCenter, rightY, { align: 'center' })
         rightY += 14
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(13) // 20% larger (was 11)
+        pdf.setFontSize(15) // Increased from 13
 
         pdf.setFont(undefined, 'bold')
 
         if (formData.english) {
           pdf.text('ENGLISH: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(formData.english, rightX + 35, rightY)
           pdf.setFont(undefined, 'bold')
@@ -474,7 +510,7 @@ function ResumeModal({ isOpen, onClose }) {
 
         if (formData.turkish) {
           pdf.text('TURKCE: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(formData.turkish, rightX + 35, rightY)
           pdf.setFont(undefined, 'bold')
@@ -483,7 +519,7 @@ function ResumeModal({ isOpen, onClose }) {
 
         if (formData.russian) {
           pdf.text('RUSSIAN: ', rightX, rightY)
-          pdf.setFontSize(14) // Larger font for value
+          pdf.setFontSize(17) // Increased from 14
           pdf.setFont(undefined, 'normal')
           pdf.text(formData.russian, rightX + 35, rightY)
           pdf.setFont(undefined, 'bold')
@@ -497,20 +533,20 @@ function ResumeModal({ isOpen, onClose }) {
                                 (formData.hobbies && formData.hobbies.trim())
       if (hasHobbyInterests) {
         pdf.setTextColor(...black) // Black color
-        pdf.setFontSize(17) // 20% larger (was 14)
+        pdf.setFontSize(20) // Increased from 17
         pdf.setFont(undefined, 'bold')
         pdf.text('HOBBY AND INTERESTS', rightCenter, rightY, { align: 'center' })
         rightY += 14
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(14) // Larger font for values
+        pdf.setFontSize(17) // Increased from 14
         pdf.setFont(undefined, 'normal')
         
         // Display courses and hobbies on separate lines
         if (formData.courses && formData.courses.trim()) {
           const coursesLines = pdf.splitTextToSize(formData.courses.trim(), rightColWidth - rightPadding * 2)
           pdf.text(coursesLines, rightX, rightY, { lineHeightFactor: 1.5 })
-          rightY += coursesLines.length * 6 * 1.5 + 4 // Add space after courses
+          rightY += coursesLines.length * 6 * 1.5 + 2 // Small space after courses
         }
         
         if (formData.hobbies && formData.hobbies.trim()) {
@@ -520,26 +556,59 @@ function ResumeModal({ isOpen, onClose }) {
       }
 
       // ========== PHOTO PAGES ==========
-      const photoFiles = [formData.selfiePhoto, formData.fullBodyPhoto, formData.additionalPhoto1, formData.additionalPhoto2].filter(Boolean)
+      const photoFiles = [formData.selfiePhoto, formData.fullBodyPhoto, formData.additionalPhoto1].filter(Boolean)
       
-      // Only show first 2 photos, centered and seamless
       if (photoFiles.length > 0) {
-        pdf.addPage()
-        
         const pageMargin = 0 // No margin for seamless photos
         const availableWidth = pageWidth - pageMargin * 2
         const availableHeight = pageHeight - pageMargin * 2
-        const photoHeight = availableHeight / 2 // Each photo takes half the page height
         
-        // Positions for 2 photos stacked vertically, centered
-        const positions = [
-          { x: pageMargin, y: pageMargin, width: availableWidth, height: photoHeight }, // Top photo
-          { x: pageMargin, y: pageMargin + photoHeight, width: availableWidth, height: photoHeight } // Bottom photo (seamless, no gap)
-        ]
-
-        for (let i = 0; i < Math.min(photoFiles.length, 2); i++) {
+        // Calculate photo dimensions based on 3:4 aspect ratio
+        // For 2 photos: each takes half page height
+        // For 3 photos: each takes one-third page height (will use 2 pages: 2 on first, 1 on second)
+        const photosPerPage = photoFiles.length <= 2 ? photoFiles.length : 2
+        const photoHeight = availableHeight / photosPerPage
+        const photoWidth = photoHeight * (3/4) // 3:4 aspect ratio
+        
+        // Center horizontally
+        const photoX = (pageWidth - photoWidth) / 2
+        
+        // Process photos
+        for (let i = 0; i < photoFiles.length; i++) {
+          // Add new page for first photo or when starting second page (after 2 photos)
+          if (i === 0 || (i === 2 && photoFiles.length === 3)) {
+            pdf.addPage()
+            // Recalculate for second page if 3 photos (only 1 photo on second page)
+            if (i === 2 && photoFiles.length === 3) {
+              const singlePhotoHeight = availableHeight
+              const singlePhotoWidth = singlePhotoHeight * (3/4)
+              const singlePhotoX = (pageWidth - singlePhotoWidth) / 2
+              
+              const file = photoFiles[i]
+              try {
+                const photoData = await new Promise((resolve) => {
+                  const reader = new FileReader()
+                  reader.onload = (e) => resolve(e.target.result)
+                  reader.onerror = () => resolve(null)
+                  reader.readAsDataURL(file)
+                })
+                
+                if (photoData) {
+                  // Crop to 3:4 ratio
+                  const croppedPhotoData = await cropTo3x4(photoData)
+                  if (croppedPhotoData) {
+                    pdf.addImage(croppedPhotoData, 'JPEG', singlePhotoX, pageMargin, singlePhotoWidth, singlePhotoHeight)
+                  }
+                }
+              } catch (err) {
+                console.log('Could not add photo:', err)
+              }
+              continue
+            }
+          }
+          
           const file = photoFiles[i]
-          const position = positions[i]
+          const photoY = pageMargin + (i % 2) * photoHeight // For first 2 photos: 0, then photoHeight
           
           try {
             const photoData = await new Promise((resolve) => {
@@ -550,37 +619,10 @@ function ResumeModal({ isOpen, onClose }) {
             })
             
             if (photoData) {
-              // Get original image dimensions
-              const imgDimensions = await new Promise((resolve) => {
-                const img = new Image()
-                img.onload = () => resolve({ width: img.width, height: img.height })
-                img.onerror = () => resolve(null)
-                img.src = photoData
-              })
-              
-              if (imgDimensions) {
-                // Calculate dimensions to fill the area with cropping (cover effect)
-                const imgAspectRatio = imgDimensions.height / imgDimensions.width
-                const areaAspectRatio = position.height / position.width
-                
-                let finalWidth = position.width
-                let finalHeight = position.width * imgAspectRatio
-                
-                // If image is taller than area, scale by width and crop height
-                if (imgAspectRatio > areaAspectRatio) {
-                  finalWidth = position.width
-                  finalHeight = position.width * imgAspectRatio
-                  // Center vertically (crop top/bottom)
-                  const offsetY = (position.height - finalHeight) / 2
-                  pdf.addImage(photoData, 'JPEG', position.x, position.y + offsetY, finalWidth, finalHeight)
-                } else {
-                  // If image is wider than area, scale by height and crop width
-                  finalHeight = position.height
-                  finalWidth = position.height / imgAspectRatio
-                  // Center horizontally (crop left/right)
-                  const offsetX = (position.width - finalWidth) / 2
-                  pdf.addImage(photoData, 'JPEG', position.x + offsetX, position.y, finalWidth, finalHeight)
-                }
+              // Crop to 3:4 ratio
+              const croppedPhotoData = await cropTo3x4(photoData)
+              if (croppedPhotoData) {
+                pdf.addImage(croppedPhotoData, 'JPEG', photoX, photoY, photoWidth, photoHeight)
               }
             }
           } catch (err) {
@@ -1183,12 +1225,8 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                     <input type="file" name="fullBodyPhoto" onChange={handleChange} accept="image/*" required />
                   </div>
                   <div className="form-group">
-                    <label>Дополнительная фотография 1</label>
+                    <label>Дополнительная фотография</label>
                     <input type="file" name="additionalPhoto1" onChange={handleChange} accept="image/*" />
-                  </div>
-                  <div className="form-group">
-                    <label>Дополнительная фотография 2</label>
-                    <input type="file" name="additionalPhoto2" onChange={handleChange} accept="image/*" />
                   </div>
                   <div className="form-group">
                     <label>Логин в Instagram (без @)</label>
