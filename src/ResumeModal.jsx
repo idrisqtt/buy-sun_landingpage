@@ -559,15 +559,14 @@ function ResumeModal({ isOpen, onClose }) {
       const photoFiles = [formData.selfiePhoto, formData.fullBodyPhoto, formData.additionalPhoto1].filter(Boolean)
       
       if (photoFiles.length > 0) {
-        const pageMargin = 0 // No margin for seamless photos
+        const pageMargin = 5 // Small margin for spacing
         const availableWidth = pageWidth - pageMargin * 2
         const availableHeight = pageHeight - pageMargin * 2
         
-        // Calculate photo dimensions based on 3:4 aspect ratio
-        // For 2 photos: each takes half page height
-        // For 3 photos: each takes one-third page height (will use 2 pages: 2 on first, 1 on second)
+        // Calculate photo dimensions for 3:4 aspect ratio
+        // Ensure 2 photos fit on one page with proper spacing
         const photosPerPage = photoFiles.length <= 2 ? photoFiles.length : 2
-        const photoHeight = availableHeight / photosPerPage
+        const photoHeight = availableHeight / photosPerPage // For 2 photos: ~143.5mm each
         const photoWidth = photoHeight * (3/4) // 3:4 aspect ratio
         
         // Center horizontally
@@ -580,9 +579,10 @@ function ResumeModal({ isOpen, onClose }) {
             pdf.addPage()
             // Recalculate for second page if 3 photos (only 1 photo on second page)
             if (i === 2 && photoFiles.length === 3) {
-              const singlePhotoHeight = availableHeight
+              const singlePhotoHeight = availableHeight * 0.8 // Use 80% of available height
               const singlePhotoWidth = singlePhotoHeight * (3/4)
               const singlePhotoX = (pageWidth - singlePhotoWidth) / 2
+              const singlePhotoY = (pageHeight - singlePhotoHeight) / 2 // Center vertically
               
               const file = photoFiles[i]
               try {
@@ -594,10 +594,10 @@ function ResumeModal({ isOpen, onClose }) {
                 })
                 
                 if (photoData) {
-                  // Crop to 3:4 ratio
+                  // Crop to 3:4 ratio before adding
                   const croppedPhotoData = await cropTo3x4(photoData)
                   if (croppedPhotoData) {
-                    pdf.addImage(croppedPhotoData, 'JPEG', singlePhotoX, pageMargin, singlePhotoWidth, singlePhotoHeight)
+                    pdf.addImage(croppedPhotoData, 'JPEG', singlePhotoX, singlePhotoY, singlePhotoWidth, singlePhotoHeight)
                   }
                 }
               } catch (err) {
@@ -608,7 +608,8 @@ function ResumeModal({ isOpen, onClose }) {
           }
           
           const file = photoFiles[i]
-          const photoY = pageMargin + (i % 2) * photoHeight // For first 2 photos: 0, then photoHeight
+          // Calculate Y position: first photo at margin, second photo at margin + photoHeight
+          const photoY = pageMargin + (i % photosPerPage) * photoHeight
           
           try {
             const photoData = await new Promise((resolve) => {
@@ -619,7 +620,7 @@ function ResumeModal({ isOpen, onClose }) {
             })
             
             if (photoData) {
-              // Crop to 3:4 ratio
+              // Crop to 3:4 ratio before adding
               const croppedPhotoData = await cropTo3x4(photoData)
               if (croppedPhotoData) {
                 pdf.addImage(croppedPhotoData, 'JPEG', photoX, photoY, photoWidth, photoHeight)
