@@ -522,26 +522,22 @@ function ResumeModal({ isOpen, onClose }) {
       // ========== PHOTO PAGES ==========
       const photoFiles = [formData.selfiePhoto, formData.fullBodyPhoto, formData.additionalPhoto1, formData.additionalPhoto2].filter(Boolean)
       
+      // Only show first 2 photos, centered and seamless
       if (photoFiles.length > 0) {
-        // Add new page for photos
         pdf.addPage()
         
-        const pageMargin = 15 // mm
-        const gap = 10 // mm gap between photos
+        const pageMargin = 0 // No margin for seamless photos
         const availableWidth = pageWidth - pageMargin * 2
         const availableHeight = pageHeight - pageMargin * 2
-        const photoWidth = (availableWidth - gap) / 2 // 2 columns
-        const photoHeight = (availableHeight - gap) / 2 // 2 rows
+        const photoHeight = availableHeight / 2 // Each photo takes half the page height
         
-        // Grid positions for 2x2 layout
+        // Positions for 2 photos stacked vertically, centered
         const positions = [
-          { x: pageMargin, y: pageMargin }, // Top-left
-          { x: pageMargin + photoWidth + gap, y: pageMargin }, // Top-right
-          { x: pageMargin, y: pageMargin + photoHeight + gap }, // Bottom-left
-          { x: pageMargin + photoWidth + gap, y: pageMargin + photoHeight + gap } // Bottom-right
+          { x: pageMargin, y: pageMargin, width: availableWidth, height: photoHeight }, // Top photo
+          { x: pageMargin, y: pageMargin + photoHeight, width: availableWidth, height: photoHeight } // Bottom photo (seamless, no gap)
         ]
 
-        for (let i = 0; i < Math.min(photoFiles.length, 4); i++) {
+        for (let i = 0; i < Math.min(photoFiles.length, 2); i++) {
           const file = photoFiles[i]
           const position = positions[i]
           
@@ -563,23 +559,28 @@ function ResumeModal({ isOpen, onClose }) {
               })
               
               if (imgDimensions) {
-                // Calculate dimensions to fit in grid cell while maintaining aspect ratio
-                const aspectRatio = imgDimensions.height / imgDimensions.width
-                let finalWidth = photoWidth
-                let finalHeight = photoWidth * aspectRatio
+                // Calculate dimensions to fill the area with cropping (cover effect)
+                const imgAspectRatio = imgDimensions.height / imgDimensions.width
+                const areaAspectRatio = position.height / position.width
                 
-                // If height exceeds cell height, scale by height instead
-                if (finalHeight > photoHeight) {
-                  finalHeight = photoHeight
-                  finalWidth = photoHeight / aspectRatio
+                let finalWidth = position.width
+                let finalHeight = position.width * imgAspectRatio
+                
+                // If image is taller than area, scale by width and crop height
+                if (imgAspectRatio > areaAspectRatio) {
+                  finalWidth = position.width
+                  finalHeight = position.width * imgAspectRatio
+                  // Center vertically (crop top/bottom)
+                  const offsetY = (position.height - finalHeight) / 2
+                  pdf.addImage(photoData, 'JPEG', position.x, position.y + offsetY, finalWidth, finalHeight)
+                } else {
+                  // If image is wider than area, scale by height and crop width
+                  finalHeight = position.height
+                  finalWidth = position.height / imgAspectRatio
+                  // Center horizontally (crop left/right)
+                  const offsetX = (position.width - finalWidth) / 2
+                  pdf.addImage(photoData, 'JPEG', position.x + offsetX, position.y, finalWidth, finalHeight)
                 }
-                
-                // Center the photo in the grid cell
-                const centerX = position.x + (photoWidth - finalWidth) / 2
-                const centerY = position.y + (photoHeight - finalHeight) / 2
-                
-                // Add photo to grid position
-                pdf.addImage(photoData, 'JPEG', centerX, centerY, finalWidth, finalHeight)
               }
             }
           } catch (err) {
