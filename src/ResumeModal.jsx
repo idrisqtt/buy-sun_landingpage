@@ -254,9 +254,9 @@ function ResumeModal({ isOpen, onClose }) {
         leftY = experienceStartY
       }
 
-      // PERSONAL DETAILS section - aligned with EXPERIENCE
+      // PERSONAL DETAILS section - aligned with EXPERIENCE (same title size)
       pdf.setTextColor(...white)
-      pdf.setFontSize(17)
+      pdf.setFontSize(20)
       pdf.setFont(undefined, 'bold')
       pdf.text('PERSONAL DETAILS', leftCenter, leftY, { align: 'center' })
       leftY += 14
@@ -269,26 +269,15 @@ function ResumeModal({ isOpen, onClose }) {
         if (!value || value.trim() === '' || value === '-' || value === ' - ') return
         pdf.setFontSize(17)
         pdf.setFont(undefined, 'bold')
-        
-        // For NAME OF EMPLOYER, MANAGER, MAJOR, and DATE, put value on next line
-        if (label === 'NAME OF EMPLOYER' || label === 'MANAGER' || label === 'MAJOR' || label === 'DATE') {
-          pdf.text(`${label}:`, leftPadding, leftY)
-          leftY += 6  // Move to next line
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
-          pdf.text(value, leftPadding, leftY)
-          pdf.setFont(undefined, 'bold')
-          leftY += 6  // Space after value
-        } else {
-          pdf.text(`${label}: `, leftPadding, leftY)
-          // Use fixed offset for value (similar to right column approach)
-          const maxLabelWidth = 45 // Approximate max width for longest labels
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
-          pdf.text(value, leftPadding + maxLabelWidth, leftY)
-          pdf.setFont(undefined, 'bold')
-          leftY += 6
-        }
+        // Label on current line
+        pdf.text(`${label}:`, leftPadding, leftY)
+        leftY += 6  // Move to next line
+        pdf.setFontSize(17)
+        pdf.setFont(undefined, 'normal')
+        // Value on next line, same level (left-aligned)
+        pdf.text(value, leftPadding, leftY)
+        pdf.setFont(undefined, 'bold')
+        leftY += 6  // Space after value
       }
 
       addLeftField('DATE OF BIRTH', formData.birthDate)
@@ -306,10 +295,10 @@ function ResumeModal({ isOpen, onClose }) {
 
       leftY += 10
 
-      // EDUCATION section - only show if there's education data
+      // EDUCATION section - only show if there's education data (same title size as EXPERIENCE)
       const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd || formData.manager
       if (hasEducation) {
-        pdf.setFontSize(17)
+        pdf.setFontSize(20)
         pdf.setFont(undefined, 'bold')
         pdf.text('EDUCATION', leftCenter, leftY, { align: 'center' })
         leftY += 14
@@ -395,12 +384,12 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (!hasPosition && !hasCompany && !hasCountry) return false
         
-        pdf.setFontSize(15) // Increased from default
+        pdf.setFontSize(17) // Same as other labels and values
         pdf.setFont(undefined, 'bold')
         
         if (hasPosition) {
           pdf.text('POSITION: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           pdf.text(position, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
@@ -409,7 +398,7 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasCompany) {
           pdf.text('PLACE OF WORK: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           pdf.text(company, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
@@ -418,21 +407,21 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasWorkStart && hasWorkEnd) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           pdf.text(`${workStart} - ${workEnd}`, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
           rightY += 6
         } else if (hasWorkStart) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           pdf.text(workStart, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
           rightY += 6
         } else if (hasWorkEnd) {
           pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           pdf.text(workEnd, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
@@ -441,7 +430,7 @@ function ResumeModal({ isOpen, onClose }) {
         
         if (hasCountry) {
           pdf.text('COUNTRY: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           pdf.text(country, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
@@ -477,7 +466,7 @@ function ResumeModal({ isOpen, onClose }) {
         rightY += 14
 
         pdf.setTextColor(...black)
-        pdf.setFontSize(15) // Increased from 13
+        pdf.setFontSize(17)
 
         if (hasExp1) addExpBlock(formData.position1, formData.company1, formData.workStart1, formData.workEnd1, formData.country1)
         if (hasExp2) addExpBlock(formData.position2, formData.company2, formData.workStart2, formData.workEnd2, formData.country2)
