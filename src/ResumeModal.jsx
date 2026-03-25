@@ -345,12 +345,33 @@ function ResumeModal({ isOpen, onClose }) {
 
       rightY += 45
 
-      // Name and position
+      // Helper to add field on the right with label and optional wrapping value
+      const addRightField = (label, value) => {
+        if (!value || String(value).trim() === '') return
+        pdf.setFontSize(15)
+        pdf.setFont(undefined, 'bold')
+        pdf.setTextColor(...black)
+        pdf.text(`${label}: `, rightX, rightY)
+        
+        pdf.setFontSize(17)
+        pdf.setFont(undefined, 'normal')
+        
+        const availableWidth = pageWidth - rightPadding - rightValueX
+        const valueLines = pdf.splitTextToSize(String(value), availableWidth)
+        pdf.text(valueLines, rightValueX, rightY)
+        
+        // Update rightY based on number of lines
+        rightY += Math.max(valueLines.length * 6, 8) 
+      }
+
+      // Name and position (no label, just value)
       pdf.setTextColor(...black)
-      pdf.setFontSize(28) // Increased from 24
+      pdf.setFontSize(28)
       pdf.setFont(undefined, 'bold')
-      pdf.text(`${formData.firstName} ${formData.lastName}`, rightX, rightY)
-      rightY += 9
+      const name = `${formData.firstName} ${formData.lastName}`
+      const nameLines = pdf.splitTextToSize(name, pageWidth - rightPadding - rightX)
+      pdf.text(nameLines, rightX, rightY)
+      rightY += nameLines.length * 9
       
       // Divider line
       pdf.setDrawColor(...gray)
@@ -358,27 +379,10 @@ function ResumeModal({ isOpen, onClose }) {
       pdf.line(rightX, rightY, pageWidth - rightPadding, rightY)
       rightY += 8
 
-      // Only show POSITION if filled
-      if (formData.desiredPosition) {
-        pdf.setFontSize(15) // Increased from 12
-        pdf.setFont(undefined, 'bold')
-        pdf.text('POSITION: ', rightX, rightY)
-        pdf.setFontSize(17) // Increased from 14
-        pdf.setFont(undefined, 'normal')
-        pdf.text(formData.desiredPosition, rightValueX, rightY)
-        rightY += 8
-      }
-
-      // Only show YEARS if filled
-      if (formData.age) {
-        pdf.setFontSize(15) // Increased from 12
-        pdf.setFont(undefined, 'bold')
-        pdf.text('YEARS: ', rightX, rightY)
-        pdf.setFontSize(17) // Increased from 14
-        pdf.setFont(undefined, 'normal')
-        pdf.text(formData.age, rightValueX, rightY)
-        rightY += 8
-      }
+      // Fields with labels
+      addRightField('POSITION', formData.desiredPosition)
+      addRightField('YEARS', formData.age)
+      
       rightY += 5
 
       // EXPERIENCE section - helper to add experience block only if has data
@@ -395,54 +399,55 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFontSize(17) // Same as other labels and values
         pdf.setFont(undefined, 'bold')
         
+        const availableValueWidth = pageWidth - rightPadding - rightValueX
+
         if (hasPosition) {
+          pdf.setFontSize(15)
+          pdf.setFont(undefined, 'bold')
           pdf.text('POSITION: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
-          pdf.text(position, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          const posLines = pdf.splitTextToSize(position, availableValueWidth)
+          pdf.text(posLines, rightValueX, rightY)
+          rightY += Math.max(posLines.length * 6, 8)
         }
         
         if (hasCompany) {
+          pdf.setFontSize(15)
+          pdf.setFont(undefined, 'bold')
           pdf.text('PLACE OF WORK: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
-          pdf.text(company, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          const companyLines = pdf.splitTextToSize(company, availableValueWidth)
+          pdf.text(companyLines, rightValueX, rightY)
+          rightY += Math.max(companyLines.length * 6, 8)
         }
         
-        if (hasWorkStart && hasWorkEnd) {
+        if (hasWorkStart || hasWorkEnd) {
+          pdf.setFontSize(15)
+          pdf.setFont(undefined, 'bold')
           pdf.text('WORK PERIOD: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
-          pdf.text(`${workStart} - ${workEnd}`, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
-        } else if (hasWorkStart) {
-          pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
-          pdf.text(workStart, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
-        } else if (hasWorkEnd) {
-          pdf.text('WORK PERIOD: ', rightX, rightY)
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
-          pdf.text(workEnd, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          let periodText = ''
+          if (hasWorkStart && hasWorkEnd) periodText = `${workStart} - ${workEnd}`
+          else if (hasWorkStart) periodText = workStart
+          else periodText = workEnd
+          
+          const periodLines = pdf.splitTextToSize(periodText, availableValueWidth)
+          pdf.text(periodLines, rightValueX, rightY)
+          rightY += Math.max(periodLines.length * 6, 8)
         }
         
         if (hasCountry) {
+          pdf.setFontSize(15)
+          pdf.setFont(undefined, 'bold')
           pdf.text('COUNTRY: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
-          pdf.text(country, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          const countryLines = pdf.splitTextToSize(country, availableValueWidth)
+          pdf.text(countryLines, rightValueX, rightY)
+          rightY += Math.max(countryLines.length * 6, 8)
         }
         rightY += 4
 
@@ -498,49 +503,22 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFont(undefined, 'bold')
 
         if (formData.english) {
-          pdf.setFontSize(15) // Reset label font size
-          pdf.text('ENGLISH: ', rightX, rightY)
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
-          const value = formData.english.charAt(0).toUpperCase() + formData.english.slice(1)
-          pdf.text(value, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          addRightField('ENGLISH', formData.english.charAt(0).toUpperCase() + formData.english.slice(1))
         }
 
         if (formData.turkish) {
-          pdf.setFontSize(15) // Reset label font size
-          pdf.text('TURKCE: ', rightX, rightY)
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
-          const value = formData.turkish.charAt(0).toUpperCase() + formData.turkish.slice(1)
-          pdf.text(value, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          addRightField('TURKCE', formData.turkish.charAt(0).toUpperCase() + formData.turkish.slice(1))
         }
 
         if (formData.russian) {
-          pdf.setFontSize(15) // Reset label font size
-          pdf.text('RUSSIAN: ', rightX, rightY)
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
-          const value = formData.russian.charAt(0).toUpperCase() + formData.russian.slice(1)
-          pdf.text(value, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          addRightField('RUSSIAN', formData.russian.charAt(0).toUpperCase() + formData.russian.slice(1))
         }
 
         if (formData.additionalLanguage) {
-          pdf.setFontSize(15)
-          pdf.text(`${formData.additionalLanguage.toUpperCase()}:`, rightX, rightY)
-          pdf.setFontSize(17)
-          pdf.setFont(undefined, 'normal')
           const level = formData.additionalLanguageLevel ? formData.additionalLanguageLevel.charAt(0).toUpperCase() + formData.additionalLanguageLevel.slice(1) : ''
-          pdf.text(level, rightValueX, rightY)
-          pdf.setFont(undefined, 'bold')
-          rightY += 6
+          addRightField(formData.additionalLanguage.toUpperCase(), level)
         }
-        rightY += 10 // Reduced space between sections
+        rightY += 4 // Reduced space after sections
       }
 
       // HOBBY AND INTERESTS section - combined courses and hobbies
