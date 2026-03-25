@@ -900,7 +900,6 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Русский</label>
                       <select name="russian" value={formData.russian} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="Native">Native</option>
                         <option value="C2">C2</option>
                         <option value="C1">C1</option>
                         <option value="B2">B2</option>
@@ -913,7 +912,6 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Английский</label>
                       <select name="english" value={formData.english} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="Native">Native</option>
                         <option value="C2">C2</option>
                         <option value="C1">C1</option>
                         <option value="B2">B2</option>
@@ -926,7 +924,6 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Турецкий</label>
                       <select name="turkish" value={formData.turkish} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="Native">Native</option>
                         <option value="C2">C2</option>
                         <option value="C1">C1</option>
                         <option value="B2">B2</option>
@@ -945,7 +942,6 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Уровень владения дополнительным языком</label>
                       <select name="additionalLanguageLevel" value={formData.additionalLanguageLevel} onChange={handleChange}>
                         <option value="">---</option>
-                        <option value="Native">Native</option>
                         <option value="C2">C2</option>
                         <option value="C1">C1</option>
                         <option value="B2">B2</option>
