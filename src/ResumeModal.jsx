@@ -503,21 +503,20 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFont(undefined, 'bold')
 
         if (formData.english) {
-          addRightField('English', formData.english.charAt(0).toUpperCase() + formData.english.slice(1))
+          addRightField('English', formData.english)
         }
 
         if (formData.turkish) {
-          addRightField('Turkish', formData.turkish.charAt(0).toUpperCase() + formData.turkish.slice(1))
+          addRightField('Turkish', formData.turkish)
         }
 
         if (formData.russian) {
-          addRightField('Russian', formData.russian.charAt(0).toUpperCase() + formData.russian.slice(1))
+          addRightField('Russian', formData.russian)
         }
 
         if (formData.additionalLanguage) {
           const langLabel = formData.additionalLanguage.charAt(0).toUpperCase() + formData.additionalLanguage.slice(1)
-          const level = formData.additionalLanguageLevel ? formData.additionalLanguageLevel.charAt(0).toUpperCase() + formData.additionalLanguageLevel.slice(1) : ''
-          addRightField(langLabel, level)
+          addRightField(langLabel, formData.additionalLanguageLevel || '')
         }
         rightY += 4 // Reduced space after sections
       }
@@ -901,30 +900,39 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Русский</label>
                       <select name="russian" value={formData.russian} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="native">Native</option>
-                        <option value="fluent">Fluent</option>
-                        <option value="good">Good</option>
-                        <option value="basic">Basic</option>
+                        <option value="Native">Native</option>
+                        <option value="C2">C2</option>
+                        <option value="C1">C1</option>
+                        <option value="B2">B2</option>
+                        <option value="B1">B1</option>
+                        <option value="A2">A2</option>
+                        <option value="A1">A1</option>
                       </select>
                     </div>
                     <div className="form-group">
                       <label>Английский</label>
                       <select name="english" value={formData.english} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="native">Native</option>
-                        <option value="fluent">Fluent</option>
-                        <option value="good">Good</option>
-                        <option value="basic">Basic</option>
+                        <option value="Native">Native</option>
+                        <option value="C2">C2</option>
+                        <option value="C1">C1</option>
+                        <option value="B2">B2</option>
+                        <option value="B1">B1</option>
+                        <option value="A2">A2</option>
+                        <option value="A1">A1</option>
                       </select>
                     </div>
                     <div className="form-group">
                       <label>Турецкий</label>
                       <select name="turkish" value={formData.turkish} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="native">Native</option>
-                        <option value="fluent">Fluent</option>
-                        <option value="good">Good</option>
-                        <option value="basic">Basic</option>
+                        <option value="Native">Native</option>
+                        <option value="C2">C2</option>
+                        <option value="C1">C1</option>
+                        <option value="B2">B2</option>
+                        <option value="B1">B1</option>
+                        <option value="A2">A2</option>
+                        <option value="A1">A1</option>
                       </select>
                     </div>
                   </div>
@@ -937,10 +945,13 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Уровень владения дополнительным языком</label>
                       <select name="additionalLanguageLevel" value={formData.additionalLanguageLevel} onChange={handleChange}>
                         <option value="">---</option>
-                        <option value="native">Native</option>
-                        <option value="fluent">Fluent</option>
-                        <option value="good">Good</option>
-                        <option value="basic">Basic</option>
+                        <option value="Native">Native</option>
+                        <option value="C2">C2</option>
+                        <option value="C1">C1</option>
+                        <option value="B2">B2</option>
+                        <option value="B1">B1</option>
+                        <option value="A2">A2</option>
+                        <option value="A1">A1</option>
                       </select>
                     </div>
                   </div>
