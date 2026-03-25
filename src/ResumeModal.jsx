@@ -267,17 +267,25 @@ function ResumeModal({ isOpen, onClose }) {
       const addLeftField = (label, value) => {
         // Skip empty fields
         if (!value || value.trim() === '' || value === '-' || value === ' - ') return
-        pdf.setFontSize(17)
+        pdf.setFontSize(15) // Changed from 17
         pdf.setFont(undefined, 'bold')
         // Label on current line
         pdf.text(`${label}:`, leftPadding, leftY)
         leftY += 6  // Move to next line
+
         pdf.setFontSize(17)
         pdf.setFont(undefined, 'normal')
-        // Value on next line, same level (left-aligned)
-        pdf.text(value, leftPadding, leftY)
+        
+        // Wrap text to fit column width
+        const availableWidth = leftColWidth - leftPadding * 2
+        const valueLines = pdf.splitTextToSize(String(value), availableWidth)
+        
+        // Value on next line(s), same level (left-aligned)
+        pdf.text(valueLines, leftPadding, leftY)
         pdf.setFont(undefined, 'bold')
-        leftY += 6  // Space after value
+        
+        // Move Y by number of lines * line height
+        leftY += valueLines.length * 6  // 6 is the line height
       }
 
       addLeftField('DATE OF BIRTH', formData.birthDate)
@@ -476,7 +484,7 @@ function ResumeModal({ isOpen, onClose }) {
       rightY += 10 // Reduced space between sections
 
       // LANGUAGES section - only show if any language is filled
-      const hasLanguages = formData.english || formData.turkish || formData.russian
+      const hasLanguages = formData.english || formData.turkish || formData.russian || formData.additionalLanguage
       if (hasLanguages) {
         pdf.setTextColor(...black) // Black color
         pdf.setFontSize(20) // Increased from 17
@@ -490,28 +498,45 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFont(undefined, 'bold')
 
         if (formData.english) {
+          pdf.setFontSize(15) // Reset label font size
           pdf.text('ENGLISH: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
-          pdf.text(formData.english, rightValueX, rightY)
+          const value = formData.english.charAt(0).toUpperCase() + formData.english.slice(1)
+          pdf.text(value, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
           rightY += 6
         }
 
         if (formData.turkish) {
+          pdf.setFontSize(15) // Reset label font size
           pdf.text('TURKCE: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
-          pdf.text(formData.turkish, rightValueX, rightY)
+          const value = formData.turkish.charAt(0).toUpperCase() + formData.turkish.slice(1)
+          pdf.text(value, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
           rightY += 6
         }
 
         if (formData.russian) {
+          pdf.setFontSize(15) // Reset label font size
           pdf.text('RUSSIAN: ', rightX, rightY)
-          pdf.setFontSize(17) // Increased from 14
+          pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
-          pdf.text(formData.russian, rightValueX, rightY)
+          const value = formData.russian.charAt(0).toUpperCase() + formData.russian.slice(1)
+          pdf.text(value, rightValueX, rightY)
+          pdf.setFont(undefined, 'bold')
+          rightY += 6
+        }
+
+        if (formData.additionalLanguage) {
+          pdf.setFontSize(15)
+          pdf.text(`${formData.additionalLanguage.toUpperCase()}:`, rightX, rightY)
+          pdf.setFontSize(17)
+          pdf.setFont(undefined, 'normal')
+          const level = formData.additionalLanguageLevel ? formData.additionalLanguageLevel.charAt(0).toUpperCase() + formData.additionalLanguageLevel.slice(1) : ''
+          pdf.text(level, rightValueX, rightY)
           pdf.setFont(undefined, 'bold')
           rightY += 6
         }
@@ -897,30 +922,30 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Русский</label>
                       <select name="russian" value={formData.russian} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="native">Родной</option>
-                        <option value="fluent">Свободно</option>
-                        <option value="good">Хорошо</option>
-                        <option value="basic">Базовый</option>
+                        <option value="native">Native</option>
+                        <option value="fluent">Fluent</option>
+                        <option value="good">Good</option>
+                        <option value="basic">Basic</option>
                       </select>
                     </div>
                     <div className="form-group">
                       <label>Английский</label>
                       <select name="english" value={formData.english} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="native">Родной</option>
-                        <option value="fluent">Свободно</option>
-                        <option value="good">Хорошо</option>
-                        <option value="basic">Базовый</option>
+                        <option value="native">Native</option>
+                        <option value="fluent">Fluent</option>
+                        <option value="good">Good</option>
+                        <option value="basic">Basic</option>
                       </select>
                     </div>
                     <div className="form-group">
                       <label>Турецкий</label>
                       <select name="turkish" value={formData.turkish} onChange={handleChange} required>
                         <option value="">---</option>
-                        <option value="native">Родной</option>
-                        <option value="fluent">Свободно</option>
-                        <option value="good">Хорошо</option>
-                        <option value="basic">Базовый</option>
+                        <option value="native">Native</option>
+                        <option value="fluent">Fluent</option>
+                        <option value="good">Good</option>
+                        <option value="basic">Basic</option>
                       </select>
                     </div>
                   </div>
@@ -933,10 +958,10 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <label>Уровень владения дополнительным языком</label>
                       <select name="additionalLanguageLevel" value={formData.additionalLanguageLevel} onChange={handleChange}>
                         <option value="">---</option>
-                        <option value="native">Родной</option>
-                        <option value="fluent">Свободно</option>
-                        <option value="good">Хорошо</option>
-                        <option value="basic">Базовый</option>
+                        <option value="native">Native</option>
+                        <option value="fluent">Fluent</option>
+                        <option value="good">Good</option>
+                        <option value="basic">Basic</option>
                       </select>
                     </div>
                   </div>
