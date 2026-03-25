@@ -380,8 +380,8 @@ function ResumeModal({ isOpen, onClose }) {
       rightY += 8
 
       // Fields with labels
-      addRightField('POSITION', formData.desiredPosition)
-      addRightField('YEARS', formData.age)
+      addRightField('Position', formData.desiredPosition)
+      addRightField('Years', formData.age)
       
       rightY += 5
 
@@ -404,7 +404,7 @@ function ResumeModal({ isOpen, onClose }) {
         if (hasPosition) {
           pdf.setFontSize(15)
           pdf.setFont(undefined, 'bold')
-          pdf.text('POSITION: ', rightX, rightY)
+          pdf.text('Position: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           const posLines = pdf.splitTextToSize(position, availableValueWidth)
@@ -415,7 +415,7 @@ function ResumeModal({ isOpen, onClose }) {
         if (hasCompany) {
           pdf.setFontSize(15)
           pdf.setFont(undefined, 'bold')
-          pdf.text('PLACE OF WORK: ', rightX, rightY)
+          pdf.text('Place of work: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           const companyLines = pdf.splitTextToSize(company, availableValueWidth)
@@ -426,7 +426,7 @@ function ResumeModal({ isOpen, onClose }) {
         if (hasWorkStart || hasWorkEnd) {
           pdf.setFontSize(15)
           pdf.setFont(undefined, 'bold')
-          pdf.text('WORK PERIOD: ', rightX, rightY)
+          pdf.text('Work period: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           let periodText = ''
@@ -442,7 +442,7 @@ function ResumeModal({ isOpen, onClose }) {
         if (hasCountry) {
           pdf.setFontSize(15)
           pdf.setFont(undefined, 'bold')
-          pdf.text('COUNTRY: ', rightX, rightY)
+          pdf.text('Country: ', rightX, rightY)
           pdf.setFontSize(17)
           pdf.setFont(undefined, 'normal')
           const countryLines = pdf.splitTextToSize(country, availableValueWidth)
@@ -503,20 +503,21 @@ function ResumeModal({ isOpen, onClose }) {
         pdf.setFont(undefined, 'bold')
 
         if (formData.english) {
-          addRightField('ENGLISH', formData.english.charAt(0).toUpperCase() + formData.english.slice(1))
+          addRightField('English', formData.english.charAt(0).toUpperCase() + formData.english.slice(1))
         }
 
         if (formData.turkish) {
-          addRightField('TURKCE', formData.turkish.charAt(0).toUpperCase() + formData.turkish.slice(1))
+          addRightField('Turkish', formData.turkish.charAt(0).toUpperCase() + formData.turkish.slice(1))
         }
 
         if (formData.russian) {
-          addRightField('RUSSIAN', formData.russian.charAt(0).toUpperCase() + formData.russian.slice(1))
+          addRightField('Russian', formData.russian.charAt(0).toUpperCase() + formData.russian.slice(1))
         }
 
         if (formData.additionalLanguage) {
+          const langLabel = formData.additionalLanguage.charAt(0).toUpperCase() + formData.additionalLanguage.slice(1)
           const level = formData.additionalLanguageLevel ? formData.additionalLanguageLevel.charAt(0).toUpperCase() + formData.additionalLanguageLevel.slice(1) : ''
-          addRightField(formData.additionalLanguage.toUpperCase(), level)
+          addRightField(langLabel, level)
         }
         rightY += 4 // Reduced space after sections
       }
