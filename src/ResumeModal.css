@@ -601,14 +601,29 @@
 
 
 /* Responsive optimizations */
+@media (max-width: 1024px) {
+  .resume-modal {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+}
+
 @media (max-width: 900px) {
+  .resume-modal {
+    max-width: 95%;
+  }
   .steps-container {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
+  .resume-overlay {
+    padding: 0;
+  }
+  
   .resume-modal {
+    max-width: 100%;
     max-height: 100vh;
     border-radius: 0;
   }

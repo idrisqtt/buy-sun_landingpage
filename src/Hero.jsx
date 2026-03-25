@@ -44,6 +44,7 @@ function Hero() {
   }
 
   return (
+    <>
     <section className="hero">
       <video 
         className="hero-video"
@@ -192,6 +193,7 @@ function Hero() {
           </motion.div>
         </div>
       </div>
+      </section>
       <ContactModal 
         isOpen={isContactModalOpen} 
         onClose={() => setIsContactModalOpen(false)} 
@@ -200,7 +202,7 @@ function Hero() {
         isOpen={isResumeModalOpen} 
         onClose={() => setIsResumeModalOpen(false)} 
       />
-    </section>
+    </>
   )
 }
 
