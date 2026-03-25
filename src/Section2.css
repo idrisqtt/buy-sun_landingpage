@@ -1,29 +1,18 @@
 .section2 {
   width: 100%;
-  background-color: #f5f5f5;
-  padding-top: clamp(6rem, 12vw, 12rem) !important;
-  padding-bottom: clamp(6rem, 12vw, 12rem) !important;
-  padding-left: clamp(2rem, 5vw, 4rem);
-  padding-right: clamp(2rem, 5vw, 4rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--bg-gray);
+  padding: 5rem 1.5rem;
 }
 
 .section2-container {
-  width: 100%;
-  max-width: 1281px;
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding-top: clamp(2rem, 4vw, 4rem);
-  padding-bottom: clamp(2rem, 4vw, 4rem);
 }
 
 .section2-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(2rem, 5vw, 4rem);
-  width: 100%;
-  align-items: stretch;
+  gap: 2rem;
 }
 
 .section2-card {
@@ -31,129 +20,35 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  width: 100%;
-  height: 100%;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .section2-icon {
-  width: clamp(150px, 18vw, 223px);
-  height: clamp(80px, 10vw, 120px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 18px;
-  flex-shrink: 0;
+  height: 120px;
+  margin-bottom: 2rem;
 }
 
 .section2-icon img {
-  width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block;
-}
-
-.section2-title {
-  font-size: clamp(1.75rem, 4vw, 3rem);
-  font-weight: 700;
-  color: #000000;
-  margin: 0;
-  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
-  line-height: 1.2;
-  flex-shrink: 0;
 }
 
 .section2-description {
-  width: 100%;
-  max-width: 392px;
-  min-height: 144px;
-  height: auto;
-  background-color: #0090FF;
-  color: var(--text-white);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  border-radius: 48px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: clamp(14px, 1.5vw, 16px);
+  background: var(--accent-blue);
+  color: #fff;
+  padding: 2rem;
+  border-radius: 2rem;
+  font-weight: 500;
   line-height: 1.6;
-  text-align: center;
-  margin: 0;
-  box-sizing: border-box;
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 4px 12px rgba(0, 144, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 144, 255, 0.2);
 }
 
-.section2-card:hover .section2-description {
-  box-shadow: 0 8px 24px rgba(0, 144, 255, 0.3);
-  background-color: #0077CC;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .section2-cards {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-  }
-
-  /* Make the last odd item span 2 columns to look centered */
-  .section2-card:last-child:nth-child(odd) {
-    grid-column: span 2;
-    max-width: 50%;
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 900px) {
-  /* Keep existing style overwrites or minor tweaks if needed */
-  /* The 1024px rule above handles the transition better, 
-     but at 900px we might want to stay 2 cols until 768px or go to 1 col earlier.
-     Let's stick to 2 cols until 768px for better tablet use.
-  */
-}
-
-@media (max-width: 768px) {
-  .section2 {
-    padding-top: clamp(4rem, 8vw, 6rem) !important;
-    padding-bottom: clamp(4rem, 8vw, 6rem) !important;
-    padding-left: clamp(1.5rem, 4vw, 3rem);
-    padding-right: clamp(1.5rem, 4vw, 3rem);
-  }
-
+@media (max-width: 992px) {
   .section2-cards {
     grid-template-columns: 1fr;
-    gap: clamp(2.5rem, 5vw, 3.5rem);
+    gap: 3rem;
   }
-
-  .section2-card,
-  .section2-card:last-child:nth-child(odd) {
-    grid-column: span 1;
-    max-width: 100%;
-    width: 100%;
-    margin: 0 auto;
-  }
-
+  
   .section2-description {
-    width: 100%;
-    max-width: 100%;
-    min-height: auto;
-    height: auto;
-    padding: clamp(1.5rem, 3vw, 2.5rem);
-    font-size: 14px;
-  }
-
-  .section2-icon {
-    width: clamp(100px, 15vw, 150px);
-    height: clamp(60px, 12vw, 100px);
-  }
-}
-
-@media (min-width: 2560px) {
-  .section2-container {
-    max-width: 2560px;
-    padding: 0 clamp(2rem, 6vw, 6rem);
+    max-width: 500px;
   }
 }
