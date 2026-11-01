@@ -368,7 +368,58 @@
   padding: 8px;
   border: 1px dashed #0090FF;
   background: #f9f9f9;
+  color: #333;
   cursor: pointer;
+}
+
+.photo-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.photo-error {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c62828;
+}
+
+.photo-preview {
+  max-width: 100%;
+  max-height: 220px;
+  align-self: flex-start;
+  border-radius: 6px;
+}
+
+.photo-crop {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.photo-crop-circle {
+  position: relative;
+  flex-shrink: 0;
+  width: 180px;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #03487D;
+  cursor: grab;
+  touch-action: none;
+}
+
+.photo-crop-circle:active {
+  cursor: grabbing;
+}
+
+.photo-crop-circle img {
+  position: absolute;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* Photo requirements styling */

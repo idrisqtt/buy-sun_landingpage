@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import jsPDF from 'jspdf'
+import PhotoField from './PhotoField'
+import { processPhoto, defaultFocus, cropRoundPhoto, fitInBox } from './photoUtils'
 import './ResumeModal.css'
 import logoAnketa from '/logo_anketa.png'
 
@@ -9,6 +11,8 @@ function ResumeModal({ isOpen, onClose }) {
   const [language, setLanguage] = useState('ru')
   const [pdfUrl, setPdfUrl] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [photoStatus, setPhotoStatus] = useState({})
+  const photoJobs = useRef({})
   const formRef = useRef(null)
 
   const [formData, setFormData] = useState({
@@ -86,7 +90,13 @@ function ResumeModal({ isOpen, onClose }) {
       sendWhatsApp: 'Отправить в WhatsApp',
       generating: 'Генерация PDF...',
       back: 'Назад',
-      submit: 'Отправить резюме'
+      submit: 'Отправить резюме',
+      pdfError: 'Не удалось создать PDF. Попробуйте ещё раз.',
+      photoProcessing: 'Обрабатываем фото...',
+      photoDrag: 'Перетащите фото, чтобы лицо было в круге',
+      format: 'Не удалось открыть этот файл. Выберите фото в формате JPG или PNG.',
+      heic: 'Не удалось обработать фото HEIC. Сохраните его как JPG и загрузите снова.',
+      tooLarge: 'Фото слишком большое. Выберите файл поменьше.'
     },
     en: {
       title: 'FILL OUT THE FORM',
@@ -105,20 +115,21 @@ function ResumeModal({ isOpen, onClose }) {
       sendWhatsApp: 'Send to WhatsApp',
       generating: 'Generating PDF...',
       back: 'Back',
-      submit: 'Submit Resume'
+      submit: 'Submit Resume',
+      pdfError: 'Could not create the PDF. Please try again.',
+      photoProcessing: 'Processing photo...',
+      photoDrag: 'Drag the photo to place your face in the circle',
+      format: 'Could not open this file. Please choose a JPG or PNG photo.',
+      heic: 'Could not process this HEIC photo. Save it as JPG and upload it again.',
+      tooLarge: 'This photo is too large. Please choose a smaller file.'
     }
   }
 
   const t = translations[language]
 
   const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target
-    if (type === 'file') {
-      setFormData({
-        ...formData,
-        [name]: files[0]
-      })
-    } else if (type === 'checkbox') {
+    const { name, value, type, checked } = e.target
+    if (type === 'checkbox') {
       setFormData({
         ...formData,
         [name]: checked
@@ -131,41 +142,39 @@ function ResumeModal({ isOpen, onClose }) {
     }
   }
 
-  // Helper function to crop images to 3:4 aspect ratio
-  const cropTo3x4 = async (imageData) => {
-    return new Promise((resolve) => {
-      const img = new Image()
-      img.onload = () => {
-        const targetAspectRatio = 3/4 // width/height
-        const imgAspectRatio = img.width / img.height
-        
-        let cropWidth, cropHeight, cropX, cropY
-        
-        if (imgAspectRatio > targetAspectRatio) {
-          // Image is wider - crop width
-          cropHeight = img.height
-          cropWidth = cropHeight * targetAspectRatio
-          cropX = (img.width - cropWidth) / 2
-          cropY = 0
-        } else {
-          // Image is taller - crop height
-          cropWidth = img.width
-          cropHeight = cropWidth / targetAspectRatio
-          cropX = 0
-          cropY = (img.height - cropHeight) / 2
-        }
-        
-        const canvas = document.createElement('canvas')
-        canvas.width = cropWidth
-        canvas.height = cropHeight
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight)
-        resolve(canvas.toDataURL('image/jpeg'))
-      }
-      img.onerror = () => resolve(null)
-      img.src = imageData
-    })
+  const handlePhotoChange = async (e) => {
+    const input = e.target
+    const { name, files } = input
+    const file = files[0]
+    // Cancelling the file dialog keeps the photo that was already chosen
+    if (!file) return
+
+    const job = (photoJobs.current[name] || 0) + 1
+    photoJobs.current[name] = job
+    const isLatest = () => photoJobs.current[name] === job
+    setPhotoStatus((prev) => ({ ...prev, [name]: { busy: true } }))
+
+    try {
+      const photo = await processPhoto(file)
+      if (!isLatest()) return
+      if (name === 'selfiePhoto') photo.focus = defaultFocus(photo.width, photo.height)
+      setFormData((prev) => ({ ...prev, [name]: photo }))
+      setPhotoStatus((prev) => ({ ...prev, [name]: {} }))
+    } catch (err) {
+      if (!isLatest()) return
+      console.error('Could not process photo:', err)
+      input.value = ''
+      setFormData((prev) => ({ ...prev, [name]: null }))
+      setPhotoStatus((prev) => ({ ...prev, [name]: { error: err.code || 'format' } }))
+    }
   }
+
+  const handleSelfieFocusChange = (focus) => {
+    setFormData((prev) => ({ ...prev, selfiePhoto: { ...prev.selfiePhoto, focus } }))
+  }
+
+  const isPhotoBusy = Object.values(photoStatus).some((status) => status.busy)
+  const photoFieldState = (name) => ({ photo: formData[name], ...photoStatus[name] })
 
   const generatePDF = async () => {
     setIsGenerating(true)
@@ -196,51 +205,10 @@ function ResumeModal({ isOpen, onClose }) {
       // ========== LEFT COLUMN ==========
       let leftY = 15
 
-      // Add selfie photo as circle using canvas crop
       if (formData.selfiePhoto) {
-        try {
-          const photoData = await new Promise((resolve) => {
-            const reader = new FileReader()
-            reader.onload = (e) => resolve(e.target.result)
-            reader.onerror = () => resolve(null)
-            reader.readAsDataURL(formData.selfiePhoto)
-          })
-          if (photoData) {
-            // Create circular crop using canvas
-            const circularPhotoData = await new Promise((resolve) => {
-              const img = new Image()
-              img.onload = () => {
-                const size = Math.min(img.width, img.height)
-                const canvas = document.createElement('canvas')
-                canvas.width = size
-                canvas.height = size
-                const ctx = canvas.getContext('2d')
-                
-                // Draw circular clip
-                ctx.beginPath()
-                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
-                ctx.closePath()
-                ctx.clip()
-                
-                // Draw image centered
-                const offsetX = (img.width - size) / 2
-                const offsetY = (img.height - size) / 2
-                ctx.drawImage(img, offsetX, offsetY, size, size, 0, 0, size, size)
-                
-                resolve(canvas.toDataURL('image/png'))
-              }
-              img.onerror = () => resolve(null)
-              img.src = photoData
-            })
-            
-            if (circularPhotoData) {
-              // Add circular photo (60x60mm - 20% larger)
-              pdf.addImage(circularPhotoData, 'PNG', leftColWidth / 2 - 30, leftY, 60, 60)
-            }
-          }
-        } catch (err) {
-          console.log('Could not add photo:', err)
-        }
+        const roundPhoto = await cropRoundPhoto(formData.selfiePhoto, darkBlue)
+        // Add circular photo (60x60mm - 20% larger)
+        pdf.addImage(roundPhoto, 'JPEG', leftColWidth / 2 - 30, leftY, 60, 60)
       }
 
       leftY += 70
@@ -550,80 +518,21 @@ function ResumeModal({ isOpen, onClose }) {
 
       // ========== PHOTO PAGES ==========
       // Only full-body photo and additional photo on photo pages (not selfie)
-      const photoFiles = [formData.fullBodyPhoto, formData.additionalPhoto1].filter(Boolean)
-      
-      if (photoFiles.length > 0) {
+      const photos = [formData.fullBodyPhoto, formData.additionalPhoto1].filter(Boolean)
+
+      if (photos.length > 0) {
+        pdf.addPage()
         const pageMargin = 5 // Small margin for spacing
-        const availableWidth = pageWidth - pageMargin * 2
-        const availableHeight = pageHeight - pageMargin * 2
-        
-        // Calculate photo dimensions for 3:4 aspect ratio
-        // Ensure 2 photos fit on one page with proper spacing
-        const photosPerPage = photoFiles.length <= 2 ? photoFiles.length : 2
-        const photoHeight = availableHeight / photosPerPage // For 2 photos: ~143.5mm each
-        const photoWidth = photoHeight * (3/4) // 3:4 aspect ratio
-        
-        // Center horizontally
-        const photoX = (pageWidth - photoWidth) / 2
-        
-        // Process photos
-        for (let i = 0; i < photoFiles.length; i++) {
-          // Add new page for first photo or when starting second page (after 2 photos)
-          if (i === 0 || (i === 2 && photoFiles.length === 3)) {
-            pdf.addPage()
-            // Recalculate for second page if 3 photos (only 1 photo on second page)
-            if (i === 2 && photoFiles.length === 3) {
-              const singlePhotoHeight = availableHeight * 0.8 // Use 80% of available height
-              const singlePhotoWidth = singlePhotoHeight * (3/4)
-              const singlePhotoX = (pageWidth - singlePhotoWidth) / 2
-              const singlePhotoY = (pageHeight - singlePhotoHeight) / 2 // Center vertically
-              
-              const file = photoFiles[i]
-              try {
-                const photoData = await new Promise((resolve) => {
-                  const reader = new FileReader()
-                  reader.onload = (e) => resolve(e.target.result)
-                  reader.onerror = () => resolve(null)
-                  reader.readAsDataURL(file)
-                })
-                
-                if (photoData) {
-                  // Crop to 3:4 ratio before adding
-                  const croppedPhotoData = await cropTo3x4(photoData)
-                  if (croppedPhotoData) {
-                    pdf.addImage(croppedPhotoData, 'JPEG', singlePhotoX, singlePhotoY, singlePhotoWidth, singlePhotoHeight)
-                  }
-                }
-              } catch (err) {
-                console.log('Could not add photo:', err)
-              }
-              continue
-            }
-          }
-          
-          const file = photoFiles[i]
-          // Calculate Y position: first photo at margin, second photo at margin + photoHeight
-          const photoY = pageMargin + (i % photosPerPage) * photoHeight
-          
-          try {
-            const photoData = await new Promise((resolve) => {
-              const reader = new FileReader()
-              reader.onload = (e) => resolve(e.target.result)
-              reader.onerror = () => resolve(null)
-              reader.readAsDataURL(file)
-            })
-            
-            if (photoData) {
-              // Crop to 3:4 ratio before adding
-              const croppedPhotoData = await cropTo3x4(photoData)
-              if (croppedPhotoData) {
-                pdf.addImage(croppedPhotoData, 'JPEG', photoX, photoY, photoWidth, photoHeight)
-              }
-            }
-          } catch (err) {
-            console.log('Could not add photo:', err)
-          }
-        }
+        const slotWidth = pageWidth - pageMargin * 2
+        const slotHeight = (pageHeight - pageMargin * 2) / photos.length
+
+        // The whole photo fits in its slot, so a head or feet are never cut off
+        photos.forEach((photo, i) => {
+          const { width, height } = fitInBox(photo.width, photo.height, slotWidth, slotHeight)
+          const photoX = (pageWidth - width) / 2
+          const photoY = pageMargin + i * slotHeight + (slotHeight - height) / 2
+          pdf.addImage(photo.dataUrl, 'JPEG', photoX, photoY, width, height)
+        })
       }
 
       // Generate blob URL
@@ -634,7 +543,7 @@ function ResumeModal({ isOpen, onClose }) {
       setCurrentStep(3)
     } catch (error) {
       console.error('Error generating PDF:', error)
-      alert('Error generating PDF. Please try again.')
+      alert(t.pdfError)
     } finally {
       setIsGenerating(false)
     }
@@ -1219,18 +1128,30 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                       <li><strong>Фото для главной должно быть более официальным!</strong></li>
                     </ul>
                   </div>
-                  <div className="form-group">
-                    <label>Главная фотография (лицо, официальная)</label>
-                    <input type="file" name="selfiePhoto" onChange={handleChange} accept="image/*" required />
-                  </div>
-                  <div className="form-group">
-                    <label>Фотография в полный рост (обязательно)</label>
-                    <input type="file" name="fullBodyPhoto" onChange={handleChange} accept="image/*" required />
-                  </div>
-                  <div className="form-group">
-                    <label>Дополнительная фотография</label>
-                    <input type="file" name="additionalPhoto1" onChange={handleChange} accept="image/*" />
-                  </div>
+                  <PhotoField
+                    name="selfiePhoto"
+                    label="Главная фотография (лицо, официальная)"
+                    required
+                    state={photoFieldState('selfiePhoto')}
+                    t={t}
+                    onChange={handlePhotoChange}
+                    onFocusChange={handleSelfieFocusChange}
+                  />
+                  <PhotoField
+                    name="fullBodyPhoto"
+                    label="Фотография в полный рост (обязательно)"
+                    required
+                    state={photoFieldState('fullBodyPhoto')}
+                    t={t}
+                    onChange={handlePhotoChange}
+                  />
+                  <PhotoField
+                    name="additionalPhoto1"
+                    label="Дополнительная фотография"
+                    state={photoFieldState('additionalPhoto1')}
+                    t={t}
+                    onChange={handlePhotoChange}
+                  />
                   <div className="form-group">
                     <label>Логин в Instagram (без @)</label>
                     <input type="text" name="instagram" value={formData.instagram} onChange={handleChange} placeholder="Введите ваш логин в Instagram" />
@@ -1248,7 +1169,7 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                 </section>
 
                 <div className="form-submit-section">
-                  <button type="submit" className="resume-submit-btn" disabled={isGenerating}>
+                  <button type="submit" className="resume-submit-btn" disabled={isGenerating || isPhotoBusy}>
                     {isGenerating ? t.generating : t.submit}
                   </button>
                   <p className="submit-note">При нажатии кнопки «Отправить резюме» вы соглашаетесь с достоверностью указанной информации.</p>
