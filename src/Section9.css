@@ -306,3 +306,25 @@
     padding: 0 clamp(2rem, 6vw, 6rem);
   }
 }
+.section9-form-text-sub.error {
+  color: #ffe08a;
+}
+
+.section9-bottom-box {
+  flex-wrap: wrap;
+}
+
+.section9-consent {
+  flex-basis: 100%;
+  margin: 8px 0 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}
+
+.section9-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}

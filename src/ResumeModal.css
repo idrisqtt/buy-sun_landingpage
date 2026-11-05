@@ -803,3 +803,29 @@
     font-size: 1.25rem;
   }
 }
+
+/* Consent and sending status */
+.consent-group label {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.send-error {
+  margin: 0 0 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #c62828;
+}
+
+.retry-btn {
+  margin-bottom: 24px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #0090FF 0%, #005699 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}

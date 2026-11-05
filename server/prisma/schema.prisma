@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Which form on buysun.kz the lead came from
+enum LeadType {
+  quick    // "Оставьте заявку": name + phone
+  callback // phone form at the bottom of the page
+  anketa   // full candidate anketa with PDF and photos
+}
+
+// Delivery to an outside system (Bitrix24 or email)
+enum DeliveryStatus {
+  pending // not tried yet
+  sent
+  failed  // tried and failed, see *_error
+  skipped // the integration is not configured
+}
+
+enum FileKind {
+  pdf
+  selfie
+  full_body
+  additional
+}
+
+model Lead {
+  id         Int      @id @default(autoincrement())
+  type       LeadType
+  name       String?
+  phone      String
+  email      String?
+  // Full anketa answers as sent by the form (anketa only)
+  answers    Json?
+  // utm_* parameters of the page the person came from
+  utm        Json?
+  consent_at DateTime?
+
+  bitrix_status  DeliveryStatus @default(pending)
+  bitrix_lead_id Int?
+  bitrix_error   String?
+  email_status   DeliveryStatus @default(pending)
+  email_error    String?
+
+  files      LeadFile[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+
+  @@index([created_at])
+  @@index([phone])
+  @@map("leads")
+}
+
+model LeadFile {
+  id         Int      @id @default(autoincrement())
+  lead_id    Int
+  lead       Lead     @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  kind       FileKind
+  // Path relative to UPLOAD_DIR
+  path       String
+  mime       String
+  size       Int
+  created_at DateTime @default(now())
+
+  @@index([lead_id])
+  @@map("lead_files")
+}
