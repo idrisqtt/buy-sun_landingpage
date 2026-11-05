@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import ContactModal from './ContactModal'
 import ResumeModal from './ResumeModal'
@@ -194,14 +195,23 @@ function Hero() {
         </div>
       </div>
       </section>
-      <ContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
-      />
-      <ResumeModal 
-        isOpen={isResumeModalOpen} 
-        onClose={() => setIsResumeModalOpen(false)} 
-      />
+      {/* On laptops and tablets the whole page is shrunk with transform: scale
+          (App.css), and inside it position: fixed no longer means "on screen":
+          the windows opened thousands of pixels down the page. Rendering them
+          directly in <body> keeps them on screen at every width. */}
+      {createPortal(
+        <>
+          <ContactModal 
+            isOpen={isContactModalOpen} 
+            onClose={() => setIsContactModalOpen(false)} 
+          />
+          <ResumeModal 
+            isOpen={isResumeModalOpen} 
+            onClose={() => setIsResumeModalOpen(false)} 
+          />
+        </>,
+        document.body
+      )}
     </>
   )
 }
