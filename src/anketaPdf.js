@@ -2,11 +2,76 @@ import { applyPdfFonts } from './pdfFonts'
 import { cropRoundPhoto, fitInBox } from './photoUtils'
 import logoAnketa from '/logo_anketa.png'
 
+// The partner's logo, header and contacts in the place of the BUY SUN logo.
+// box: the area at the top of the right column, in mm.
+function drawPartnerHeader(pdf, { logo, header, contacts }, box) {
+  const headerText = (header || '').trim()
+  const contactLines = (contacts || '').split('\n').map((l) => l.trim()).filter(Boolean)
+  const hasText = Boolean(headerText || contactLines.length)
+
+  let textX = box.x
+  let textWidth = box.width
+  if (logo) {
+    // Next to the text the logo takes the left part, alone it is centered
+    const size = fitInBox(logo.width, logo.height, hasText ? 48 : 80, box.height)
+    const x = hasText ? box.x : box.x + (box.width - size.width) / 2
+    pdf.addImage(logo.dataUrl, 'PNG', x, box.y + (box.height - size.height) / 2, size.width, size.height)
+    textX = box.x + size.width + 6
+    textWidth = box.width - size.width - 6
+  }
+  if (!hasText) return
+
+  const ptToMm = 0.3528 * 1.15
+  // The header on one line if it fits down to 12 pt, otherwise two lines of 14 pt
+  pdf.setFont(undefined, 'bold')
+  let headerSize = 14
+  let headerLines = []
+  if (headerText) {
+    const oneLine = [16, 15, 14, 13, 12].find((size) => {
+      pdf.setFontSize(size)
+      return pdf.getTextWidth(headerText) <= textWidth
+    })
+    if (oneLine) {
+      headerSize = oneLine
+      headerLines = [headerText]
+    } else {
+      pdf.setFontSize(headerSize)
+      headerLines = pdf.splitTextToSize(headerText, textWidth).slice(0, 2)
+    }
+  }
+  pdf.setFont(undefined, 'normal')
+  pdf.setFontSize(10)
+  const contactRows = contactLines.flatMap((l) => pdf.splitTextToSize(l, textWidth)).slice(0, 4)
+  const headerHeight = headerLines.length * headerSize * ptToMm
+  const gap = headerLines.length && contactRows.length ? 1.5 : 0
+  const height = headerHeight + gap + contactRows.length * 10 * ptToMm
+
+  const center = !logo
+  const x = center ? box.x + box.width / 2 : textX
+  const options = { baseline: 'top', align: center ? 'center' : 'left' }
+  let y = box.y + Math.max(0, (box.height - height) / 2)
+  if (headerLines.length) {
+    pdf.setFont(undefined, 'bold')
+    pdf.setFontSize(headerSize)
+    pdf.setTextColor(20, 20, 20)
+    pdf.text(headerLines, x, y, options)
+    y += headerHeight + gap
+  }
+  if (contactRows.length) {
+    pdf.setFont(undefined, 'normal')
+    pdf.setFontSize(10)
+    pdf.setTextColor(90, 90, 90)
+    pdf.text(contactRows, x, y, options)
+  }
+}
+
 // The anketa PDF exactly as candidates get it. Used by the form on the site
 // and by the manager cabinet, so an edited anketa looks the same.
 // formData: the anketa answers plus selfiePhoto, fullBodyPhoto and
 // additionalPhoto1 as { dataUrl, width, height, focus? }. Returns a Blob.
-export async function buildAnketaPdf(formData) {
+// partner: { logo: { dataUrl, width, height } | null, header, contacts } makes
+// the file for a partner: their header instead of BUY SUN, no service fields.
+export async function buildAnketaPdf(formData, { partner } = {}) {
   // Loaded only when needed: keeps 400 KB of PDF code out of the first page load
   const { default: jsPDF } = await import('jspdf')
   const pdf = new jsPDF('p', 'mm', 'a4')
@@ -101,8 +166,11 @@ export async function buildAnketaPdf(formData) {
 
   leftY += 10
 
+  // The BUY SUN manager who advised the candidate is a service field: never in a partner's file
+  const manager = partner ? '' : formData.manager
+
   // EDUCATION section - only show if there's education data (same title size as EXPERIENCE)
-  const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd || formData.manager
+  const hasEducation = formData.institution || formData.specialty || formData.studyStart || formData.studyEnd || manager
   if (hasEducation) {
     pdf.setFontSize(20)
     pdf.setFont(undefined, 'bold')
@@ -120,7 +188,7 @@ export async function buildAnketaPdf(formData) {
     } else if (formData.studyEnd) {
       addLeftField('DATE', formData.studyEnd)
     }
-    addLeftField('MANAGER', formData.manager)
+    addLeftField('MANAGER', manager)
   }
 
   // ========== RIGHT COLUMN ==========
@@ -128,17 +196,21 @@ export async function buildAnketaPdf(formData) {
   const rightX = rightColStart + rightPadding
   const rightValueX = rightX + 58 // Value start position so label and value don't blend
 
-  // BUY SUN Logo (image) - larger size, centered
-  try {
-    pdf.addImage(logoAnketa, 'PNG', rightCenter - 35, rightY, 70, 28)
-  } catch (err) {
-    // Fallback to text if image fails
-    pdf.setTextColor(3, 72, 125) // #03487D
-    pdf.setFontSize(29)
-    pdf.setFont(undefined, 'bold')
-    pdf.text('BUY', rightCenter - 28, rightY + 16)
-    pdf.setTextColor(218, 165, 32)
-    pdf.text('SUN', rightCenter + 4, rightY + 16)
+  if (partner) {
+    drawPartnerHeader(pdf, partner, { x: rightX, y: rightY, width: pageWidth - rightPadding - rightX, height: 28 })
+  } else {
+    try {
+      // BUY SUN Logo (image) - larger size, centered
+      pdf.addImage(logoAnketa, 'PNG', rightCenter - 35, rightY, 70, 28)
+    } catch (err) {
+      // Fallback to text if image fails
+      pdf.setTextColor(3, 72, 125) // #03487D
+      pdf.setFontSize(29)
+      pdf.setFont(undefined, 'bold')
+      pdf.text('BUY', rightCenter - 28, rightY + 16)
+      pdf.setTextColor(218, 165, 32)
+      pdf.text('SUN', rightCenter + 4, rightY + 16)
+    }
   }
 
   rightY += 45

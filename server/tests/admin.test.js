@@ -189,3 +189,56 @@ describe('cabinet anketas', () => {
     assert.equal((await c.call('GET', '/api/admin/leads/999999')).status, 404)
   })
 })
+
+describe('partner template', () => {
+  let t, c
+  const PNG = Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex')
+  before(async () => {
+    t = await startTestApp()
+    await addManager(t, 'anna@buysun.test')
+    c = (await firstLogin(t, 'anna@buysun.test')).c
+  })
+  after(async () => { await t.close() })
+
+  it('is only for managers who are logged in', async () => {
+    assert.equal((await t.cabinet().call('GET', '/api/admin/template')).status, 401)
+    assert.equal((await t.cabinet().call('PUT', '/api/admin/template', { name: 'X', header: 'X', contacts: '' })).status, 401)
+  })
+
+  it('keeps one template, shared by all managers, with who saved it', async () => {
+    assert.equal((await c.call('GET', '/api/admin/template')).body.template, null)
+    const first = await c.call('PUT', '/api/admin/template', {
+      name: 'Antalya Staff', header: 'Antalya Staff Agency', contacts: '+90 532 000 00 00\ninfo@antalya-staff.com', logo: dataUrl('image/png', PNG),
+    })
+    assert.equal(first.status, 200)
+    assert.equal(first.body.template.updated_by, 'Анна')
+    assert.equal(first.body.template.logo, dataUrl('image/png', PNG))
+
+    // Saving again replaces it; a missing logo keeps the saved one
+    const second = await c.call('PUT', '/api/admin/template', { name: 'Side Hotels', header: 'Side Hotels', contacts: '' })
+    assert.equal(second.body.template.name, 'Side Hotels')
+    assert.equal(second.body.template.logo, dataUrl('image/png', PNG))
+    assert.equal(await t.prisma.partnerTemplate.count(), 1)
+
+    await addManager(t, 'boris@buysun.test')
+    const boris = (await firstLogin(t, 'boris@buysun.test')).c
+    assert.equal((await boris.call('GET', '/api/admin/template')).body.template.name, 'Side Hotels')
+
+    // null removes the logo; the template cannot end up empty
+    const noLogo = await c.call('PUT', '/api/admin/template', { name: 'Side Hotels', header: 'Side Hotels', contacts: '', logo: null })
+    assert.equal(noLogo.body.template.logo, null)
+    assert.equal((await c.call('PUT', '/api/admin/template', { name: 'Side Hotels', header: '', contacts: '' })).status, 400)
+
+    assert.equal((await c.call('DELETE', '/api/admin/template')).status, 200)
+    assert.equal((await c.call('GET', '/api/admin/template')).body.template, null)
+  })
+
+  it('refuses a logo that is not a PNG, too many lines and an empty name', async () => {
+    const base = { name: 'P', header: 'P', contacts: '' }
+    assert.equal((await c.call('PUT', '/api/admin/template', { ...base, logo: dataUrl('image/png', JPEG) })).status, 400)
+    assert.equal((await c.call('PUT', '/api/admin/template', { ...base, logo: dataUrl('image/jpeg', JPEG) })).status, 400)
+    assert.equal((await c.call('PUT', '/api/admin/template', { ...base, contacts: 'a\nb\nc\nd' })).status, 400)
+    assert.equal((await c.call('PUT', '/api/admin/template', { ...base, name: ' ' })).status, 400)
+    assert.equal((await c.call('PUT', '/api/admin/template', base, { header: false })).status, 403, 'not without the cabinet header')
+  })
+})

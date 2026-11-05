@@ -68,6 +68,8 @@ const FILE_RULES = {
   selfie: { mime: 'image/jpeg', maxBytes: 4 * MB },
   full_body: { mime: 'image/jpeg', maxBytes: 4 * MB },
   additional: { mime: 'image/jpeg', maxBytes: 4 * MB },
+  // A partner's logo; the cabinet always converts it to PNG to keep transparency
+  logo: { mime: 'image/png', maxBytes: 1 * MB },
 }
 
 const dataUrl = (kind) => z.string().max(Math.ceil(FILE_RULES[kind].maxBytes * 4 / 3) + 100).optional()
@@ -99,9 +101,21 @@ const anketaEditSchema = z.object({
   files: anketaFiles,
 })
 
+// The partner template: what replaces the BUY SUN logo at the top of the PDF.
+// logo: a PNG data URL, null to remove it, left out to keep the saved one.
+const lines = (max, maxLines) => z.string().trim().max(max)
+  .refine((v) => v.split('\n').length <= maxLines, { message: `Не больше ${maxLines} строк` })
+const partnerTemplateSchema = z.object({
+  name: z.string().trim().min(1, 'Укажите название партнёра').max(80),
+  header: lines(120, 2),
+  contacts: lines(300, 3),
+  logo: z.union([dataUrl('logo'), z.null()]),
+})
+
 const SIGNATURES = {
   'application/pdf': [0x25, 0x50, 0x44, 0x46, 0x2d], // %PDF-
   'image/jpeg': [0xff, 0xd8, 0xff],
+  'image/png': [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
 }
 
 // Turns "data:<mime>;base64,..." into a Buffer after checking the declared type,
@@ -124,6 +138,7 @@ module.exports = {
   callbackLeadSchema,
   anketaSchema,
   anketaEditSchema,
+  partnerTemplateSchema,
   decodeDataUrl,
   FILE_RULES,
 }

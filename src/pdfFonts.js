@@ -1,11 +1,12 @@
 // jsPDF's built-in fonts only cover Latin-1, so Russian, Kazakh and Turkish
-// letters turn into garbage. We embed BuySun Sans (Liberation Sans subset,
-// same metrics as Helvetica, so the existing layout does not move).
-export const PDF_FONT = 'BuySunSans'
+// letters turn into garbage. We embed Anketa Sans (Liberation Sans subset,
+// same metrics as Helvetica, so the existing layout does not move). The name
+// is neutral on purpose: files for partners must not carry the BUY SUN name.
+export const PDF_FONT = 'AnketaSans'
 
 const FONT_FILES = {
-  normal: '/fonts/BuySunSans-Regular.ttf',
-  bold: '/fonts/BuySunSans-Bold.ttf',
+  normal: '/fonts/AnketaSans-Regular.ttf',
+  bold: '/fonts/AnketaSans-Bold.ttf',
 }
 
 let fontsPromise = null

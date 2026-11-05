@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit')
 const { z } = require('zod')
 const auth = require('../services/auth')
 const { logger } = require('../utils/logger')
-const { anketaEditSchema } = require('../utils/validation')
+const { anketaEditSchema, partnerTemplateSchema } = require('../utils/validation')
 
 const COOKIE = 'bs_admin'
 const PENDING_MS = 10 * 60 * 1000 // password checked, waiting for the phone code
@@ -31,7 +31,7 @@ function nextStep(user, session) {
   return null
 }
 
-function adminRouter({ config, prisma, storage, leadAdmin }) {
+function adminRouter({ config, prisma, storage, leadAdmin, templates }) {
   const router = express.Router()
   const strict = config.isProduction
   const json = express.json({ limit: '20kb' })
@@ -246,6 +246,30 @@ function adminRouter({ config, prisma, storage, leadAdmin }) {
       const data = anketaEditSchema.parse(req.body)
       const lead = await leadAdmin.update(leadId(req), data, req.user)
       res.json(lead)
+    } catch (err) { next(err) }
+  })
+
+  // ---- the partner template ----
+
+  router.get('/template', loadSession, requireFull, async (req, res, next) => {
+    try {
+      res.json({ template: await templates.get() })
+    } catch (err) { next(err) }
+  })
+
+  router.put('/template', express.json({ limit: '2mb' }), loadSession, requireFull, async (req, res, next) => {
+    try {
+      const template = await templates.save(partnerTemplateSchema.parse(req.body), req.user)
+      logger.info('Partner template saved', { userId: req.user.id })
+      res.json({ template })
+    } catch (err) { next(err) }
+  })
+
+  router.delete('/template', loadSession, requireFull, async (req, res, next) => {
+    try {
+      await templates.remove()
+      logger.info('Partner template removed', { userId: req.user.id })
+      res.json({ template: null })
     } catch (err) { next(err) }
   })
 

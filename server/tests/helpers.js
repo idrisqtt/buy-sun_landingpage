@@ -74,7 +74,7 @@ async function startTestApp({ env = {}, bitrixEnabled = true, mailEnabled = true
     ...env,
   })
   const prisma = createPrisma(TEST_URL)
-  await prisma.$executeRawUnsafe('TRUNCATE leads, lead_files, lead_events, sessions, users RESTART IDENTITY CASCADE')
+  await prisma.$executeRawUnsafe('TRUNCATE leads, lead_files, lead_events, sessions, users, partner_templates RESTART IDENTITY CASCADE')
   const storage = createStorage(config.uploadDir)
 
   const mails = []

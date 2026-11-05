@@ -6,6 +6,7 @@ import PhotoField from '../PhotoField'
 import { processPhoto, defaultFocus } from '../photoUtils'
 import { buildAnketaPdf } from '../anketaPdf'
 import { blobToDataUrl } from '../api'
+import PartnerPanel from './PartnerPanel'
 
 const PHOTO_TEXTS = {
   photoProcessing: 'Обрабатываем фото…',
@@ -58,6 +59,11 @@ function LeadPage({ id, onError }) {
         </div>
         <div className="cab-actions">
           {pdf && <a className="cab-btn" href={fileUrl(lead.id, pdf.id, true)}>Скачать PDF</a>}
+          {lead.type === 'anketa' && (
+            <button type="button" className="cab-btn secondary" onClick={() => document.getElementById('partner')?.scrollIntoView({ behavior: 'smooth' })}>
+              Для партнёра
+            </button>
+          )}
           {lead.bitrix_url && <a className="cab-btn secondary" href={lead.bitrix_url} target="_blank" rel="noopener noreferrer">Открыть в Битрикс24</a>}
         </div>
       </div>
@@ -193,44 +199,47 @@ function AnketaEditor({ lead, onSaved, onError }) {
   }
 
   return (
-    <form className="cab-form" onSubmit={save}>
-      {SECTIONS.map((section) => (
-        <section key={section.title} className="cab-section">
-          <h2>{section.title}</h2>
-          <div className="cab-grid">
-            {section.fields.map((f) => <Field key={f.name} field={f} value={answers[f.name]} onChange={change} />)}
+    <>
+      <form className="cab-form" onSubmit={save}>
+        {SECTIONS.map((section) => (
+          <section key={section.title} className="cab-section">
+            <h2>{section.title}</h2>
+            <div className="cab-grid">
+              {section.fields.map((f) => <Field key={f.name} field={f} value={answers[f.name]} onChange={change} />)}
+            </div>
+          </section>
+        ))}
+
+        <section className="cab-section">
+          <h2>Фотографии</h2>
+          <p className="cab-hint">Новое фото заменит старое после сохранения. Круг на главном фото можно сдвинуть.</p>
+          <div className="cab-photos">
+            {PHOTOS.map(({ name, label }) => (
+              <PhotoField
+                key={name}
+                name={name}
+                label={label}
+                state={{ photo: photos[name], ...photoStatus[name] }}
+                t={PHOTO_TEXTS}
+                onChange={changePhoto}
+                onFocusChange={name === 'selfiePhoto' ? changeFocus : undefined}
+              />
+            ))}
           </div>
         </section>
-      ))}
 
-      <section className="cab-section">
-        <h2>Фотографии</h2>
-        <p className="cab-hint">Новое фото заменит старое после сохранения. Круг на главном фото можно сдвинуть.</p>
-        <div className="cab-photos">
-          {PHOTOS.map(({ name, label }) => (
-            <PhotoField
-              key={name}
-              name={name}
-              label={label}
-              state={{ photo: photos[name], ...photoStatus[name] }}
-              t={PHOTO_TEXTS}
-              onChange={changePhoto}
-              onFocusChange={name === 'selfiePhoto' ? changeFocus : undefined}
-            />
-          ))}
+        <div className={`cab-savebar${dirty ? ' dirty' : ''}`}>
+          <span role="status">
+            {message ? <span className={message.ok ? 'cab-ok' : 'cab-error'}>{message.text}</span>
+              : dirty ? 'Есть несохранённые изменения' : 'Изменений нет'}
+          </span>
+          <button className="cab-btn" disabled={!dirty || saving || busy}>
+            {saving ? 'Сохраняем и создаём PDF…' : 'Сохранить и обновить PDF'}
+          </button>
         </div>
-      </section>
-
-      <div className={`cab-savebar${dirty ? ' dirty' : ''}`}>
-        <span role="status">
-          {message ? <span className={message.ok ? 'cab-ok' : 'cab-error'}>{message.text}</span>
-            : dirty ? 'Есть несохранённые изменения' : 'Изменений нет'}
-        </span>
-        <button className="cab-btn" disabled={!dirty || saving || busy}>
-          {saving ? 'Сохраняем и создаём PDF…' : 'Сохранить и обновить PDF'}
-        </button>
-      </div>
-    </form>
+      </form>
+      <PartnerPanel build={() => ({ answers, photos })} waiting={busy} dirty={dirty} onError={onError} />
+    </>
   )
 }
 

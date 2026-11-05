@@ -75,6 +75,13 @@ first login the cabinet asks for a new password and to connect Google
 Authenticator or Яндекс Ключ. Lost phone: `manager.sh reset <email>`.
 Someone left: `manager.sh disable <email>`. Everyone: `manager.sh list`.
 
+**File for a partner.** On every anketa page, section “Файл для партнёра”: the
+manager picks the partner’s logo, header and contacts, sees a preview and
+downloads a PDF named `Name_Surname_CV.pdf`. There is no BUY SUN in it (not
+in the text, the font name or the file name), and the BUY SUN manager’s name
+is left out. One template is saved for all managers and is part of the nightly
+database backup.
+
 ## Everyday
 
 - **Updating the site**: merge into `main` on GitHub. Within 5 minutes the
