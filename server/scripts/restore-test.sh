@@ -11,7 +11,7 @@ set -euo pipefail
 
 work="$(mktemp -d)"
 test_db="buysun_restore_test_$$"
-admin_url="${DB_URL%/*}/postgres"
+admin_url="$(db_url_named postgres)"
 cleanup() {
   psql "$admin_url" -qc "DROP DATABASE IF EXISTS $test_db" >/dev/null 2>&1 || true
   rm -rf "$work"
@@ -33,7 +33,7 @@ fi
 log "Testing backup $src"
 
 psql "$admin_url" -qc "CREATE DATABASE $test_db"
-test_url="${DB_URL%/*}/$test_db"
+test_url="$(db_url_named "$test_db")"
 RESTORE_DB_URL="$test_url" RESTORE_UPLOADS="$work/uploads" "$(dirname "$0")/restore.sh" "$src" >/dev/null
 
 expected="$(tr '\n' ' ' < "$src/counts.txt")"

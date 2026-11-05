@@ -1,0 +1,53 @@
+# buysun.kz on the server. setup-server.sh puts the real domain instead of
+# __DOMAIN__ and installs this as /etc/caddy/Caddyfile.
+# Caddy gets and renews the HTTPS certificate by itself.
+
+www.__DOMAIN__ {
+	redir https://__DOMAIN__{uri} permanent
+}
+
+__DOMAIN__ {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	# Forms and anketa: the API on the same machine
+	handle /api/* {
+		request_body {
+			max_size 30MB
+		}
+		reverse_proxy 127.0.0.1:3001
+	}
+
+	# The site: the current release built by deploy/update.sh
+	handle {
+		root * /opt/buysun/current
+
+		# File names with a content hash never change: cache for a year
+		@hashed path /assets/*
+		header @hashed Cache-Control "public, max-age=31536000, immutable"
+
+		@media path *.webp *.png *.jpg *.mp4 *.ttf *.woff2 *.ico
+		header @media Cache-Control "public, max-age=604800"
+
+		@page path / /index.html
+		header @page Cache-Control "no-cache"
+
+		try_files {path} /index.html
+		file_server
+	}
+
+	log {
+		output file /var/log/caddy/buysun.log {
+			roll_size 10MiB
+			roll_keep 5
+		}
+	}
+}

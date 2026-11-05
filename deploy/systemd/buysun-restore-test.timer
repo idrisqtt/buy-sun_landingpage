@@ -1,0 +1,9 @@
+[Unit]
+Description=BUY SUN: restore test on the 1st of every month
+
+[Timer]
+OnCalendar=*-*-01 05:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

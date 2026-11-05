@@ -1,0 +1,29 @@
+[Unit]
+Description=BUY SUN API (forms, anketa, Bitrix24, email)
+After=network-online.target postgresql.service
+Wants=network-online.target postgresql.service
+
+[Service]
+User=buysun
+Group=buysun
+WorkingDirectory=/opt/buysun/repo/server
+EnvironmentFile=/opt/buysun/shared/server.env
+ExecStart=/usr/local/bin/node src/server.js
+Restart=always
+RestartSec=3
+MemoryMax=400M
+
+# The API only needs to write anketa files; everything else is read-only
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+ReadWritePaths=/var/lib/buysun
+
+[Install]
+WantedBy=multi-user.target

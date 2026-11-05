@@ -1,0 +1,11 @@
+[Unit]
+Description=BUY SUN: check the site and email the client if something is broken
+
+[Service]
+Type=oneshot
+User=buysun
+Group=buysun
+WorkingDirectory=/opt/buysun/repo/server
+EnvironmentFile=/opt/buysun/shared/server.env
+ExecStart=/usr/local/bin/node scripts/healthcheck.js
+TimeoutStartSec=2min

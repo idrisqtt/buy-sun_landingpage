@@ -1,0 +1,12 @@
+[Unit]
+Description=BUY SUN: deploy the latest version from GitHub if there is one
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=buysun
+Group=buysun
+EnvironmentFile=/opt/buysun/shared/server.env
+ExecStart=/opt/buysun/repo/deploy/update.sh
+TimeoutStartSec=20min

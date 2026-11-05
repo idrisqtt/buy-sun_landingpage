@@ -11,8 +11,16 @@ fi
 : "${DATABASE_URL:?DATABASE_URL is not set}"
 : "${UPLOAD_DIR:?UPLOAD_DIR is not set}"
 
-# libpq does not understand Prisma's "?schema=public"
-DB_URL="${DATABASE_URL%%\?*}"
+# libpq does not understand Prisma's "schema=..." parameter; other parameters
+# (like host=/var/run/postgresql for a local socket) are kept
+DB_URL="$(printf '%s' "$DATABASE_URL" | sed -E 's/([?&])schema=[^&]*&?/\1/; s/[?&]$//')"
+
+# The same connection with another database name, e.g. db_url_named postgres
+db_url_named() {
+  local base="${DB_URL%%\?*}" query=""
+  [ "$base" != "$DB_URL" ] && query="?${DB_URL#*\?}"
+  printf '%s/%s%s' "${base%/*}" "$1" "$query"
+}
 # UPLOAD_DIR may be relative to the server folder, like the app reads it
 case "$UPLOAD_DIR" in
   /*) UPLOADS="$UPLOAD_DIR" ;;
