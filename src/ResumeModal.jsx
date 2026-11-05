@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import jsPDF from 'jspdf'
 import PhotoField from './PhotoField'
 import { processPhoto, defaultFocus, cropRoundPhoto, fitInBox } from './photoUtils'
 import { applyPdfFonts, loadPdfFonts } from './pdfFonts'
@@ -209,9 +208,11 @@ function ResumeModal({ isOpen, onClose }) {
     return () => clearTimeout(timer)
   }, [formData])
 
-  // Download the PDF fonts while the person is filling in the form
+  // Download the PDF fonts and code while the person is filling in the form
   useEffect(() => {
-    if (isOpen) loadPdfFonts().catch(() => { /* retried when the PDF is created */ })
+    if (!isOpen) return
+    loadPdfFonts().catch(() => { /* retried when the PDF is created */ })
+    import('jspdf').catch(() => { /* retried when the PDF is created */ })
   }, [isOpen])
 
   const startOver = () => {
@@ -281,6 +282,8 @@ function ResumeModal({ isOpen, onClose }) {
     setIsGenerating(true)
     
     try {
+      // Loaded only when needed: keeps 400 KB of PDF code out of the first page load
+      const { default: jsPDF } = await import('jspdf')
       const pdf = new jsPDF('p', 'mm', 'a4')
       await applyPdfFonts(pdf)
       const pageWidth = 210

@@ -49,8 +49,8 @@ function Section3() {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
           >
-            <img 
-              src="/s3-1.png" 
+            <img loading="lazy" decoding="async" 
+              src="/s3-1.webp" 
               alt="Флаг Турции"
             />
           </motion.div>
@@ -93,7 +93,9 @@ function Section3() {
             viewport={{ once: true, margin: "-100px" }}
           >
             <motion.img 
-              src="/s3-2.png" 
+              loading="lazy"
+              decoding="async"
+              src="/s3-2.webp" 
               alt="Команда BUY SUN"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}

@@ -78,7 +78,7 @@ function Gallery() {
                   whileHover={{ scale: 1.1, zIndex: 10 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <img src={`/${imageName}.png`} alt={`Галерея ${imageName}`} />
+                  <img loading="lazy" decoding="async" src={`/${imageName}.webp`} alt={`Галерея ${imageName}`} />
                 </motion.div>
               ))}
             </div>

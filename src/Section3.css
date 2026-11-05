@@ -1,7 +1,7 @@
 .section3 {
   width: 100%;
   min-height: clamp(400px, 28.7vw, 551px);
-  background-image: url('/s3-1.png');
+  background-image: url('/s3-1.webp');
   background-size: cover;
   background-position: left center;
   background-repeat: no-repeat;

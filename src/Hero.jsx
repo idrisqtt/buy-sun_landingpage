@@ -47,14 +47,18 @@ function Hero() {
   return (
     <>
     <section className="hero">
+      {/* 720p for screens, 540p for phones (21 MB -> 5 / 3 MB; the video is shown
+          dimmed, so the difference is not visible). The poster shows at once. */}
       <video 
         className="hero-video"
         autoPlay
         loop
         muted
         playsInline
+        poster="/hero-poster.webp"
       >
-        <source src="/hero.mp4" type="video/mp4" />
+        <source src="/hero-540.mp4" type="video/mp4" media="(max-width: 768px)" />
+        <source src="/hero-720.mp4" type="video/mp4" />
       </video>
       <div className="hero-video-overlay"></div>
       <div className="hero-container">
@@ -188,7 +192,7 @@ function Hero() {
             animate="visible"
           >
             <motion.img 
-              src="/man1.png" 
+              src="/man1.webp" 
               alt="Ахмед"
             />
           </motion.div>

@@ -1,6 +1,6 @@
 .section7 {
   width: 100%;
-  background-image: url('/s7.png');
+  background-image: url('/s7.webp');
   background-size: cover;
   /* Заполняем всю ширину и высоту, обрезая при необходимости */
   background-position: center center;

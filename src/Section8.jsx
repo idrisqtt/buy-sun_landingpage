@@ -26,8 +26,8 @@ function Section8() {
               }
             }}
           >
-            <img src="/s8.png" alt="Логотипы отелей" className="section8-image" />
-            <img src="/s8.png" alt="Логотипы отелей" className="section8-image" />
+            <img loading="lazy" decoding="async" src="/s8.webp" alt="Логотипы отелей" className="section8-image" />
+            <img loading="lazy" decoding="async" src="/s8.webp" alt="Логотипы отелей" className="section8-image" />
           </motion.div>
         </motion.div>
       </div>

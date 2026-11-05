@@ -50,7 +50,9 @@ function Section6() {
             viewport={{ once: true, margin: "-100px" }}
           >
             <motion.img 
-              src="/s6.png" 
+              loading="lazy"
+              decoding="async"
+              src="/s6.webp" 
               alt="Ахмед"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
