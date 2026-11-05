@@ -10,7 +10,7 @@ function createLeadService({ prisma, storage }) {
       })
     },
 
-    async createAnketa({ answers, utm, files }) {
+    async createAnketa({ answers, utm, files, selfieFocus }) {
       // Decode and check every file first: a bad file rejects the whole anketa
       const decoded = Object.entries(files)
         .filter(([, value]) => value)
@@ -31,7 +31,9 @@ function createLeadService({ prisma, storage }) {
 
       try {
         const saved = await storage.saveLeadFiles(lead.id, decoded)
-        await prisma.leadFile.createMany({ data: saved.map((file) => ({ ...file, lead_id: lead.id })) })
+        await prisma.leadFile.createMany({
+          data: saved.map((file) => ({ ...file, lead_id: lead.id, focus: file.kind === 'selfie' ? selfieFocus : undefined })),
+        })
       } catch (err) {
         await storage.removeLead(lead.id).catch(() => {})
         await prisma.lead.delete({ where: { id: lead.id } }).catch(() => {})

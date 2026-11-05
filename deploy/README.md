@@ -55,6 +55,20 @@ Then:
    uptimerobot.com (HTTP(s), `https://buysun.kz/api/health`, every 5 minutes)
    with alerts to the client’s work email.
 
+## Managers and the cabinet
+
+The cabinet is at `https://buysun.kz/admin/`; every anketa in Bitrix24 has a
+link “Открыть и исправить анкету в кабинете”. Add a manager on the server:
+
+```bash
+sudo -u buysun /opt/buysun/repo/deploy/manager.sh add anna@buysun.kz "Анна Ли"
+```
+
+It prints a temporary password; send it to the manager privately. On the
+first login the cabinet asks for a new password and to connect Google
+Authenticator or Яндекс Ключ. Lost phone: `manager.sh reset <email>`.
+Someone left: `manager.sh disable <email>`. Everyone: `manager.sh list`.
+
 ## Everyday
 
 - **Updating the site**: merge into `main` on GitHub. Within 5 minutes the

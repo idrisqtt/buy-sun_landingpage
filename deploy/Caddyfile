@@ -26,6 +26,16 @@ __DOMAIN__ {
 		reverse_proxy 127.0.0.1:3001
 	}
 
+	# Manager cabinet: one page, never cached or indexed by search engines
+	redir /admin /admin/ permanent
+	handle /admin/* {
+		root * /opt/buysun/current
+		header X-Robots-Tag "noindex, nofollow"
+		header Cache-Control "no-cache"
+		try_files /admin/index.html
+		file_server
+	}
+
 	# The site: the current release built by deploy/update.sh
 	handle {
 		root * /opt/buysun/current/site

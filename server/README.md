@@ -2,7 +2,8 @@
 
 Accepts the three forms of buysun.kz (“Оставьте заявку”, the phone form at the
 bottom, the candidate anketa), stores every lead in Postgres (anketa PDF and
-photos on disk) and passes it to Bitrix24 and to the work email.
+photos on disk) and passes it to Bitrix24 and to the work email. Managers open
+and correct anketas in the cabinet at `/admin/`; each Bitrix24 lead links there.
 
 The lead is stored **before** anything is sent: if Bitrix24 or email are down,
 nothing is lost. The outcome of each delivery is kept in `leads.bitrix_status`
@@ -35,9 +36,38 @@ Postgres, with a fake Bitrix24 and a fake mail server.
 | `POST /api/leads/anketa` | `{ answers, consent: true, utm?, files: { pdf, selfie?, full_body?, additional? } }`, files as `data:` URLs (PDF ≤ 8 MB, JPEG ≤ 4 MB) |
 | `GET /api/health` | `{ status: "ok" }` when the database answers |
 
+Manager cabinet (`/admin/` on the site), all under `/api/admin`, session in an
+httpOnly cookie, every change needs the `X-Requested-With: buysun-admin` header:
+
+| Request | What |
+|---|---|
+| `POST /login`, `/password`, `/2fa/setup`, `/2fa/confirm`, `/code`, `/logout`, `GET /me` | Logging in: password, new password on first login, phone app (TOTP) once, then the code every time |
+| `GET /leads?q=&type=&page=` | List and search by name, phone, email or number |
+| `GET /leads/:id`, `GET /leads/:id/files/:fileId` | One lead with files, Bitrix24 link and change history; a stored file |
+| `PUT /leads/:id` | Save an edited anketa: answers, the new PDF (built in the browser), replaced photos |
+
+Security of the cabinet: the code from the phone is required for everyone and
+cannot be reused; 5 wrong passwords or codes lock the account for 15 minutes;
+sessions end after 2 idle hours or 12 hours; passwords are scrypt hashes;
+every edit is recorded with who and what. Anketa files are only given to a
+logged-in manager.
+
 Spam protection: hidden `website` field (bots get a fake “ok”), 10 forms per
 15 minutes per IP, forms from other sites refused by `Origin`, strict
 validation, and the real file type of every upload is checked.
+
+## Managers
+
+```bash
+node scripts/manager.js add anna@buysun.kz "Анна Ли"   # prints a temporary password
+node scripts/manager.js reset anna@buysun.kz           # lost phone or password
+node scripts/manager.js disable anna@buysun.kz         # left the company
+node scripts/manager.js list
+```
+
+On the first login the cabinet asks for a new password and to connect
+Google Authenticator or Яндекс Ключ. On the server use
+`sudo -u buysun /opt/buysun/repo/deploy/manager.sh` with the same arguments.
 
 ## Settings (.env)
 

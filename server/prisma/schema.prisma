@@ -47,6 +47,7 @@ model Lead {
   email_error    String?
 
   files      LeadFile[]
+  events     LeadEvent[]
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
 
@@ -64,8 +65,66 @@ model LeadFile {
   path       String
   mime       String
   size       Int
+  // Where the face is on the selfie ({ x, y } from 0 to 1) for the round crop
+  focus      Json?
   created_at DateTime @default(now())
 
   @@index([lead_id])
   @@map("lead_files")
+}
+
+// Managers who can open the cabinet. Created with scripts/manager.js.
+model User {
+  id                    Int       @id @default(autoincrement())
+  email                 String    @unique
+  name                  String
+  // scrypt hash, see src/services/auth.js
+  password_hash         String
+  must_change_password  Boolean   @default(true)
+  // Code from the phone (TOTP); required for everyone
+  totp_secret           String?
+  totp_enabled          Boolean   @default(false)
+  // Last accepted 30-second step, so a code cannot be used twice
+  totp_last_step        Int?
+  failed_attempts       Int       @default(0)
+  locked_until          DateTime?
+  disabled              Boolean   @default(false)
+  last_login_at         DateTime?
+  created_at            DateTime  @default(now())
+
+  sessions Session[]
+  events   LeadEvent[]
+
+  @@map("users")
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  // sha256 of the cookie value; the value itself is never stored
+  token_hash   String   @unique
+  user_id      Int
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  // "pending": password checked, code from the phone still needed
+  verified     Boolean  @default(false)
+  expires_at   DateTime
+  last_seen_at DateTime @default(now())
+  created_at   DateTime @default(now())
+
+  @@index([user_id])
+  @@map("sessions")
+}
+
+// Who changed what in an anketa
+model LeadEvent {
+  id         Int      @id @default(autoincrement())
+  lead_id    Int
+  lead       Lead     @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+  user_id    Int?
+  user       User?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  action     String
+  details    Json?
+  created_at DateTime @default(now())
+
+  @@index([lead_id])
+  @@map("lead_events")
 }

@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { clampFocus } from './photoUtils'
+import './PhotoField.css'
 
 const CROP_BOX_SIZE = 180
 

@@ -3,7 +3,7 @@ const { esc, leadTitle, leadRows } = require('../utils/leadText')
 
 // Bitrix24 REST through an incoming webhook (scope "crm").
 // The webhook URL is a secret: it is never logged.
-function createBitrix({ webhookUrl, assignedById }, { fetchImpl = fetch, timeoutMs = 30000 } = {}) {
+function createBitrix({ webhookUrl, assignedById, cabinetUrl }, { fetchImpl = fetch, timeoutMs = 30000 } = {}) {
   async function call(method, params) {
     const response = await fetchImpl(`${webhookUrl}/${method}.json`, {
       method: 'POST',
@@ -39,6 +39,10 @@ function createBitrix({ webhookUrl, assignedById }, { fetchImpl = fetch, timeout
       if (duplicates.leads.length) parts.push(`лиды ${duplicates.leads.map((id) => `#${id}`).join(', ')}`)
       if (duplicates.contacts.length) parts.push(`контакты ${duplicates.contacts.map((id) => `#${id}`).join(', ')}`)
       lines.push(`<b>Возможный дубль, этот телефон уже есть:</b> ${parts.join('; ')}`)
+    }
+    if (lead.type === 'anketa' && cabinetUrl) {
+      const url = cabinetUrl(lead.id)
+      lines.push(`<b>Открыть и исправить анкету в кабинете:</b> <a href="${esc(url)}">${esc(url)}</a>`)
     }
     for (const [label, value] of leadRows(lead)) lines.push(`<b>${esc(label)}:</b> ${esc(value)}`)
 

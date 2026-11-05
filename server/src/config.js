@@ -51,8 +51,14 @@ function loadConfig(env = process.env) {
     allowedOrigins: isProduction
       ? allowedOrigins
       : [...allowedOrigins, 'http://localhost:5173', 'http://localhost:4173'],
+    // Public address of the site, for links to the cabinet in Bitrix24
+    siteUrl: allowedOrigins[0] || 'http://localhost:5173',
     bitrix: e.BITRIX_WEBHOOK_URL
-      ? { webhookUrl: e.BITRIX_WEBHOOK_URL.replace(/\/$/, ''), assignedById: e.BITRIX_ASSIGNED_BY_ID }
+      ? {
+          webhookUrl: e.BITRIX_WEBHOOK_URL.replace(/\/$/, ''),
+          assignedById: e.BITRIX_ASSIGNED_BY_ID,
+          cabinetUrl: (leadId) => `${allowedOrigins[0] || 'http://localhost:5173'}/admin/#/leads/${leadId}`,
+        }
       : null,
     mail: e.SMTP_HOST && e.LEADS_EMAIL_TO
       ? {

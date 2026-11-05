@@ -72,17 +72,31 @@ const FILE_RULES = {
 
 const dataUrl = (kind) => z.string().max(Math.ceil(FILE_RULES[kind].maxBytes * 4 / 3) + 100).optional()
 
+// Where the face is on the selfie, for the round crop in the PDF
+const focus = z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }).optional()
+
+const anketaFiles = z.object({
+  pdf: dataUrl('pdf').pipe(z.string({ message: 'Нет PDF анкеты' })),
+  selfie: dataUrl('selfie'),
+  full_body: dataUrl('full_body'),
+  additional: dataUrl('additional'),
+})
+
 const anketaSchema = z.object({
   answers,
+  selfieFocus: focus,
   consent: z.literal(true, { message: 'Нужно согласие на обработку данных' }),
   utm,
   website: honeypot,
-  files: z.object({
-    pdf: dataUrl('pdf').pipe(z.string({ message: 'Нет PDF анкеты' })),
-    selfie: dataUrl('selfie'),
-    full_body: dataUrl('full_body'),
-    additional: dataUrl('additional'),
-  }),
+  files: anketaFiles,
+})
+
+// A manager saving an anketa in the cabinet: the new PDF always, photos only
+// the ones that were replaced
+const anketaEditSchema = z.object({
+  answers,
+  selfieFocus: focus,
+  files: anketaFiles,
 })
 
 const SIGNATURES = {
@@ -109,6 +123,7 @@ module.exports = {
   quickLeadSchema,
   callbackLeadSchema,
   anketaSchema,
+  anketaEditSchema,
   decodeDataUrl,
   FILE_RULES,
 }

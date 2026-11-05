@@ -74,7 +74,7 @@ async function startTestApp({ env = {}, bitrixEnabled = true, mailEnabled = true
     ...env,
   })
   const prisma = createPrisma(TEST_URL)
-  await prisma.$executeRawUnsafe('TRUNCATE leads, lead_files RESTART IDENTITY CASCADE')
+  await prisma.$executeRawUnsafe('TRUNCATE leads, lead_files, lead_events, sessions, users RESTART IDENTITY CASCADE')
   const storage = createStorage(config.uploadDir)
 
   const mails = []
@@ -109,8 +109,29 @@ async function startTestApp({ env = {}, bitrixEnabled = true, mailEnabled = true
     await delivery.idle()
   }
 
+  // A browser of the cabinet: keeps the session cookie, sends the cabinet header
+  const cabinet = () => {
+    let cookie = ''
+    const call = async (method, url, body, { header = true } = {}) => {
+      const headers = { Origin: SITE }
+      if (cookie) headers.Cookie = cookie
+      if (header) headers['X-Requested-With'] = 'buysun-admin'
+      if (body !== undefined) headers['Content-Type'] = 'application/json'
+      const response = await fetch(base + url, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
+      const setCookie = response.headers.get('set-cookie')
+      if (setCookie) cookie = setCookie.split(';')[0].endsWith('=') ? '' : setCookie.split(';')[0]
+      const type = response.headers.get('content-type') || ''
+      return {
+        status: response.status,
+        headers: response.headers,
+        body: type.includes('json') ? await response.json() : Buffer.from(await response.arrayBuffer()),
+      }
+    }
+    return { call, get cookie() { return cookie } }
+  }
+
   return {
-    config, prisma, storage, uploadDir, bitrixServer, mails, mailBehaviour, post, settle, delivery,
+    config, prisma, storage, uploadDir, bitrixServer, mails, mailBehaviour, post, settle, delivery, cabinet,
     async close() {
       await new Promise((resolve) => server.close(resolve))
       bitrixServer.close()

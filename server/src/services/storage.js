@@ -40,6 +40,10 @@ function createStorage(rootDir) {
       return fs.readFile(resolveInside(relPath))
     },
 
+    async removeFile(relPath) {
+      await fs.rm(resolveInside(relPath), { force: true })
+    },
+
     async removeLead(leadId) {
       await fs.rm(leadDir(leadId), { recursive: true, force: true })
     },
