@@ -229,6 +229,51 @@
   color: white;
 }
 
+/* Draft notice above the form */
+.draft-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #666;
+}
+
+.draft-notice p {
+  margin: 0;
+  flex: 1 1 260px;
+  line-height: 1.4;
+}
+
+.draft-notice.restored {
+  padding: 12px 16px;
+  background: #EEF7FF;
+  border-left: 3px solid #0090FF;
+  border-radius: 8px;
+  color: #03487D;
+}
+
+.draft-reset-btn {
+  padding: 8px 16px;
+  background: transparent;
+  color: #0090FF;
+  border: 2px solid #0090FF;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.draft-reset-btn:hover {
+  background: #0090FF;
+  color: white;
+}
+
 /* Form Styles */
 .resume-rules {
   background: #f5f5f5;
@@ -624,6 +669,13 @@
 .back-to-start-btn:hover {
   background: #0090FF;
   color: white;
+}
+
+.result-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
 }
 
 /* Modal Close Button Override */

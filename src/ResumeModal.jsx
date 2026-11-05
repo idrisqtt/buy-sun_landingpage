@@ -1,10 +1,71 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import jsPDF from 'jspdf'
 import PhotoField from './PhotoField'
 import { processPhoto, defaultFocus, cropRoundPhoto, fitInBox } from './photoUtils'
+import { applyPdfFonts, loadPdfFonts } from './pdfFonts'
+import { PHOTO_FIELDS, loadDraft, saveDraftAnswers, saveDraftPhoto, clearDraft } from './anketaDraft'
 import './ResumeModal.css'
 import logoAnketa from '/logo_anketa.png'
+
+const emptyForm = {
+  firstName: '',
+  lastName: '',
+  phone: '',
+  email: '',
+  city: '',
+  age: '',
+  birthDate: '',
+  maritalStatus: '',
+  citizenship: '',
+  nationality: '',
+  gender: '',
+  height: '',
+  weight: '',
+  russian: '',
+  english: '',
+  turkish: '',
+  additionalLanguage: '',
+  additionalLanguageLevel: '',
+  institution: '',
+  specialty: '',
+  studyStart: '',
+  studyEnd: '',
+  manager: '',
+  company1: '',
+  country1: '',
+  position1: '',
+  workStart1: '',
+  workEnd1: '',
+  company2: '',
+  country2: '',
+  position2: '',
+  workStart2: '',
+  workEnd2: '',
+  company3: '',
+  country3: '',
+  position3: '',
+  workStart3: '',
+  workEnd3: '',
+  isStudent: '',
+  desiredPosition: '',
+  readyToWorkPermanently: false,
+  startMonth: '',
+  startDay: '',
+  endMonth: '',
+  endDay: '',
+  fatherName: '',
+  motherName: '',
+  hobbies: '',
+  courses: '',
+  selfiePhoto: null,
+  fullBodyPhoto: null,
+  additionalPhoto1: null,
+  instagram: '',
+  source: ''
+}
+
+const PHOTO_SAVE_DELAY_MS = 500
 
 function ResumeModal({ isOpen, onClose }) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -12,65 +73,13 @@ function ResumeModal({ isOpen, onClose }) {
   const [pdfUrl, setPdfUrl] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [photoStatus, setPhotoStatus] = useState({})
+  const [hasDraft, setHasDraft] = useState(false)
   const photoJobs = useRef({})
   const formRef = useRef(null)
+  const draftLoaded = useRef(false)
+  const savedPhotos = useRef({})
 
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    email: '',
-    city: '',
-    age: '',
-    birthDate: '',
-    maritalStatus: '',
-    citizenship: '',
-    nationality: '',
-    gender: '',
-    height: '',
-    weight: '',
-    russian: '',
-    english: '',
-    turkish: '',
-    additionalLanguage: '',
-    additionalLanguageLevel: '',
-    institution: '',
-    specialty: '',
-    studyStart: '',
-    studyEnd: '',
-    manager: '',
-    company1: '',
-    country1: '',
-    position1: '',
-    workStart1: '',
-    workEnd1: '',
-    company2: '',
-    country2: '',
-    position2: '',
-    workStart2: '',
-    workEnd2: '',
-    company3: '',
-    country3: '',
-    position3: '',
-    workStart3: '',
-    workEnd3: '',
-    isStudent: '',
-    desiredPosition: '',
-    readyToWorkPermanently: false,
-    startMonth: '',
-    startDay: '',
-    endMonth: '',
-    endDay: '',
-    fatherName: '',
-    motherName: '',
-    hobbies: '',
-    courses: '',
-    selfiePhoto: null,
-    fullBodyPhoto: null,
-    additionalPhoto1: null,
-    instagram: '',
-    source: ''
-  })
+  const [formData, setFormData] = useState(emptyForm)
 
   const translations = {
     ru: {
@@ -96,7 +105,14 @@ function ResumeModal({ isOpen, onClose }) {
       photoDrag: 'Перетащите фото, чтобы лицо было в круге',
       format: 'Не удалось открыть этот файл. Выберите фото в формате JPG или PNG.',
       heic: 'Не удалось обработать фото HEIC. Сохраните его как JPG и загрузите снова.',
-      tooLarge: 'Фото слишком большое. Выберите файл поменьше.'
+      tooLarge: 'Фото слишком большое. Выберите файл поменьше.',
+      draftRestored: 'Мы восстановили ваши ответы с прошлого раза.',
+      draftNote: 'Ответы сохраняются на этом устройстве: можно закрыть окно и вернуться позже.',
+      startOver: 'Начать заново',
+      startOverConfirm: 'Удалить все ответы и фото и начать заново?',
+      continueForm: 'Продолжить заполнение',
+      editForm: 'Исправить анкету',
+      newForm: 'Заполнить новую анкету'
     },
     en: {
       title: 'FILL OUT THE FORM',
@@ -121,11 +137,72 @@ function ResumeModal({ isOpen, onClose }) {
       photoDrag: 'Drag the photo to place your face in the circle',
       format: 'Could not open this file. Please choose a JPG or PNG photo.',
       heic: 'Could not process this HEIC photo. Save it as JPG and upload it again.',
-      tooLarge: 'This photo is too large. Please choose a smaller file.'
+      tooLarge: 'This photo is too large. Please choose a smaller file.',
+      draftRestored: 'We restored your answers from last time.',
+      draftNote: 'Your answers are saved on this device: you can close the window and come back later.',
+      startOver: 'Start over',
+      startOverConfirm: 'Delete all answers and photos and start over?',
+      continueForm: 'Continue filling',
+      editForm: 'Edit the form',
+      newForm: 'Fill out a new form'
     }
   }
 
   const t = translations[language]
+
+  // Restore the draft once, filling only fields the person has not touched yet
+  useEffect(() => {
+    let cancelled = false
+    loadDraft(emptyForm).then((draft) => {
+      if (cancelled) return
+      if (draft) {
+        setFormData((prev) => {
+          const merged = { ...prev }
+          for (const [key, value] of Object.entries(draft)) {
+            if (prev[key] === emptyForm[key]) merged[key] = value
+          }
+          return merged
+        })
+        setHasDraft(true)
+      }
+      for (const name of PHOTO_FIELDS) savedPhotos.current[name] = draft?.[name] ?? null
+      draftLoaded.current = true
+    })
+    return () => { cancelled = true }
+  }, [])
+
+  // Answers are saved on every change; photos (large, and the round one changes
+  // while it is dragged) are saved once the person stops for a moment
+  useEffect(() => {
+    if (!draftLoaded.current) return
+    saveDraftAnswers(formData, emptyForm)
+    const timer = setTimeout(() => {
+      for (const name of PHOTO_FIELDS) {
+        if (formData[name] !== savedPhotos.current[name]) {
+          savedPhotos.current[name] = formData[name]
+          saveDraftPhoto(name, formData[name])
+        }
+      }
+    }, PHOTO_SAVE_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [formData])
+
+  // Download the PDF fonts while the person is filling in the form
+  useEffect(() => {
+    if (isOpen) loadPdfFonts().catch(() => { /* retried when the PDF is created */ })
+  }, [isOpen])
+
+  const startOver = () => {
+    if (!window.confirm(t.startOverConfirm)) return
+    photoJobs.current = {} // results of photos still being processed are ignored
+    savedPhotos.current = {}
+    setFormData(emptyForm)
+    setPhotoStatus({})
+    setPdfUrl(null)
+    setHasDraft(false)
+    clearDraft()
+    setCurrentStep(1)
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -181,6 +258,7 @@ function ResumeModal({ isOpen, onClose }) {
     
     try {
       const pdf = new jsPDF('p', 'mm', 'a4')
+      await applyPdfFonts(pdf)
       const pageWidth = 210
       const pageHeight = 297
       const leftColWidth = 85
@@ -699,7 +777,7 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                 className="start-form-btn"
                 onClick={() => setCurrentStep(2)}
               >
-                {t.startForm}
+                {hasDraft ? t.continueForm : t.startForm}
               </button>
             </motion.div>
           )}
@@ -716,6 +794,15 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
               <button className="back-btn" onClick={() => setCurrentStep(1)}>
                 ← {t.back}
               </button>
+
+              <div className={`draft-notice${hasDraft ? ' restored' : ''}`}>
+                <p>{hasDraft ? `${t.draftRestored} ${t.draftNote}` : t.draftNote}</p>
+                {hasDraft && (
+                  <button type="button" className="draft-reset-btn" onClick={startOver}>
+                    {t.startOver}
+                  </button>
+                )}
+              </div>
 
               <form className="resume-form" onSubmit={handleSubmit} ref={formRef}>
                 <h2 className="resume-form-title">Заполните резюме</h2>
@@ -1214,12 +1301,17 @@ Please consider my application. PDF resume is downloaded and ready to be sent.`
                   </button>
                 </div>
 
-                <button className="back-to-start-btn" onClick={() => {
-                  setCurrentStep(1)
-                  setPdfUrl(null)
-                }}>
-                  Заполнить новую анкету
-                </button>
+                <div className="result-secondary">
+                  <button className="back-to-start-btn" onClick={() => {
+                    setCurrentStep(2)
+                    setPdfUrl(null)
+                  }}>
+                    {t.editForm}
+                  </button>
+                  <button className="back-to-start-btn" onClick={startOver}>
+                    {t.newForm}
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
