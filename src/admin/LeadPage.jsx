@@ -7,6 +7,7 @@ import { processPhoto, defaultFocus } from '../photoUtils'
 import { buildAnketaPdf } from '../anketaPdf'
 import { blobToDataUrl } from '../api'
 import PartnerPanel from './PartnerPanel'
+import CanvaButton from './CanvaButton'
 
 const PHOTO_TEXTS = {
   photoProcessing: 'Обрабатываем фото…',
@@ -35,6 +36,8 @@ async function loadStoredPhoto(leadId, file) {
 function LeadPage({ id, onError }) {
   const [lead, setLead] = useState(null)
   const [error, setError] = useState('')
+  // The anketa as it is in the editor now, for the Canva file
+  const builder = useRef(null)
 
   useEffect(() => {
     api('GET', `/leads/${id}`).then(setLead).catch((err) => { setError(err.message); onError(err) })
@@ -59,6 +62,7 @@ function LeadPage({ id, onError }) {
         </div>
         <div className="cab-actions">
           {pdf && <a className="cab-btn" href={fileUrl(lead.id, pdf.id, true)}>Скачать PDF</a>}
+          {lead.type === 'anketa' && <CanvaButton builder={builder} />}
           {lead.type === 'anketa' && (
             <button type="button" className="cab-btn secondary" onClick={() => document.getElementById('partner')?.scrollIntoView({ behavior: 'smooth' })}>
               Для партнёра
@@ -69,7 +73,7 @@ function LeadPage({ id, onError }) {
       </div>
 
       {lead.type === 'anketa'
-        ? <AnketaEditor lead={lead} onSaved={setLead} onError={onError} />
+        ? <AnketaEditor lead={lead} onSaved={setLead} onError={onError} builder={builder} />
         : <ShortLead lead={lead} />}
 
       {lead.events.length > 0 && (
@@ -101,7 +105,7 @@ function ShortLead({ lead }) {
   )
 }
 
-function AnketaEditor({ lead, onSaved, onError }) {
+function AnketaEditor({ lead, onSaved, onError, builder }) {
   const [answers, setAnswers] = useState(() => withAllFields(lead.answers))
   const [photos, setPhotos] = useState({})
   const [photoStatus, setPhotoStatus] = useState({})
@@ -172,6 +176,7 @@ function AnketaEditor({ lead, onSaved, onError }) {
   }
 
   const busy = Object.values(photoStatus).some((s) => s.busy)
+  builder.current = () => ({ answers, photos, waiting: busy })
 
   const save = async (e) => {
     e.preventDefault()

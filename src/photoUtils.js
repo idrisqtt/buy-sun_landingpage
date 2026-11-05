@@ -91,24 +91,29 @@ export const clampFocus = ({ x, y }, width, height) => {
   }
 }
 
-export const cropRoundPhoto = async ({ dataUrl, width, height, focus }, background) => {
+// The selfie cut to a square around the face; round: inside a circle on the
+// given background colour, as in the anketa PDF
+const cropSelfie = async ({ dataUrl, width, height, focus }, { round, background } = {}) => {
   const img = await loadImage(dataUrl)
   const sourceSize = Math.min(width, height)
   const outputSize = Math.min(sourceSize, SELFIE_SIZE)
+  const center = focus || defaultFocus(width, height)
   const canvas = document.createElement('canvas')
   canvas.width = outputSize
   canvas.height = outputSize
   const ctx = canvas.getContext('2d')
-  // Filled with the PDF column colour instead of transparency to keep the file small
-  ctx.fillStyle = `rgb(${background.join(',')})`
-  ctx.fillRect(0, 0, outputSize, outputSize)
-  ctx.beginPath()
-  ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2)
-  ctx.clip()
+  if (round) {
+    // Filled with the PDF column colour instead of transparency to keep the file small
+    ctx.fillStyle = `rgb(${background.join(',')})`
+    ctx.fillRect(0, 0, outputSize, outputSize)
+    ctx.beginPath()
+    ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2)
+    ctx.clip()
+  }
   ctx.drawImage(
     img,
-    focus.x * width - sourceSize / 2,
-    focus.y * height - sourceSize / 2,
+    center.x * width - sourceSize / 2,
+    center.y * height - sourceSize / 2,
     sourceSize,
     sourceSize,
     0,
@@ -118,6 +123,10 @@ export const cropRoundPhoto = async ({ dataUrl, width, height, focus }, backgrou
   )
   return canvasToJpeg(canvas, 0.9)
 }
+
+export const cropRoundPhoto = (photo, background) => cropSelfie(photo, { round: true, background })
+
+export const cropSquarePhoto = (photo) => cropSelfie(photo)
 
 export const fitInBox = (width, height, boxWidth, boxHeight) => {
   const scale = Math.min(boxWidth / width, boxHeight / height)

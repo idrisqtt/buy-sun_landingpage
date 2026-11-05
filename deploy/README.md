@@ -82,6 +82,12 @@ in the text, the font name or the file name), and the BUY SUN manager’s name
 is left out. One template is saved for all managers and is part of the nightly
 database backup.
 
+**For Canva.** The “Для Canva” button next to “Скачать PDF” downloads
+`Name_Surname_Canva.pdf`: white pages, every line real text, photos as separate
+pictures, no logo and no manager name. In Canva: Create a design → Import file;
+the text can then be edited. Both partner and Canva files are made from the
+anketa as it is on the screen.
+
 ## Everyday
 
 - **Updating the site**: merge into `main` on GitHub. Within 5 minutes the

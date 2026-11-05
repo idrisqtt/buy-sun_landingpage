@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from './api'
 import { formatDate } from './common'
 import { buildAnketaPdf } from '../anketaPdf'
+import { downloadBlob, pdfName } from './download'
 
 const EMPTY = { name: '', header: '', contacts: '', logo: null }
 const MAX_LOGO_BYTES = 900 * 1024
@@ -69,23 +70,6 @@ async function logoFromFile(file) {
   }
 }
 
-// Aidana_Seitkalieva_CV.pdf: no BUY SUN in the name of a partner's file
-const fileName = (answers) => {
-  const name = [answers.firstName, answers.lastName].map((s) => (s || '').trim()).filter(Boolean).join('_')
-  return `${name.replace(/[^\p{L}\p{N}_-]+/gu, '_') || 'Anketa'}_CV.pdf`
-}
-
-const downloadBlob = (blob, name) => {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = name
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 10000)
-}
-
 // The file for a partner: their logo, header and contacts instead of BUY SUN,
 // without the BUY SUN manager's name. One template is kept for everyone.
 function PartnerPanel({ build, waiting, dirty, onError }) {
@@ -144,7 +128,7 @@ function PartnerPanel({ build, waiting, dirty, onError }) {
     try {
       const { answers, photos } = build()
       const blob = await buildAnketaPdf({ ...answers, ...photos }, { partner: draft })
-      downloadBlob(blob, fileName(answers))
+      downloadBlob(blob, pdfName(answers, 'CV'))
     } catch {
       setStatus({ ok: false, text: 'Не удалось создать PDF. Попробуйте ещё раз.' })
     } finally {

@@ -265,3 +265,10 @@ a { color: var(--cab-accent); }
   .cab-partner-grid { grid-template-columns: minmax(0, 1fr); }
   .cab-partner-actions .cab-btn { width: 100%; }
 }
+
+/* Canva */
+.cab-canva { display: flex; flex-direction: column; gap: 4px; max-width: 220px; }
+.cab-canva small { font-size: 12px; margin: 0; }
+@media (max-width: 720px) {
+  .cab-canva { max-width: none; width: 100%; }
+}
