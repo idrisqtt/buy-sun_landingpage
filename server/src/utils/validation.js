@@ -1,5 +1,5 @@
 const { z } = require('zod')
-const { ANKETA_FIELDS, BOOLEAN_FIELDS } = require('./anketaFields')
+const { ANKETA_KEYS, BOOLEAN_FIELDS } = require('./anketaFields')
 
 // Brings Kazakhstan numbers to +7XXXXXXXXXX so Bitrix24 can find duplicates;
 // other countries keep their digits with a leading +. Returns null if the
@@ -50,7 +50,7 @@ const callbackLeadSchema = z.object({
   website: honeypot,
 })
 
-const answersShape = Object.fromEntries(ANKETA_FIELDS.map(([key]) => [
+const answersShape = Object.fromEntries(ANKETA_KEYS.map((key) => [
   key,
   BOOLEAN_FIELDS.has(key) ? z.boolean().optional() : text(key === 'hobbies' || key === 'courses' ? 2000 : 300).optional(),
 ]))

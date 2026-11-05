@@ -1,9 +1,17 @@
-const { anketaRows } = require('./anketaFields')
+const { anketaRows, positionLabel } = require('./anketaFields')
 
 const TYPE_LABELS = {
   quick: 'Заявка «Оставьте заявку»',
   callback: 'Обратный звонок',
   anketa: 'Анкета кандидата',
+}
+
+const UTM_LABELS = {
+  utm_source: 'Источник рекламы',
+  utm_medium: 'Тип рекламы',
+  utm_campaign: 'Кампания',
+  utm_content: 'Объявление',
+  utm_term: 'Ключевое слово',
 }
 
 const FILE_NAMES = {
@@ -30,7 +38,7 @@ const personName = (lead) => {
 const leadTitle = (lead) => {
   const who = personName(lead) || lead.phone
   if (lead.type === 'anketa') {
-    const position = oneLine(lead.answers?.desiredPosition || '')
+    const position = oneLine(positionLabel(lead.answers))
     return `Анкета: ${who}${position ? `, ${position}` : ''}`
   }
   if (lead.type === 'callback') return `Обратный звонок: ${lead.phone}`
@@ -46,8 +54,8 @@ const leadRows = (lead) => {
     if (lead.name) rows.push(['Имя', lead.name])
     rows.push(['Телефон', lead.phone])
   }
-  for (const [key, value] of Object.entries(lead.utm || {})) {
-    if (value) rows.push([key, value])
+  for (const [key, label] of Object.entries(UTM_LABELS)) {
+    if (lead.utm?.[key]) rows.push([label, lead.utm[key]])
   }
   return rows
 }
