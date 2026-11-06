@@ -67,7 +67,7 @@ node scripts/manager.js list
 
 On the first login the cabinet asks for a new password and to connect
 Google Authenticator or Яндекс Ключ. On the server use
-`sudo -u buysun /opt/buysun/repo/deploy/manager.sh` with the same arguments.
+`sudo -u buysun /opt/buysun/current/deploy/manager.sh` with the same arguments.
 
 ## Settings (.env)
 

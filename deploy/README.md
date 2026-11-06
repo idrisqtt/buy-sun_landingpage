@@ -61,7 +61,7 @@ The cabinet is at `https://buysun.kz/admin/`; every anketa in Bitrix24 has a
 link “Открыть и исправить анкету в кабинете”. Add a manager on the server:
 
 ```bash
-sudo -u buysun /opt/buysun/repo/deploy/manager.sh add anna@buysun.kz "Анна Ли"
+sudo -u buysun /opt/buysun/current/deploy/manager.sh add anna@buysun.kz "Анна Ли"
 ```
 
 It prints a temporary password; send it to the manager privately. On the

@@ -8,7 +8,7 @@
 //   node scripts/manager.js enable anna@buysun.kz
 //   node scripts/manager.js list
 //
-// On the server: sudo -u buysun /opt/buysun/repo/deploy/manager.sh <same arguments>
+// On the server: sudo -u buysun /opt/buysun/current/deploy/manager.sh <same arguments>
 require('dotenv/config')
 const { loadConfig } = require('../src/config')
 const { createPrisma } = require('../src/services/prisma')

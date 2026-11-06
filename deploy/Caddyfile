@@ -29,7 +29,7 @@ __DOMAIN__ {
 	# Manager cabinet: one page, never cached or indexed by search engines
 	redir /admin /admin/ permanent
 	handle /admin/* {
-		root * /opt/buysun/current
+		root * /opt/buysun/current/site
 		header X-Robots-Tag "noindex, nofollow"
 		header Cache-Control "no-cache"
 		try_files /admin/index.html
