@@ -666,9 +666,13 @@
   transition: all 0.3s;
 }
 
-.back-to-start-btn:hover {
-  background: #0090FF;
-  color: white;
+/* Only with a mouse: on a phone the tap on "Отправить" left this button,
+   which appears under the finger, looking pale as if disabled */
+@media (hover: hover) {
+  .back-to-start-btn:hover {
+    background: #0090FF;
+    color: white;
+  }
 }
 
 .result-secondary {
