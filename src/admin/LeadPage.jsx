@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api, fileUrl } from './api'
 import { SECTIONS, PHOTOS, withAllFields } from './anketaForm'
-import { DeliveryBadges, TYPE_LABELS, formatDate } from './common'
+import { DeliveryBadges, TYPE_LABELS, UTM_LABELS, formatDate } from './common'
 import PhotoField from '../PhotoField'
 import { processPhoto, defaultFocus } from '../photoUtils'
 import { buildAnketaPdf } from '../anketaPdf'
@@ -84,7 +84,7 @@ function LeadPage({ id, onError }) {
 }
 
 function ShortLead({ lead }) {
-  const rows = [['Имя', lead.name], ['Телефон', lead.phone], ...Object.entries(lead.utm || {})]
+  const rows = [['Имя', lead.name], ['Телефон', lead.phone], ...Object.entries(UTM_LABELS).map(([key, label]) => [label, lead.utm?.[key]])]
   return (
     <section className="cab-section">
       <dl className="cab-details">

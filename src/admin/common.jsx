@@ -4,6 +4,15 @@ export const TYPE_LABELS = {
   quick: 'Оставьте заявку',
 }
 
+// Advertising tags in words, as in Bitrix24 and the email
+export const UTM_LABELS = {
+  utm_source: 'Источник рекламы',
+  utm_medium: 'Тип рекламы',
+  utm_campaign: 'Кампания',
+  utm_content: 'Объявление',
+  utm_term: 'Ключевое слово',
+}
+
 export const formatDate = (iso) => new Date(iso).toLocaleString('ru-RU', {
   timeZone: 'Asia/Almaty', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
 })
