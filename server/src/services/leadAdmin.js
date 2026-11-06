@@ -2,6 +2,7 @@ const { decodeDataUrl } = require('../utils/validation')
 const { anketaRows, positionLabel, ANKETA_KEYS } = require('../utils/anketaFields')
 const { logger } = require('../utils/logger')
 
+const MAX_ID = 2147483647 // largest id the database column holds
 const PAGE_SIZE = 30
 
 const FILE_LABELS = { pdf: 'PDF анкеты', selfie: 'фото лица', full_body: 'фото в полный рост', additional: 'доп. фото' }
@@ -53,7 +54,9 @@ function createLeadAdmin({ prisma, storage, bitrixPortal }) {
           { email: { contains: q, mode: 'insensitive' } },
         ]
         if (digits.length >= 3) where.OR.push({ phone: { contains: digits.length > 10 ? digits.slice(-10) : digits } })
-        if (/^#?\d+$/.test(q.trim())) where.OR.push({ id: Number(q.replace('#', '')) })
+        // "#12" or "12" is a lead number; a phone typed without "+" is not
+        const id = Number(q.trim().replace('#', ''))
+        if (/^#?\d+$/.test(q.trim()) && id <= MAX_ID) where.OR.push({ id })
       }
       const [total, leads] = await Promise.all([
         prisma.lead.count({ where }),

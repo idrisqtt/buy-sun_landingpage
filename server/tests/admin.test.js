@@ -136,6 +136,9 @@ describe('cabinet anketas', () => {
     assert.equal(all.body.items.find((i) => i.type === 'anketa').position, 'Официант')
     assert.equal((await c.call('GET', '/api/admin/leads?q=petrov')).body.total, 1)
     assert.equal((await c.call('GET', '/api/admin/leads?q=8 777 123-45-67')).body.total, 1)
+    // A phone typed as digits only, without "+": not taken for a lead number
+    assert.equal((await c.call('GET', '/api/admin/leads?q=7771234567')).body.total, 1)
+    assert.equal((await c.call('GET', '/api/admin/leads?q=87771234567')).body.total, 1)
     assert.equal((await c.call('GET', `/api/admin/leads?q=%23${leadId}`)).body.items[0].id, leadId)
     assert.equal((await c.call('GET', '/api/admin/leads?type=callback')).body.total, 1)
   })
