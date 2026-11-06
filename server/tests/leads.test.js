@@ -224,3 +224,50 @@ describe('without integrations configured', () => {
     assert.equal(lead.email_status, 'skipped')
   })
 })
+
+describe('a burst of anketas and a restart', () => {
+  let t
+  before(async () => { t = await startTestApp() })
+  after(async () => { await t.close() })
+
+  it('sends a burst of anketas to Bitrix24 one at a time', async () => {
+    let active = 0
+    let most = 0
+    t.bitrixServer.handlers['crm.lead.add'] = async () => {
+      most = Math.max(most, ++active)
+      await new Promise((r) => setTimeout(r, 40)) // a slow Bitrix24
+      active--
+      return null // the usual answer
+    }
+    const answers = await Promise.all(Array.from({ length: 6 }, () => t.post('/api/leads/anketa', anketaPayload())))
+    assert.deepEqual(answers.map((a) => a.status), [201, 201, 201, 201, 201, 201])
+    await t.settle()
+    delete t.bitrixServer.handlers['crm.lead.add']
+    assert.equal(most, 1, 'never more than one anketa in flight')
+    assert.equal(await t.prisma.lead.count({ where: { bitrix_status: 'sent', email_status: 'sent' } }), 6)
+  })
+
+  it('after a restart sends what was left, without a second Bitrix24 lead', async () => {
+    // As if the server stopped: one lead not sent at all, one already in
+    // Bitrix24 but not emailed yet
+    const fresh = await t.prisma.lead.create({ data: { type: 'callback', phone: '+77010000091', consent_at: new Date() } })
+    const half = await t.prisma.lead.create({ data: { type: 'callback', phone: '+77010000092', consent_at: new Date(), bitrix_status: 'sent', bitrix_lead_id: 555 } })
+    const addsBefore = t.bitrixServer.calls.filter((c) => c.method === 'crm.lead.add').length
+    const mailsBefore = t.mails.length
+
+    assert.equal(await t.delivery.resumePending(), 2)
+    await t.settle()
+
+    const adds = t.bitrixServer.calls.filter((c) => c.method === 'crm.lead.add').slice(addsBefore)
+    assert.equal(adds.length, 1, 'only the lead never sent goes to Bitrix24')
+    assert.match(adds[0].params.fields.TITLE, /\+77010000091/)
+    assert.equal(t.mails.length - mailsBefore, 2, 'both are emailed')
+    for (const id of [fresh.id, half.id]) {
+      const lead = await t.prisma.lead.findUnique({ where: { id } })
+      assert.equal(lead.bitrix_status, 'sent')
+      assert.equal(lead.email_status, 'sent')
+    }
+    assert.equal((await t.prisma.lead.findUnique({ where: { id: half.id } })).bitrix_lead_id, 555)
+    assert.equal(await t.delivery.resumePending(), 0, 'nothing left')
+  })
+})

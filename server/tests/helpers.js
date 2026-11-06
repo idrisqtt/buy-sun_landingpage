@@ -40,11 +40,11 @@ function startFakeBitrix() {
   const server = http.createServer((req, res) => {
     let body = ''
     req.on('data', (chunk) => { body += chunk })
-    req.on('end', () => {
+    req.on('end', async () => {
       const method = req.url.split('/').pop().replace(/\.json$/, '')
       const params = JSON.parse(body || '{}')
       calls.push({ method, params })
-      const custom = handlers[method]?.(params)
+      const custom = await handlers[method]?.(params) // may wait, like a slow Bitrix24
       const answer = custom || (
         method === 'crm.lead.add' ? { status: 200, body: { result: nextLeadId++ } }
           : method === 'crm.duplicate.findbycomm' ? { status: 200, body: { result: [] } }
@@ -88,10 +88,7 @@ async function startTestApp({ env = {}, bitrixEnabled = true, mailEnabled = true
   const bitrix = config.bitrix ? createBitrix(config.bitrix) : null
   const mailer = config.mail ? createMailer(config.mail, { transporter }) : null
 
-  // Keep every background delivery so tests can wait for it
-  const realDelivery = createDelivery({ prisma, storage, bitrix, mailer })
-  const deliveries = []
-  const delivery = { deliver: (id) => { const p = realDelivery.deliver(id); deliveries.push(p); return p } }
+  const delivery = createDelivery({ prisma, storage, bitrix, mailer })
 
   const app = createApp({ config, prisma, storage, delivery })
   const server = await new Promise((resolve) => { const s = app.listen(0, '127.0.0.1', () => resolve(s)) })
@@ -106,14 +103,14 @@ async function startTestApp({ env = {}, bitrixEnabled = true, mailEnabled = true
     return { status: response.status, body: await response.json().catch(() => null) }
   }
 
-  // Waits until the background delivery started by the last request finished
+  // Waits until every lead sent so far went to Bitrix24 and email
   const settle = async () => {
-    for (let i = 0; i < 50 && deliveries.length === 0; i++) await new Promise((r) => setTimeout(r, 10))
-    await Promise.all(deliveries.splice(0))
+    await new Promise((r) => setTimeout(r, 20))
+    await delivery.idle()
   }
 
   return {
-    config, prisma, storage, uploadDir, bitrixServer, mails, mailBehaviour, post, settle,
+    config, prisma, storage, uploadDir, bitrixServer, mails, mailBehaviour, post, settle, delivery,
     async close() {
       await new Promise((resolve) => server.close(resolve))
       bitrixServer.close()

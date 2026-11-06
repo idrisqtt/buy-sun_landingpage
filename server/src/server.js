@@ -31,12 +31,15 @@ const stopCleanup = scheduleCleanup({ prisma, storage, retentionDays: config.ret
 
 const server = app.listen(config.port, config.host, () => {
   logger.info('BUY SUN API started', { host: config.host, port: config.port, env: config.env })
+  delivery.resumePending().catch((err) => logger.error('Could not resume deliveries', { error: err.message }))
 })
 
 async function shutdown(signal) {
   logger.info('Shutting down', { signal })
   stopCleanup()
   server.close(async () => {
+    // Let the lead being sent finish; the rest stays pending for the next start
+    await Promise.race([delivery.idle(), new Promise((r) => setTimeout(r, 8000))])
     await prisma.$disconnect()
     process.exit(0)
   })
