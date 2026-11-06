@@ -11,6 +11,7 @@ const fs = require('fs')
 const path = require('path')
 const tls = require('tls')
 const { execFileSync } = require('child_process')
+const { logger } = require('../src/utils/logger')
 
 const REPEAT_MS = 12 * 60 * 60 * 1000
 const HOUR = 60 * 60 * 1000
@@ -25,7 +26,8 @@ function decideAlerts(state, results, now = Date.now()) {
   for (const r of results) {
     const prev = state[r.name]
     if (r.ok) {
-      if (prev) resolved.push(r)
+      // "Fixed" only for a problem the client was told about
+      if (prev?.lastSent) resolved.push(r)
       continue
     }
     const entry = prev ? { ...prev } : { since: now, lastSent: 0 }
@@ -37,6 +39,17 @@ function decideAlerts(state, results, now = Date.now()) {
   }
   // A check that disappeared (e.g. a remote URL no longer configured) is dropped
   return { next, problems, resolved }
+}
+
+// What to remember after trying to email. An alert counts as sent only when
+// the email went out; otherwise (email not set up yet, mail server down) it
+// is tried again on the next run instead of being silently skipped for 12 hours.
+function rememberAlerts(state, { next, problems, resolved }, sent) {
+  if (sent) return next
+  const kept = { ...next }
+  for (const p of problems) kept[p.name] = { ...next[p.name], lastSent: state[p.name]?.lastSent || 0 }
+  for (const r of resolved) kept[r.name] = state[r.name]
+  return kept
 }
 
 // ---- checks ----
@@ -131,8 +144,6 @@ async function checkDeliveries(prisma) {
 async function main() {
   const { loadConfig } = require('../src/config')
   const { createPrisma } = require('../src/services/prisma')
-  const nodemailer = require('nodemailer')
-  const { logger } = require('../src/utils/logger')
 
   const config = loadConfig()
   const site = process.env.SITE_URL || config.allowedOrigins[0]
@@ -153,16 +164,25 @@ async function main() {
 
   let state = {}
   try { state = JSON.parse(fs.readFileSync(stateFile, 'utf8')) } catch { /* first run */ }
-  const { next, problems, resolved } = decideAlerts(state, results.filter(Boolean))
-  fs.writeFileSync(stateFile, JSON.stringify(next))
-
+  const decision = decideAlerts(state, results.filter(Boolean))
+  const { problems, resolved } = decision
   for (const p of problems) logger.warn('Health problem', { check: p.name, message: p.message })
-  if (!problems.length && !resolved.length) return
 
+  let sent = false
+  try {
+    if (problems.length || resolved.length) sent = await sendAlert(config, site, problems, resolved)
+  } finally {
+    fs.writeFileSync(stateFile, JSON.stringify(rememberAlerts(state, decision, sent || (!problems.length && !resolved.length))))
+  }
+}
+
+// Returns true when the email went out
+async function sendAlert(config, site, problems, resolved) {
+  const nodemailer = require('nodemailer')
   const to = process.env.ALERT_EMAIL_TO || config.mail?.to
   if (!config.mail || !to) {
     logger.warn('Health alert not emailed: SMTP or ALERT_EMAIL_TO is not set')
-    return
+    return false
   }
   const lines = [
     ...problems.map((p) => `ПРОБЛЕМА: ${p.message} (с ${new Date(p.since).toLocaleString('ru-RU', { timeZone: 'Asia/Almaty' })})`),
@@ -174,6 +194,7 @@ async function main() {
     subject: problems.length ? `[BUY SUN] Проблема на сайте: ${problems[0].message}`.replace(/[\r\n]+/g, ' ').slice(0, 200) : '[BUY SUN] Сайт снова работает нормально',
     text: `${lines.join('\n\n')}\n\n${problems.length ? 'Если проблема останется, напомним через 12 часов. Передайте это письмо исполнителю.' : 'Больше ничего делать не нужно.'}\n\nСообщение отправил сервер сайта ${site || ''}`,
   })
+  return true
 }
 
 if (require.main === module) {
@@ -183,4 +204,4 @@ if (require.main === module) {
   })
 }
 
-module.exports = { decideAlerts, checkBackup, checkDisk }
+module.exports = { decideAlerts, rememberAlerts, sendAlert, checkBackup, checkDisk }
