@@ -5,7 +5,8 @@
 # Run after setting up backups and then every few months.
 #   restore-test.sh                 latest local backup
 #   restore-test.sh <backup folder> a specific one
-#   restore-test.sh --remote        latest off-site backup (downloads it first)
+#   restore-test.sh --remote        latest off-site backup (downloads it first:
+#                                   db/<latest date> and the uploads/ folder)
 set -euo pipefail
 . "$(dirname "$0")/common.sh"
 
@@ -20,9 +21,10 @@ trap cleanup EXIT
 
 if [ "${1:-}" = "--remote" ]; then
   : "${BACKUP_REMOTE:?BACKUP_REMOTE is not set}"
-  latest="$(rclone lsf --dirs-only "$BACKUP_REMOTE" | sort | tail -1)"
+  latest="$(rclone lsf --dirs-only "$BACKUP_REMOTE/db" | sort | tail -1)"
   [ -n "$latest" ] || { echo "No off-site backups found"; exit 1; }
-  rclone copy "$BACKUP_REMOTE/$latest" "$work/backup"
+  rclone copy "$BACKUP_REMOTE/db/$latest" "$work/backup"
+  rclone copy "$BACKUP_REMOTE/uploads" "$work/backup/uploads"
   src="$work/backup"
 elif [ -n "${1:-}" ]; then
   src="$1"

@@ -60,10 +60,18 @@ year, once a day. Empty keeps everything; the period is the client’s decision
 
 ## Backups
 
-`scripts/backup.sh` dumps the database and packs the anketa files into
-`BACKUP_DIR/<date>/`, keeps them `BACKUP_KEEP_DAYS` days and, when
-`BACKUP_REMOTE` is set, copies them off the server with rclone. Use an rclone
-**crypt** remote: the copies hold personal data.
+`scripts/backup.sh` dumps the database into `BACKUP_DIR/<date>/` with an
+`uploads/` folder of the anketa files and keeps `BACKUP_KEEP_DAYS` days. Each
+night looks like a full copy, but unchanged files are hard links to the night
+before, so every file takes disk space once (14 full copies would fill a small
+server after a few hundred anketas). Needs `rsync`.
+
+With `BACKUP_REMOTE` (an rclone **crypt** remote: the copies hold personal data)
+the off-site storage gets `db/<date>/` every night, `uploads/` with only the new
+files sent, and `uploads-removed/<date>/` with files deleted or replaced that
+night, kept `BACKUP_KEEP_DAYS` days. To restore an older night from there, take
+`db/<date>` plus `uploads/` plus everything in `uploads-removed/` newer than
+that date.
 
 ```cron
 30 3 * * * /opt/buysun/server/scripts/backup.sh >> /var/log/buysun-backup.log 2>&1

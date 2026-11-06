@@ -34,7 +34,7 @@ step "System packages"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -q
 apt-get install -y -q git curl ca-certificates gnupg xz-utils sudo ufw \
-  postgresql postgresql-client unattended-upgrades rclone \
+  postgresql postgresql-client unattended-upgrades rclone rsync \
   debian-keyring debian-archive-keyring apt-transport-https
 
 step "Swap 1 GB (the server has 1 GB of memory; building the site needs more)"
