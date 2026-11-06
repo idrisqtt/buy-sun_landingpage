@@ -49,7 +49,7 @@ Then:
    The old Vercel site keeps working until then, so there is no downtime.
 4. Off-site backups: `sudo -u buysun rclone config` (a crypt remote over the
    storage), set `BACKUP_REMOTE=<remote>:backups` in `server.env`. After the
-   first night: `sudo -u buysun /opt/buysun/repo/server/scripts/restore-test.sh --remote`.
+   first night: `sudo -u buysun /opt/buysun/current/server/scripts/restore-test.sh --remote`.
 5. **Outside uptime monitor.** The health check runs on the server and cannot
    report the server itself being off. Create a free monitor at
    uptimerobot.com (HTTP(s), `https://buysun.kz/api/health`, every 5 minutes)
@@ -58,9 +58,13 @@ Then:
 ## Everyday
 
 - **Updating the site**: merge into `main` on GitHub. Within 5 minutes the
-  server builds the new version in a separate folder and switches to it in one
-  step; database migrations run automatically. Log: `journalctl -u buysun-update`.
-  Force: `sudo -u buysun /opt/buysun/repo/deploy/update.sh --force`.
+  server prepares the new version (code, server packages, built site) in its
+  own folder next to the running one and switches to it in one step; database
+  migrations run automatically. A failed update leaves the running version
+  untouched and is retried in 5 minutes; if the new API does not start, the
+  previous version is switched back. Packages are downloaded only when
+  `package-lock.json` changes. Log: `journalctl -u buysun-update`.
+  Force: `sudo -u buysun /opt/buysun/current/deploy/update.sh --force`.
 - **Going back**: the last 5 builds stay in `/opt/buysun/releases`; the quickest
   way back is to revert the commit on GitHub.
 - **Logs**: `journalctl -u buysun-api -f`, site requests in `/var/log/caddy/buysun.log`.
@@ -70,8 +74,9 @@ Then:
 
 | Path | What |
 |---|---|
-| `/opt/buysun/repo` | The code (git), deployed commit |
-| `/opt/buysun/current` | → `/opt/buysun/releases/<commit>`, the site Caddy serves |
+| `/opt/buysun/repo` | Git checkout the updates are fetched into |
+| `/opt/buysun/current` | → the running version in `/opt/buysun/releases/`: code, server packages, the site Caddy serves (`site/`) |
+| `/opt/buysun/cache` | Installed packages per `package-lock.json`, shared by versions as hard links |
 | `/opt/buysun/shared/server.env` | Settings and secrets, readable only by `buysun` |
 | `/var/lib/buysun/uploads` | Anketa PDFs and photos, readable only by `buysun`, never served |
 | `/var/backups/buysun` | Local backups |

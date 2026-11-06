@@ -6,7 +6,7 @@ Wants=network-online.target postgresql.service
 [Service]
 User=buysun
 Group=buysun
-WorkingDirectory=/opt/buysun/repo/server
+WorkingDirectory=/opt/buysun/current/server
 EnvironmentFile=/opt/buysun/shared/server.env
 ExecStart=/usr/local/bin/node src/server.js
 Restart=always

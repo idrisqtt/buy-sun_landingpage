@@ -8,5 +8,5 @@ Type=oneshot
 User=buysun
 Group=buysun
 EnvironmentFile=/opt/buysun/shared/server.env
-ExecStart=/opt/buysun/repo/deploy/update.sh
+ExecStart=/opt/buysun/current/deploy/update.sh
 TimeoutStartSec=20min

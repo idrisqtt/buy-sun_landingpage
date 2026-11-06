@@ -8,5 +8,5 @@ User=buysun
 Group=buysun
 EnvironmentFile=/opt/buysun/shared/server.env
 Environment=ENV_FILE=/dev/null
-ExecStart=/opt/buysun/repo/server/scripts/restore-test.sh
+ExecStart=/opt/buysun/current/server/scripts/restore-test.sh
 TimeoutStartSec=1h

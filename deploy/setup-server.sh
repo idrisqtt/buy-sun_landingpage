@@ -126,6 +126,10 @@ if [ ! -d "$APP_DIR/repo/.git" ]; then
     fi
   fi
   as_app git clone --quiet --branch "$BRANCH" "$REPO_URL" "$APP_DIR/repo"
+else
+  # Running services use releases/, so the checkout can be brought up to date
+  as_app git -C "$APP_DIR/repo" fetch --quiet origin "$BRANCH"
+  as_app git -C "$APP_DIR/repo" checkout --quiet -B "$BRANCH" "origin/$BRANCH"
 fi
 
 step "Settings file $APP_DIR/shared/server.env"
@@ -200,5 +204,5 @@ echo "Done. Next:"
 echo "  1. Fill in Bitrix24 and SMTP in $APP_DIR/shared/server.env, then: systemctl restart buysun-api"
 echo "  2. Point $DOMAIN and www.$DOMAIN (A records) to this server; Caddy gets the certificate itself"
 echo "  3. Off-site backups: rclone config (as $APP_USER), set BACKUP_REMOTE, then run"
-echo "     sudo -u $APP_USER $APP_DIR/repo/server/scripts/restore-test.sh --remote after the first night"
+echo "     sudo -u $APP_USER $APP_DIR/current/server/scripts/restore-test.sh --remote after the first night"
 echo "  4. Outside uptime monitor for https://$DOMAIN/api/health (deploy/README.md)"

@@ -8,5 +8,5 @@ User=buysun
 Group=buysun
 EnvironmentFile=/opt/buysun/shared/server.env
 Environment=ENV_FILE=/dev/null
-ExecStart=/opt/buysun/repo/server/scripts/backup.sh
+ExecStart=/opt/buysun/current/server/scripts/backup.sh
 TimeoutStartSec=1h

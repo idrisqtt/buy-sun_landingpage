@@ -28,7 +28,7 @@ __DOMAIN__ {
 
 	# The site: the current release built by deploy/update.sh
 	handle {
-		root * /opt/buysun/current
+		root * /opt/buysun/current/site
 
 		# File names with a content hash never change: cache for a year
 		@hashed path /assets/*
