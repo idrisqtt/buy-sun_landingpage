@@ -58,7 +58,13 @@ Then:
 ## Managers and the cabinet
 
 The cabinet is at `https://buysun.kz/admin/`; every anketa in Bitrix24 has a
-link “Открыть и исправить анкету в кабинете”. Add a manager on the server:
+link “Открыть и исправить анкету в кабинете”.
+
+The setup script creates the first manager, `buysun@gmail.com` (another one:
+`ADMIN_EMAIL=… ADMIN_NAME=…` before `setup-server.sh`). Its temporary password
+is made on the server, never stored in the repository (it is public), shown at
+the end of the setup and kept in `/opt/buysun/shared/first-manager.txt`; delete
+that file after the first login. Add more managers on the server:
 
 ```bash
 sudo -u buysun /opt/buysun/current/deploy/manager.sh add anna@buysun.kz "Анна Ли"
